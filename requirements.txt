@@ -1,2 +1,4 @@
 Twisted==17.5.0
 txjason==0.1.0
+txmongo==17.1.0
+supervisor==3.3.3
