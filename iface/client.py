@@ -33,7 +33,10 @@ def main(reactor, description):
     client = JSONRPCClientFactory(endpoint, reactor=reactor)
 
     #add campaign
-    r = yield client.callRemote('campaign.add', [CAMAPAIGN_DATA])
+    r = yield client.callRemote('campaign.add', [{
+        'id':'campaign_1',
+
+    }])
     print "add campaign result", r
 
     #update campaign
