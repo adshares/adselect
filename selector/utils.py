@@ -35,4 +35,9 @@ def select_banner(request_data):
             },
         ]
     """
+
     return []
+
+
+def update_stats():
+    pass

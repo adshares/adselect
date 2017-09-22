@@ -1,12 +1,12 @@
 import txmongo
 
 
+def get_stat_collection():
+    return get_mongo_db().stats
+
+
 def get_campaign_collection():
     return get_mongo_db().campaign
-
-
-def get_impression_collection():
-    return get_mongo_db().impression
 
 
 MONGO_CONNECTION = None
