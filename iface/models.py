@@ -19,7 +19,7 @@ class RequireExcludeListObject(jsonobject.JsonObject):
 class BannerObject(jsonobject.JsonObject):
     banner_id = jsonobject.StringProperty()
     banner_size = jsonobject.StringProperty()
-    keywords = jsonobject.JsonDict()
+    keywords = jsonobject.DictProperty()
 
 
 class CamapaignObject(jsonobject.JsonObject):
@@ -27,13 +27,23 @@ class CamapaignObject(jsonobject.JsonObject):
     time_start = jsonobject.IntegerProperty()
     time_end = jsonobject.IntegerProperty()
     filters = jsonobject.ListProperty(RequireExcludeListObject)
-    keywords = jsonobject.JsonDict()
+    keywords = jsonobject.DictProperty()
     banners = jsonobject.ListProperty()
 
 
 class ImpressionObject(jsonobject.JsonObject):
     banner_id = jsonobject.StringProperty()
-    keywords = jsonobject.JsonDict()
+    keywords = jsonobject.DictProperty()
     publisher_id = jsonobject.StringProperty()
 
 
+class SelectBannerRequest(jsonobject.JsonObject):
+    request_id = jsonobject.IntegerProperty()
+    publisher_id = jsonobject.IntegerProperty()
+    user_id = jsonobject.StringProperty()
+    banner_size = jsonobject.StringProperty()
+    keywords = jsonobject.DictProperty()
+
+class SelectBannerResponse(jsonobject.JsonObject):
+    request_id = jsonobject.IntegerProperty()
+    banner_id = jsonobject.StringProperty()

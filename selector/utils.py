@@ -6,37 +6,22 @@
 
 """
 
-def select_banner(request_data):
-    """
-        List of requests:
-         [
-            {
-                'id':'request_id'
-                'filters':{
-                    'required':[{
-                        'keyword':'banner_keyword',
-                        'filter':'banner_filter'
-                    },],
-                    'excluded':[{
-                        'keyword':'banner_keyword',
-                        'filter':'banner_filter'
-                    },]
-                },
-                'userid':'',
-                'keywords':impression_keywords
-            },
-        ]
+from adselect.selector import stats as selector_stats
+from adselect.iface import models as iface_models
 
-        Should return list of banners to display
-        [
-            {
-                'request_id':,
-                'banner_id':
-            },
-        ]
-    """
 
-    return []
+def select_banner(select_banner_request_list):
+    request = []
+
+    for banner_request in select_banner_request_list:
+        request.append(
+            iface_models.SelectBannerResponse(
+                request_id = banner_request.request_id,
+                banner_id = 'a3878c8608ed42afa18dd6edcbf3948e'
+            )
+        )
+
+    return request
 
 
 def update_stats():
