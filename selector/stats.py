@@ -30,30 +30,34 @@ KEYWORDS_BANNERS = {}
 
 # Keep info about banners impression payments
 # KEYWORD_IMPRESSION_PAID_AMOUNT = {
-#   'campaignid1_bannerid1':{
-#       'keyword1':'total_payment_amount',
-#       'keyword2':'total_payment_amount',
-#       },
 #   'campaignid2_bannerid2':{
-#      'keyword1':'total_payment_amount',
-#      'keyword2':'total_payment_amount',
+#       'publisher_id_1':{
+#           'keyword1':'total_payment_amount',
+#           'keyword2':'total_payment_amount',
+#       },
+#       'publisher_id_2':{
+#           'keyword1':'total_payment_amount',
+#           'keyword2':'total_payment_amount',
+#       }
 #   }
 #  }
 KEYWORD_IMPRESSION_PAID_AMOUNT = {}
 
 # Keep info about new banners to display
 # NEW_BANNERS:{
-#   publisher_id1:{
-#       'size1':['campaignid1_bannerid1', 'campaignid2_bannerid2'],
-#       'size2':['campaignid3_bannerid3', 'campaignid1_bannerid1']
-#   }
+#   'size1':['campaignid1_bannerid1', 'campaignid2_bannerid2'],
+#   'size2':['campaignid3_bannerid3', 'campaignid1_bannerid1']
 # }
 NEW_BANNERS = {}
 
 # Keep data about impressions count of banners
 # BANNERS_IMPRESSIONS_COUNT = {
-#   'campaignid1_bannerid1':'impression_count',
-#   'campaignid2_bannerid2':'impression_count'
+#   'campaignid1_bannerid1':{
+#           'publisher_id1':'impression_count_for_publisher_1',
+#           'publisher_id2':'impression_count_for_publisher_2'
+#    },
+#   'campaignid2_bannerid2':{
+#   }
 # }
 BANNERS_IMPRESSIONS_COUNT = {}
 
@@ -61,7 +65,7 @@ BANNERS_IMPRESSIONS_COUNT = {}
 def select_new_banners(publisher_id,
                        banner_size,
                        proposition_nb,
-                       notpaid_display_cutoff=1000,
+                       notpaid_display_cutoff=100,
                        filtering_population_factor=4
                        ):
     """
@@ -70,13 +74,12 @@ def select_new_banners(publisher_id,
         publisher_id - publisher id
     """
 
-    publisher_banners = NEW_BANNERS.get(publisher_id, {})
-    random_banners = random.shuffle(publisher_banners.get(banner_size, []))[:proposition_nb*filtering_population_factor]
+    random_banners = random.shuffle(NEW_BANNERS.get(banner_size, []))[:proposition_nb*filtering_population_factor]
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
-        if BANNERS_IMPRESSIONS_COUNT.get(banner_id, 0) < notpaid_display_cutoff:
+        if BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0) < notpaid_display_cutoff:
             selected_banners.append(banner_size)
 
         if len(selected_banners) > proposition_nb:
