@@ -17,13 +17,6 @@ class CampaignUpdateHandler(AdSelectHandler):
     """
 
     @handler.exportRPC()
-    def add(self, campaign_data):
-        if type(campaign_data)!= list:
-            campaign_data = [campaign_data]
-        db_utils.add_campaigns(campaign_data)
-        return "OK"
-
-    @handler.exportRPC()
     def update(self, campaign_data):
         if type(campaign_data)!= list:
             campaign_data = [campaign_data]
@@ -59,6 +52,7 @@ class BannerHandler(AdSelectHandler):
     @handler.exportRPC()
     def select(self, impression_params):
         return selector_utils.select_banner(impression_params)
+
 
 def configure_iface(port = iface_config.SERVER_PORT):
     factory = JSONRPCServerFactory()
