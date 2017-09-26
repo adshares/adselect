@@ -1,14 +1,9 @@
 import jsonobject
 
 
-class FilterObject(jsonobject.JsonObject):
-    type = jsonobject.StringProperty()
-    args = jsonobject.StringProperty()
-
-
 class KeywordFilterObject(jsonobject.JsonObject):
     keyword = jsonobject.StringProperty()
-    filter = jsonobject.ObjectProperty(FilterObject)
+    filter = jsonobject.DictProperty()
 
 
 class RequireExcludeListObject(jsonobject.JsonObject):
@@ -26,9 +21,9 @@ class CamapaignObject(jsonobject.JsonObject):
     campaign_id = jsonobject.StringProperty()
     time_start = jsonobject.IntegerProperty()
     time_end = jsonobject.IntegerProperty()
-    filters = jsonobject.ListProperty(RequireExcludeListObject)
+    filters = jsonobject.ObjectProperty(RequireExcludeListObject)
     keywords = jsonobject.DictProperty()
-    banners = jsonobject.ListProperty()
+    banners = jsonobject.ListProperty(BannerObject)
 
 
 class ImpressionObject(jsonobject.JsonObject):
@@ -43,6 +38,7 @@ class SelectBannerRequest(jsonobject.JsonObject):
     user_id = jsonobject.StringProperty()
     banner_size = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
+
 
 class SelectBannerResponse(jsonobject.JsonObject):
     request_id = jsonobject.IntegerProperty()

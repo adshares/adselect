@@ -74,13 +74,15 @@ def select_new_banners(publisher_id,
         publisher_id - publisher id
     """
 
-    random_banners = random.shuffle(NEW_BANNERS.get(banner_size, []))[:proposition_nb*filtering_population_factor]
+    new_banners = NEW_BANNERS.get(banner_size, [])
+    random.shuffle(new_banners)
+    random_banners = new_banners[:proposition_nb*filtering_population_factor]
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
         if BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0) < notpaid_display_cutoff:
-            selected_banners.append(banner_size)
+            selected_banners.append(banner_id)
 
         if len(selected_banners) > proposition_nb:
             break
@@ -88,14 +90,14 @@ def select_new_banners(publisher_id,
     return selected_banners[:proposition_nb]
 
 
-def select_impression_banners(publisher_id,
-                              banner_size,
-                              impression_keywords_dict,
-                              propositions_nb=100,
-                              best_keywords_cutoff=100,
-                              banners_per_keyword_cutoff=10,
-                              mixed_new_banners_percent=5
-                              ):
+def select_best_banners(publisher_id,
+                        banner_size,
+                        impression_keywords_dict,
+                        propositions_nb=100,
+                        best_keywords_cutoff=100,
+                        banners_per_keyword_cutoff=10,
+                        mixed_new_banners_percent=5
+                        ):
     """
         Select banners with appropriate size for given impression keywords.
         proposition_nb - the amount of selected banners
@@ -128,10 +130,26 @@ def select_impression_banners(publisher_id,
     # Add new banners without payment statistic
     new_banners_proposition_nb = int(mixed_new_banners_percent*propositions_nb/100.0)
     selected_banners += select_new_banners(publisher_id, banner_size, new_banners_proposition_nb)
+    random.shuffle(selected_banners)
 
     #Shuffle items in the list
-    return random.shuffle(selected_banners)[:propositions_nb]
+    return selected_banners[:propositions_nb]
 
 
-def update_stats(impression_keywords):
+def update_impression(banner_id, banner_size, publisher_id, impression_keywords, paid_amount):
+    # Update KEYWORD_IMPRESSION_PAID_AMOUNT and BANNERS_IMPRESSIONS_COUNT
+    pass
+
+
+def add_new_banner(banner_id, banner_size):
+    # Update NEW_BANNERS
+    if banner_size not in NEW_BANNERS:
+        NEW_BANNERS[banner_size] = []
+
+    NEW_BANNERS[banner_size].append(banner_id)
+
+
+def recalculate_stats():
+    # Update BEST_KEYWORDS and KEYWORDS_BANNERS based on
+    # KEYWORD_IMPRESSION_PAID_AMOUNT and BANNERS_IMPRESSIONS_COUNT
     pass
