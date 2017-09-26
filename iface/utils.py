@@ -38,13 +38,22 @@ def create_or_update_campaign(cmpobj):
         selector_stats.add_new_banner(banner.banner_id, banner.banner_size)
 
 
+def add_impression(imobj):
+    """
+        imobj - impression object
+    """
+
+    #TODO: get banner size
+    selector_stats.update_impression(imobj.banner_id,
+                                     "banner_size",
+                                     imobj.publisher_id,
+                                     imobj.keywords,
+                                     imobj.paid_amount)
+
+
 def delete_campaign(cmpid):
     """
         cmpid - camapign id
     """
 
 
-def add_impression(imobj):
-    """
-        imobj - impression object
-    """

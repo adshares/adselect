@@ -138,7 +138,15 @@ def select_best_banners(publisher_id,
 
 def update_impression(banner_id, banner_size, publisher_id, impression_keywords, paid_amount):
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT and BANNERS_IMPRESSIONS_COUNT
-    pass
+
+    #TODO: add lock per impression?
+    if banner_id not in BANNERS_IMPRESSIONS_COUNT:
+        BANNERS_IMPRESSIONS_COUNT[banner_id] = {}
+
+    if publisher_id not in BANNERS_IMPRESSIONS_COUNT[banner_id]:
+        BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]=0
+
+    BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
 
 
 def add_new_banner(banner_id, banner_size):

@@ -30,6 +30,8 @@ class ImpressionObject(jsonobject.JsonObject):
     banner_id = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
     publisher_id = jsonobject.StringProperty()
+    user_id = jsonobject.StringProperty()
+    paid_amount = jsonobject.FloatProperty()
 
 
 class SelectBannerRequest(jsonobject.JsonObject):

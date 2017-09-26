@@ -23,7 +23,7 @@ class AdSelectIfaceServer(JSONRPCServer):
     #impressions interface
     def jsonrpc_impression_add(self, *impressions_data_list):
         for imobj in impressions_data_list:
-            iface_utils.add_impression(imobj)
+            iface_utils.add_impression(iface_models.ImpressionObject(imobj))
         return True
 
     #select banner interface
