@@ -27,15 +27,11 @@ def delete_campaign(cmpid_list):
 
 
 def add_impression(imobj):
-    def wraper(banner_doc):
-        # Change counter only  in stats cache
-        stats_cache.update_impression(imobj.banner_id,
-                                      banner_doc['banner_size'],
-                                      imobj.publisher_id,
-                                      imobj.keywords,
-                                      imobj.paid_amount)
-
-    db_utils.get_banner({'banner_id': imobj.banner_id}, wraper)
+    # Change counter only  in stats cache
+    stats_cache.update_impression(imobj.banner_id,
+                                  imobj.publisher_id,
+                                  imobj.keywords,
+                                  imobj.paid_amount)
 
 
 def select_banner(banners_requests):

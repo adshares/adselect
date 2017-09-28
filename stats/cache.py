@@ -83,6 +83,10 @@ def update_banners_impressions_count(banners_impressions_count):
     BANNERS_IMPRESSIONS_COUNT = banners_impressions_count
 
 
+def genkey(key, val, delimiter="$"):
+    return "%s%s%s" % (key, delimiter, val)
+
+
 def select_new_banners(publisher_id,
                        banner_size,
                        proposition_nb,
@@ -158,12 +162,8 @@ def select_best_banners(publisher_id,
     return selected_banners[:propositions_nb]
 
 
-def update_impression(banner_id, banner_size, publisher_id, impression_keywords, paid_amount):
-    # Update KEYWORD_IMPRESSION_PAID_AMOUNT and BANNERS_IMPRESSIONS_COUNT
-    if paid_amount > 0:
-        if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
-            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
-
+def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+    # Update BANNERS_IMPRESSIONS_COUNT
     if banner_id not in BANNERS_IMPRESSIONS_COUNT:
         BANNERS_IMPRESSIONS_COUNT[banner_id] = {}
 
@@ -173,11 +173,19 @@ def update_impression(banner_id, banner_size, publisher_id, impression_keywords,
     BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
 
 
-def add_new_banner(banner_id, banner_size):
-    # Update NEW_BANNERS
-    if banner_size not in NEW_BANNERS:
-        NEW_BANNERS[banner_size] = []
+    # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
+    if not paid_amount > 0:
+        return
 
-    NEW_BANNERS[banner_size].append(banner_id)
+    if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
 
+    if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
 
+    for key, val in impression_keywords.items():
+        stat_key = genkey(key, val)
+        if stat_key not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
+            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
+
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount
