@@ -1,5 +1,5 @@
 from adselect.selector import stats as selector_stats
-from adselect.iface import models as iface_models
+from adselect.iface import protocol as iface_proto
 
 
 def select_banner(banners_requests):
@@ -20,7 +20,7 @@ def select_banner(banners_requests):
         #TODO: add banners filtering
 
         requests.append(
-            iface_models.SelectBannerResponse(
+            iface_proto.SelectBannerResponse(
                 request_id = banner_request.request_id,
                 banner_id = proposed_banners[0] if proposed_banners else None
             )
@@ -55,5 +55,3 @@ def delete_campaign(cmpid):
     """
         cmpid - camapign id
     """
-
-

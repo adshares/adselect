@@ -5,14 +5,15 @@ from fastjsonrpc.server import JSONRPCServer
 
 from adselect.iface import config as iface_config
 from adselect.iface import utils as iface_utils
-from adselect.iface import models as iface_models
+from adselect.iface import protocol as iface_proto
+from adselect.db import models as db_models
 
 
 class AdSelectIfaceServer(JSONRPCServer):
     #campaign interface
     def jsonrpc_campaign_update(self, *campaign_data_list):
         for campaign_data in campaign_data_list:
-            iface_utils.create_or_update_campaign(iface_models.CamapaignObject(campaign_data))
+            iface_utils.create_or_update_campaign(db_models.CamapaignObject(campaign_data))
         return True
 
     def jsonrpc_campaign_delete(self, *campaign_id_list):
@@ -23,12 +24,12 @@ class AdSelectIfaceServer(JSONRPCServer):
     #impressions interface
     def jsonrpc_impression_add(self, *impressions_data_list):
         for imobj in impressions_data_list:
-            iface_utils.add_impression(iface_models.ImpressionObject(imobj))
+            iface_utils.add_impression(db_models.ImpressionObject(imobj))
         return True
 
     #select banner interface
     def jsonrpc_banner_select(self, *impression_param_list):
-        banner_requests = [iface_models.SelectBannerRequest(impression_param)
+        banner_requests = [iface_proto.SelectBannerRequest(impression_param)
                           for impression_param in impression_param_list]
 
         return [response.to_json() for response in iface_utils.select_banner(banner_requests)]

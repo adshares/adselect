@@ -74,6 +74,7 @@ def select_new_banners(publisher_id,
         publisher_id - publisher id
     """
 
+    #TODO: fix shuffle of whole list
     new_banners = NEW_BANNERS.get(banner_size, [])
     random.shuffle(new_banners)
     random_banners = new_banners[:proposition_nb*filtering_population_factor]

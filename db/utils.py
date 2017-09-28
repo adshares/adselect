@@ -1,4 +1,6 @@
-def add_campaigns(campaigns_list):
+from txmongo import filter
+
+def add_campaigns(cmpobj):
     """
         List of campaign data
         {
@@ -42,3 +44,18 @@ def add_impressions(impression_list):
             'userid':''
         }
     """
+
+from twisted.internet import defer, reactor
+@defer.inlineCallbacks
+def example():
+    from adselect.db import get_campaign_collection
+
+    campaign_collection = yield get_campaign_collection()
+    idx = filter.sort(filter.ASCENDING("user_id"))
+    campaign_collection.campaign.create_index(idx, unique=True)
+    result = yield campaign_collection.campaign.index_information()
+    print result
+
+if __name__ == "__main__":
+    example().addCallback(lambda ign: reactor.stop())
+    reactor.run()

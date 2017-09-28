@@ -18,5 +18,4 @@ def get_mongo_db():
 
 
 def configure_db():
-    #get_mongo_db()
-    pass
+    get_mongo_db()
