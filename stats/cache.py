@@ -12,6 +12,11 @@ from adselect.contrib import utils as contrib_utils
 # }
 BEST_KEYWORDS = {}
 
+def update_best_keywords(best_keywords_dict):
+    global  BEST_KEYWORDS
+    BEST_KEYWORDS = best_keywords_dict
+
+
 # KEYWORDS_BANNERS keeps sorted list of banners for given size and keyword
 # KEYWORDS_BANNERS = {
 #   'publisher_id1':{
@@ -28,7 +33,11 @@ BEST_KEYWORDS = {}
 # }
 KEYWORDS_BANNERS = {}
 
-# Keep info about banners impression payments
+def update_keywords_banners(keywords_banners):
+    global KEYWORDS_BANNERS
+    KEYWORDS_BANNERS = keywords_banners
+
+# Keep info about banners impression payments > 0
 # KEYWORD_IMPRESSION_PAID_AMOUNT = {
 #   'campaignid2_bannerid2':{
 #       'publisher_id_1':{
@@ -43,12 +52,20 @@ KEYWORDS_BANNERS = {}
 #  }
 KEYWORD_IMPRESSION_PAID_AMOUNT = {}
 
+def update_keyowrd_impression_paid_amount(keyword_impression_paid_amount):
+    global  KEYWORD_IMPRESSION_PAID_AMOUNT
+    KEYWORD_IMPRESSION_PAID_AMOUNT = keyword_impression_paid_amount
+
 # Keep info about new banners to display
 # NEW_BANNERS:{
 #   'size1':['campaignid1_bannerid1', 'campaignid2_bannerid2'],
 #   'size2':['campaignid3_bannerid3', 'campaignid1_bannerid1']
 # }
 NEW_BANNERS = {}
+
+def update_new_banners(new_banners):
+    global  NEW_BANNERS
+    NEW_BANNERS = new_banners
 
 # Keep data about impressions count of banners
 # BANNERS_IMPRESSIONS_COUNT = {
@@ -60,6 +77,10 @@ NEW_BANNERS = {}
 #   }
 # }
 BANNERS_IMPRESSIONS_COUNT = {}
+
+def update_banners_impressions_count(banners_impressions_count):
+    global  BANNERS_IMPRESSIONS_COUNT
+    BANNERS_IMPRESSIONS_COUNT = banners_impressions_count
 
 
 def select_new_banners(publisher_id,
@@ -139,8 +160,10 @@ def select_best_banners(publisher_id,
 
 def update_impression(banner_id, banner_size, publisher_id, impression_keywords, paid_amount):
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT and BANNERS_IMPRESSIONS_COUNT
+    if paid_amount > 0:
+        if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
+            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
 
-    #TODO: add lock per impression?
     if banner_id not in BANNERS_IMPRESSIONS_COUNT:
         BANNERS_IMPRESSIONS_COUNT[banner_id] = {}
 

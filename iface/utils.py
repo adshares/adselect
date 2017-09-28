@@ -1,5 +1,6 @@
 from adselect.iface import protocol as iface_proto
 from adselect.stats import utils as stats_utils
+from adselect.db import utils as db_utils
 
 
 def select_banner(banners_requests):
@@ -17,30 +18,37 @@ def select_banner(banners_requests):
     return responses
 
 
-def create_or_update_campaign(cmpobj):
-    """
-        cmpobj - campaign object
-    """
-
-    #TODO: add save to banner
-    for banner in cmpobj.banners:
-        stats_utils.add_new_banner(banner.banner_id, banner.banner_size)
-
-
 def add_impression(imobj):
     """
         imobj - impression object
     """
 
-    #TODO: get banner size
+    banner = db_utils.get_banner(imobj.banner_id)
     stats_utils.update_impression(imobj.banner_id,
-                                  "banner_size",
+                                  banner.banner_size,
                                   imobj.publisher_id,
                                   imobj.keywords,
                                   imobj.paid_amount)
 
 
-def delete_campaign(cmpid):
-    """
-        cmpid - camapign id
-    """
+def create_or_update_campaign(cmpobj):
+    # Save changes to database
+    campaign_doc = cmpobj.to_json()
+    del campaign_doc['banners']
+
+    banners_doc_list = []
+    for banner in cmpobj.banners:
+        banner_doc = banner.to_json()
+        banner_doc['campaign_id'] = cmpobj.campaign_id
+        banners_doc_list.append(banner_doc)
+
+    db_utils.add_or_update_campaigns(campaign_doc, banners_doc_list)
+
+    # Update cache with new banners
+    # for banner in cmpobj.banners:
+    #    stats_utils.add_new_banner(banner.banner_id, banner.banner_size)
+
+
+def delete_campaign(cmpid_list):
+    # Save changes to database
+    db_utils.delete_campaigns(cmpid_list)
