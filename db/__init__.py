@@ -1,6 +1,14 @@
 import txmongo
 
 
+def configure_db():
+    get_mongo_db()
+
+
+def get_mongo_db():
+    return get_mongo_connection().spotree
+
+
 def get_campaign_collection():
     # Keep information about campaigns
     return get_mongo_db().campaign
@@ -20,12 +28,13 @@ def get_impressions_stats_collection():
 
 
 MONGO_CONNECTION = None
-def get_mongo_db():
-    from adselect.db import MONGO_CONNECTION
+def get_mongo_connection():
+    global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
-        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool().spotree
+        print "Starting lazy connection"
+        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool()
     return MONGO_CONNECTION
 
 
-def configure_db():
-    get_mongo_db()
+def disconnect():
+    get_mongo_connection().disconnect()

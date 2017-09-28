@@ -53,18 +53,3 @@ def add_impressions(impression_list):
             'userid':''
         }
     """
-
-from twisted.internet import defer, reactor
-def example():
-    from adselect.db import get_mongo_db
-
-    campaign_collection = get_mongo_db().campaign
-    idx = filter.sort(filter.ASCENDING("user_id"))
-    print campaign_collection.create_index(idx, unique=True)
-    #result = yield campaign_collection.index_information()
-    #print result
-
-
-if __name__ == "__main__":
-    get_banner({'banner_id':'35de1ea177084086b94089324724a388'}).addCallback(lambda x: reactor.stop())
-    reactor.run()
