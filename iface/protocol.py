@@ -1,5 +1,6 @@
 import jsonobject
 
+
 class SelectBannerRequest(jsonobject.JsonObject):
     request_id = jsonobject.IntegerProperty()
     publisher_id = jsonobject.IntegerProperty()

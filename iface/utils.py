@@ -1,32 +1,20 @@
-from adselect.selector import stats as selector_stats
 from adselect.iface import protocol as iface_proto
+from adselect.stats import utils as stats_utils
 
 
 def select_banner(banners_requests):
-    """
-        select_banner function should work as follow:
-        1) Select banners which are paid a lot.
-        2) Some percent of selected banners should be new banners without payments stats
-        3) The same user shoudn't take the same banners every time.
+    proposed_banners = stats_utils.select_banner([
+        (obj.request_id, obj.publisher_id, obj.user_id, obj.banner_size, obj.keywords) for obj in banners_requests
+    ])
 
-    """
+    responses = []
+    for request_id, banner_id in proposed_banners:
+        responses.append(iface_proto.SelectBannerResponse(
+                request_id = request_id,
+                banner_id = banner_id
+            ))
 
-    requests = []
-    for banner_request in banners_requests:
-        proposed_banners = selector_stats.select_best_banners(banner_request.publisher_id,
-                                                              banner_request.banner_size,
-                                                              banner_request.keywords)
-
-        #TODO: add banners filtering
-
-        requests.append(
-            iface_proto.SelectBannerResponse(
-                request_id = banner_request.request_id,
-                banner_id = proposed_banners[0] if proposed_banners else None
-            )
-        )
-
-    return requests
+    return responses
 
 
 def create_or_update_campaign(cmpobj):
@@ -34,8 +22,9 @@ def create_or_update_campaign(cmpobj):
         cmpobj - campaign object
     """
 
+    #TODO: add save to banner
     for banner in cmpobj.banners:
-        selector_stats.add_new_banner(banner.banner_id, banner.banner_size)
+        stats_utils.add_new_banner(banner.banner_id, banner.banner_size)
 
 
 def add_impression(imobj):
@@ -44,11 +33,11 @@ def add_impression(imobj):
     """
 
     #TODO: get banner size
-    selector_stats.update_impression(imobj.banner_id,
-                                     "banner_size",
-                                     imobj.publisher_id,
-                                     imobj.keywords,
-                                     imobj.paid_amount)
+    stats_utils.update_impression(imobj.banner_id,
+                                  "banner_size",
+                                  imobj.publisher_id,
+                                  imobj.keywords,
+                                  imobj.paid_amount)
 
 
 def delete_campaign(cmpid):

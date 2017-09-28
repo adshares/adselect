@@ -158,7 +158,3 @@ def add_new_banner(banner_id, banner_size):
     NEW_BANNERS[banner_size].append(banner_id)
 
 
-def recalculate_stats():
-    # Update BEST_KEYWORDS and KEYWORDS_BANNERS based on
-    # KEYWORD_IMPRESSION_PAID_AMOUNT and BANNERS_IMPRESSIONS_COUNT
-    pass
