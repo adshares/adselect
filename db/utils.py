@@ -5,7 +5,7 @@ from adselect import db
 
 
 @defer.inlineCallbacks
-def add_or_update_campaigns(campaign_doc, banners_doc_list):
+def add_or_update_campaign(campaign_doc, banners_doc_list):
     campaign_collection = yield db.get_campaign_collection()
     campaign_collection.insert(campaign_doc, safe=True)
 
@@ -21,6 +21,12 @@ def get_banners_iter(handle_wrapper):
         for doc in docs:
             handle_wrapper(doc)
         docs, dfr = yield dfr
+
+
+@defer.inlineCallbacks
+def get_banner(params, wrapper):
+    result = yield db.get_banner_collection().find_one(params)
+    wrapper(result)
 
 
 def delete_campaigns(campaigns_ids_list):
@@ -60,5 +66,5 @@ def example():
 
 
 if __name__ == "__main__":
-    #add_or_update_campaigns(1, []).addCallback(lambda x: reactor.stop())
+    get_banner({'banner_id':'35de1ea177084086b94089324724a388'}).addCallback(lambda x: reactor.stop())
     reactor.run()
