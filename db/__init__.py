@@ -27,6 +27,10 @@ def get_impressions_stats_collection():
     return get_mongo_db().imp_stats
 
 
+def get_scores_stats_collection():
+    return get_mongo_db().score_stats
+
+
 MONGO_CONNECTION = None
 def get_mongo_connection():
     global MONGO_CONNECTION

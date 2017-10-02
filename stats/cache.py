@@ -21,8 +21,8 @@ def update_best_keywords(best_keywords_dict):
 # KEYWORDS_BANNERS = {
 #   'publisher_id1':{
 #      'size1':{
-#          keyword1:[(avg_pay_amount, campaignid1_bannerid1), (avg_pay_amount, campaignid2_bannerid2), ...]
-#          keyword2:[(avg_pay_amount, campaignid1_bannerid1), (avg_pay_amount, campaignid2_bannerid2), ..., ...]
+#          keyword1:[(pay_score, campaignid1_bannerid1), (pay_score, campaignid2_bannerid2), ...]
+#          keyword2:[(pay_score, campaignid1_bannerid1), (pay_score, campaignid2_bannerid2), ..., ...]
 #       },
 #       'size2':{
 #           keyword1:[(avg_pay_amount, campaignid1_bannerid1), (avg_pay_amount, campaignid2_bannerid2), ...]
@@ -183,6 +183,8 @@ def select_best_banners(publisher_id,
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+    paid_amount = 20
+
     # Update BANNERS_IMPRESSIONS_COUNT
     if BANNERS_IMPRESSIONS_COUNT is not None:
         if banner_id not in BANNERS_IMPRESSIONS_COUNT:

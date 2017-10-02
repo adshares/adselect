@@ -3,6 +3,7 @@ from twisted.internet import defer, reactor
 from adselect.stats import const as stats_consts
 from adselect.stats import cache as stats_cache
 from adselect.db import utils as db_utils
+from adselect import db
 
 
 def save_banners_impression_count():
@@ -67,9 +68,70 @@ def load_new_banners():
 
     db_utils.get_banners_iter(handle_wrapper).addCallback(update_new_banners)
 
-
+@defer.inlineCallbacks
 def recalculate_best_keywords():
-    pass
+    #Update KEYWORDS_BANNERS and BEST_KEYWORDS
+    if stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT is None:
+        return
+
+    if stats_cache.BANNERS_IMPRESSIONS_COUNT is None:
+        return
+
+    KEYWORDS_BANNERS = {}
+    for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
+        banner = yield db.get_banner_collection().find_one({'banner_id': banner_id})
+
+        if not banner:
+            print "Warning! Banner %s not in database" %banner_id
+            continue
+
+        banner_size = banner['banner_size']
+
+        for publisher_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+
+            keyword_impression_count = stats_cache.BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id)
+            if not keyword_impression_count > 0:
+                continue
+
+            if publisher_id not in KEYWORDS_BANNERS:
+                KEYWORDS_BANNERS[publisher_id] = {}
+
+            if banner['banner_size'] not in KEYWORDS_BANNERS[publisher_id]:
+                KEYWORDS_BANNERS[publisher_id][banner_size] = {}
+
+            for keyword, keyword_payment in \
+                    stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id].iteritems():
+
+
+                if keyword not in KEYWORDS_BANNERS[publisher_id][banner_size]:
+                    KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = []
+
+                score = 1.0*keyword_payment/keyword_impression_count
+                KEYWORDS_BANNERS[publisher_id][banner_size][keyword].append((score, banner_id))
+
+    for publisher_id in KEYWORDS_BANNERS:
+        for banner_size in KEYWORDS_BANNERS[publisher_id]:
+            for keyword in KEYWORDS_BANNERS[publisher_id][banner_size]:
+                KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = \
+                    sorted(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], reverse=True)
+    stats_cache.update_keywords_banners(KEYWORDS_BANNERS)
+
+    BEST_KEYWORDS = {}
+    for publisher_id in KEYWORDS_BANNERS:
+        BEST_KEYWORDS[publisher_id] = {}
+
+        for size in KEYWORDS_BANNERS[publisher_id]:
+            BEST_KEYWORDS[publisher_id][size] = []
+
+            for keyword, banners_list in KEYWORDS_BANNERS[publisher_id][size].iteritems():
+                if not banners_list:
+                    continue
+
+                BEST_KEYWORDS[publisher_id][size].append((banners_list[0][0], keyword))
+
+            BEST_KEYWORDS[publisher_id][size] = sorted(BEST_KEYWORDS[publisher_id][size], reverse=True)
+            BEST_KEYWORDS[publisher_id][size] = [elem[1] for elem in BEST_KEYWORDS[publisher_id][size]]
+    stats_cache.update_best_keywords(BEST_KEYWORDS)
 
 
 def recalculate_stats():
@@ -85,10 +147,6 @@ def recalculate_stats():
 
     # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS
     recalculate_best_keywords()
-
-    print "NEW_BANNERS", stats_cache.NEW_BANNERS
-    print "KEYWORD_IMPRESSION_PAID_AMOUNT", stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT
-    print "BANNERS_IMPRESSIONS_COUNT", stats_cache.BANNERS_IMPRESSIONS_COUNT
 
 
 def recalculate_stats_task():
