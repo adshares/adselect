@@ -1,6 +1,4 @@
 from twisted.internet import defer, reactor
-from txmongo import filter
-
 from adselect import db
 
 
@@ -35,21 +33,35 @@ def delete_campaigns(campaigns_ids_list):
     """
 
 
+@defer.inlineCallbacks
 def update_banner_impression_count(banner_id, counts_per_publisher_dict):
-    pass
+    impression_stats_collection = db.get_impressions_stats_collection()
+    yield impression_stats_collection.replace_one({"banner_id":banner_id},
+                                                           {"stats": counts_per_publisher_dict, "banner_id":banner_id},
+                                                           upsert=True)
 
 
+@defer.inlineCallbacks
+def get_banner_impression_count_iter(record_wrapper):
+    docs, dfr = yield db.get_impressions_stats_collection().find(cursor=True)
+    while docs:
+        for doc in docs:
+            record_wrapper(doc)
+        docs, dfr = yield dfr
+
+
+@defer.inlineCallbacks
 def update_banner_payment(banner_id, pay_per_publisher_per_keyword_dict):
-    pass
+    payments_stats_collections = db.get_payments_stats_collection()
+    yield payments_stats_collections.replace_one({"banner_id":banner_id},
+                                                           {"stats": pay_per_publisher_per_keyword_dict,
+                                                            "banner_id":banner_id}, upsert=True)
 
 
-def add_impressions(impression_list):
-    """
-        List of impressions with payments
-        {
-            'id':'banner_id',
-            'keywords':'impression_keywords_dict',
-            'amount':'paid_amount'
-            'userid':''
-        }
-    """
+@defer.inlineCallbacks
+def get_banner_payment_iter(record_wrapper):
+    docs, dfr = yield db.get_payments_stats_collection().find(cursor=True)
+    while docs:
+        for doc in docs:
+            record_wrapper(doc)
+        docs, dfr = yield dfr

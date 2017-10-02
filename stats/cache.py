@@ -50,11 +50,13 @@ def update_keywords_banners(keywords_banners):
 #       }
 #   }
 #  }
-KEYWORD_IMPRESSION_PAID_AMOUNT = {}
+KEYWORD_IMPRESSION_PAID_AMOUNT = None
 
-def update_keyowrd_impression_paid_amount(keyword_impression_paid_amount):
-    global  KEYWORD_IMPRESSION_PAID_AMOUNT
-    KEYWORD_IMPRESSION_PAID_AMOUNT = keyword_impression_paid_amount
+def update_keyowrd_impression_paid_amount(banner_id, stats):
+    global KEYWORD_IMPRESSION_PAID_AMOUNT
+    if KEYWORD_IMPRESSION_PAID_AMOUNT is None:
+        KEYWORD_IMPRESSION_PAID_AMOUNT = {}
+    KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = stats
 
 # Keep info about new banners to display
 # NEW_BANNERS:{
@@ -76,11 +78,14 @@ def update_new_banners(new_banners):
 #   'campaignid2_bannerid2':{
 #   }
 # }
-BANNERS_IMPRESSIONS_COUNT = {}
+BANNERS_IMPRESSIONS_COUNT = None
 
-def update_banners_impressions_count(banners_impressions_count):
+def update_banners_impressions_count(banner_id, impression_stats):
     global  BANNERS_IMPRESSIONS_COUNT
-    BANNERS_IMPRESSIONS_COUNT = banners_impressions_count
+    if BANNERS_IMPRESSIONS_COUNT is None:
+        BANNERS_IMPRESSIONS_COUNT = {}
+
+    BANNERS_IMPRESSIONS_COUNT[banner_id] = impression_stats
 
 
 def genkey(key, val, delimiter="$"):
@@ -103,6 +108,9 @@ def select_new_banners(publisher_id,
     new_banners = NEW_BANNERS.get(banner_size, [])
     random.shuffle(new_banners)
     random_banners = new_banners[:proposition_nb*filtering_population_factor]
+
+    if BANNERS_IMPRESSIONS_COUNT is None:
+        return random_banners[:proposition_nb]
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
@@ -163,29 +171,35 @@ def select_best_banners(publisher_id,
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+    if not paid_amount:
+        paid_amount = 10
+
+
     # Update BANNERS_IMPRESSIONS_COUNT
-    if banner_id not in BANNERS_IMPRESSIONS_COUNT:
-        BANNERS_IMPRESSIONS_COUNT[banner_id] = {}
+    if BANNERS_IMPRESSIONS_COUNT is not None:
+        if banner_id not in BANNERS_IMPRESSIONS_COUNT:
+            BANNERS_IMPRESSIONS_COUNT[banner_id] = {}
 
-    if publisher_id not in BANNERS_IMPRESSIONS_COUNT[banner_id]:
-        BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]=0
+        if publisher_id not in BANNERS_IMPRESSIONS_COUNT[banner_id]:
+            BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]=0
 
-    BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
+        BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
 
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
-    if not paid_amount > 0:
-        return
+    if KEYWORD_IMPRESSION_PAID_AMOUNT is not None:
+        if not paid_amount > 0:
+            return
 
-    if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
-        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
+        if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
+            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
 
-    if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
-        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
+        if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
 
-    for key, val in impression_keywords.items():
-        stat_key = genkey(key, val)
-        if stat_key not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
-            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
+        for key, val in impression_keywords.items():
+            stat_key = genkey(key, val)
+            if stat_key not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
+                KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
 
-        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount
+            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount
