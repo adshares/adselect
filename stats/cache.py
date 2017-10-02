@@ -13,7 +13,7 @@ from adselect.contrib import utils as contrib_utils
 BEST_KEYWORDS = {}
 
 def update_best_keywords(best_keywords_dict):
-    global  BEST_KEYWORDS
+    global BEST_KEYWORDS
     BEST_KEYWORDS = best_keywords_dict
 
 
@@ -52,11 +52,16 @@ def update_keywords_banners(keywords_banners):
 #  }
 KEYWORD_IMPRESSION_PAID_AMOUNT = None
 
-def update_keyowrd_impression_paid_amount(banner_id, stats):
+
+def initialize_keyword_impression_paid_amount():
     global KEYWORD_IMPRESSION_PAID_AMOUNT
     if KEYWORD_IMPRESSION_PAID_AMOUNT is None:
         KEYWORD_IMPRESSION_PAID_AMOUNT = {}
+
+def update_keyword_impression_paid_amount(banner_id, stats):
+    initialize_keyword_impression_paid_amount()
     KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = stats
+
 
 # Keep info about new banners to display
 # NEW_BANNERS:{
@@ -64,6 +69,7 @@ def update_keyowrd_impression_paid_amount(banner_id, stats):
 #   'size2':['campaignid3_bannerid3', 'campaignid1_bannerid1']
 # }
 NEW_BANNERS = {}
+
 
 def update_new_banners(new_banners):
     global  NEW_BANNERS
@@ -80,16 +86,22 @@ def update_new_banners(new_banners):
 # }
 BANNERS_IMPRESSIONS_COUNT = None
 
-def update_banners_impressions_count(banner_id, impression_stats):
-    global  BANNERS_IMPRESSIONS_COUNT
+
+def initialize_banners_impressions_count():
+    global BANNERS_IMPRESSIONS_COUNT
     if BANNERS_IMPRESSIONS_COUNT is None:
         BANNERS_IMPRESSIONS_COUNT = {}
 
+
+def update_banners_impressions_count(banner_id, impression_stats):
+    initialize_banners_impressions_count()
     BANNERS_IMPRESSIONS_COUNT[banner_id] = impression_stats
 
 
-def genkey(key, val, delimiter="$"):
-    return "%s%s%s" % (key, delimiter, val)
+def genkey(key, val, delimiter="_"):
+    #TODO: fix comma replacement
+    keywal = "%s%s%s" % (key, delimiter, val)
+    return keywal.replace(".", "")
 
 
 def select_new_banners(publisher_id,
@@ -171,10 +183,6 @@ def select_best_banners(publisher_id,
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
-    if not paid_amount:
-        paid_amount = 10
-
-
     # Update BANNERS_IMPRESSIONS_COUNT
     if BANNERS_IMPRESSIONS_COUNT is not None:
         if banner_id not in BANNERS_IMPRESSIONS_COUNT:

@@ -15,7 +15,11 @@ def load_banners_impression_count():
     # Load BANNERS_IMPRESSIONS_COUNT from database
     def handle_record(record):
         stats_cache.update_banners_impressions_count(record['banner_id'], record['stats'])
-    db_utils.get_banner_impression_count_iter(handle_record)
+
+    def initlialize_banner_impression_count(*args):
+        stats_cache.initialize_banners_impressions_count()
+
+    db_utils.get_banner_impression_count_iter(handle_record).addCallback(initlialize_banner_impression_count)
 
 
 def update_banners_impressions_count():
@@ -34,8 +38,12 @@ def save_keyword_impression_paid_amount():
 def load_keyword_impression_paid_amount():
     #Load stats for KEYWORD_IMPRESSION_PAID_AMOUNT
     def handle_record(record):
-        stats_cache.update_keyowrd_impression_paid_amount(record['banner_id'], record['stats'])
-    db_utils.get_banner_payment_iter(handle_record)
+        stats_cache.update_keyword_impression_paid_amount(record['banner_id'], record['stats'])
+
+    def initialize_keyword_impression_paid(*args):
+        stats_cache.initialize_keyword_impression_paid_amount()
+
+    db_utils.get_banner_payment_iter(handle_record).addCallback(initialize_keyword_impression_paid)
 
 
 def update_keyword_impression_paid_amount():
@@ -60,6 +68,10 @@ def load_new_banners():
     db_utils.get_banners_iter(handle_wrapper).addCallback(update_new_banners)
 
 
+def recalculate_best_keywords():
+    pass
+
+
 def recalculate_stats():
 
     # Taking from database BANNERS_IMPRESSIONS_COUNT
@@ -71,9 +83,8 @@ def recalculate_stats():
     # Creating new banners list
     load_new_banners()
 
-    # Recalculate KEYWORDS_BANNERS
-
-    # Recalcuate BEST_KEYWORDS
+    # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS
+    recalculate_best_keywords()
 
     print "NEW_BANNERS", stats_cache.NEW_BANNERS
     print "KEYWORD_IMPRESSION_PAID_AMOUNT", stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT

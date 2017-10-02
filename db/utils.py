@@ -53,9 +53,11 @@ def get_banner_impression_count_iter(record_wrapper):
 @defer.inlineCallbacks
 def update_banner_payment(banner_id, pay_per_publisher_per_keyword_dict):
     payments_stats_collections = db.get_payments_stats_collection()
+    print pay_per_publisher_per_keyword_dict
+
     yield payments_stats_collections.replace_one({"banner_id":banner_id},
-                                                           {"stats": pay_per_publisher_per_keyword_dict,
-                                                            "banner_id":banner_id}, upsert=True)
+                                                 {"stats": pay_per_publisher_per_keyword_dict, "banner_id":banner_id},
+                                                 upsert=True)
 
 
 @defer.inlineCallbacks
