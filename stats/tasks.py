@@ -6,21 +6,24 @@ from adselect.db import utils as db_utils
 from adselect import db
 
 
+@defer.inlineCallbacks
 def save_banners_impression_count():
     # Save BANNERS_IMPRESSIONS_COUNT to database
     for banner_id, counts_per_publisher_dict in stats_cache.BANNERS_IMPRESSIONS_COUNT.iteritems():
-        db_utils.update_banner_impression_count(banner_id, counts_per_publisher_dict)
+        yield db_utils.update_banner_impression_count(banner_id, counts_per_publisher_dict)
 
 
+@defer.inlineCallbacks
 def load_banners_impression_count():
     # Load BANNERS_IMPRESSIONS_COUNT from database
-    def handle_record(record):
-        stats_cache.update_banners_impressions_count(record['banner_id'], record['stats'])
 
-    def initlialize_banner_impression_count(*args):
-        stats_cache.initialize_banners_impressions_count()
+    docs, dfr = yield db_utils.get_banner_impression_count_iter()
+    while docs:
+        for record in docs:
+            stats_cache.update_banners_impressions_count(record['banner_id'], record['stats'])
+        docs, dfr = yield dfr
 
-    db_utils.get_banner_impression_count_iter(handle_record).addCallback(initlialize_banner_impression_count)
+    stats_cache.initialize_banners_impressions_count()
 
 
 def update_banners_impressions_count():
@@ -30,21 +33,23 @@ def update_banners_impressions_count():
         save_banners_impression_count()
 
 
+@defer.inlineCallbacks
 def save_keyword_impression_paid_amount():
     #Save stats for KEYWORD_IMPRESSION_PAID_AMOUNT
     for banner_id, payment_stats_dict in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.iteritems():
-        db_utils.update_banner_payment(banner_id, payment_stats_dict)
+        yield db_utils.update_banner_payment(banner_id, payment_stats_dict)
 
 
+@defer.inlineCallbacks
 def load_keyword_impression_paid_amount():
     #Load stats for KEYWORD_IMPRESSION_PAID_AMOUNT
-    def handle_record(record):
-        stats_cache.update_keyword_impression_paid_amount(record['banner_id'], record['stats'])
+    docs, dfr = yield db_utils.get_banner_payment_iter()
+    while docs:
+        for record in docs:
+            stats_cache.update_keyword_impression_paid_amount(record['banner_id'], record['stats'])
+        docs, dfr = yield dfr
 
-    def initialize_keyword_impression_paid(*args):
-        stats_cache.initialize_keyword_impression_paid_amount()
-
-    db_utils.get_banner_payment_iter(handle_record).addCallback(initialize_keyword_impression_paid)
+    stats_cache.initialize_keyword_impression_paid_amount()
 
 
 def update_keyword_impression_paid_amount():
@@ -54,19 +59,20 @@ def update_keyword_impression_paid_amount():
         save_keyword_impression_paid_amount()
 
 
+@defer.inlineCallbacks
 def load_new_banners():
     NEW_BANNERS = {}
 
-    def handle_wrapper(banner_doc):
-        banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
-        if not banner_size in NEW_BANNERS:
-            NEW_BANNERS[banner_size]=[]
-        NEW_BANNERS[banner_size].append(banner_id)
+    docs, dfr = yield db_utils.get_banners_iter()
+    while docs:
+        for banner_doc in docs:
+            banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
+            if not banner_size in NEW_BANNERS:
+                NEW_BANNERS[banner_size] = []
+            NEW_BANNERS[banner_size].append(banner_id)
+        docs, dfr = yield dfr
 
-    def update_new_banners(*args):
-        stats_cache.update_new_banners(NEW_BANNERS)
-
-    db_utils.get_banners_iter(handle_wrapper).addCallback(update_new_banners)
+    stats_cache.update_new_banners(NEW_BANNERS)
 
 @defer.inlineCallbacks
 def recalculate_best_keywords():
@@ -79,13 +85,15 @@ def recalculate_best_keywords():
 
     KEYWORDS_BANNERS = {}
     for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
-        banner = yield db.get_banner_collection().find_one({'banner_id': banner_id})
+        banner = yield db_utils.get_banner(banner_id)
 
         if not banner:
             print "Warning! Banner %s not in database" %banner_id
             continue
 
         banner_size = banner['banner_size']
+
+        #banner_score_stats = yield db.get_scores_stats_collection().find_one({'banner_id':banner_id})
 
         for publisher_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
 

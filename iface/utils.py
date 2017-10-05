@@ -4,6 +4,7 @@ from adselect.db import utils as db_utils
 
 from twisted.internet import defer
 
+@defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
     # Delete campaign if exists
     delete_campaign(cmpobj.campaign_id)
@@ -11,14 +12,12 @@ def create_or_update_campaign(cmpobj):
     # Save changes only to database
     campaign_doc = cmpobj.to_json()
     del campaign_doc['banners']
+    yield db_utils.add_or_update_campaign(campaign_doc)
 
-    banners_doc_list = []
     for banner in cmpobj.banners:
         banner_doc = banner.to_json()
         banner_doc['campaign_id'] = cmpobj.campaign_id
-        banners_doc_list.append(banner_doc)
-
-    db_utils.add_or_update_campaign(campaign_doc, banners_doc_list)
+        yield db_utils.add_or_update_banner(banner_doc)
 
 
 def delete_campaign(cmpid_list):
