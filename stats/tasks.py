@@ -74,14 +74,60 @@ def load_new_banners():
 
     stats_cache.update_new_banners(NEW_BANNERS)
 
+
 @defer.inlineCallbacks
 def recalculate_best_keywords():
-    #Update KEYWORDS_BANNERS and BEST_KEYWORDS
     if stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT is None:
         return
 
     if stats_cache.BANNERS_IMPRESSIONS_COUNT is None:
         return
+
+    #Recalculate database scores
+    KEYWORDS_SCORES = {}
+    docs, dfr = yield db_utils.get_banner_scores_iter()
+    while docs:
+        for score_doc in docs:
+            banner_id, banner_stats = score_doc['banner_id'], score_doc['stats']
+            KEYWORDS_SCORES[banner_id] = {}
+
+            for publisher_id in banner_stats:
+                if publisher_id not in KEYWORDS_SCORES:
+                    KEYWORDS_SCORES[banner_id][publisher_id] = {}
+
+                for keyword, score_value in banner_stats.get(publisher_id, {}).items():
+                    last_round_keyword_payment = stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).\
+                        get(publisher_id, {}).get(keyword, 0)
+                    last_round_impression_count = stats_cache.BANNERS_IMPRESSIONS_COUNT.\
+                        get(banner_id, {}).get(publisher_id, 0)
+
+                    last_round_score = 0
+                    if last_round_impression_count>0:
+                        last_round_score = 1.0*last_round_keyword_payment/last_round_impression_count
+
+                    KEYWORDS_SCORES[banner_id][publisher_id][keyword] = 0.5*score_value + 0.5*last_round_score
+
+        docs, dfr = yield dfr
+
+    # Add scores for new banners
+    for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
+        if banner_id not in KEYWORDS_SCORES:
+            KEYWORDS_SCORES[banner_id] = {}
+
+        for publisher_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+            if publisher_id not in KEYWORDS_SCORES[banner_id]:
+                KEYWORDS_SCORES[banner_id][publisher_id] = {}
+
+            for keyword, paid_value in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id].items():
+                impression_count = stats_cache.BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
+                if impression_count == 0:
+                    continue
+
+                KEYWORDS_SCORES[banner_id][publisher_id][keyword] = 1.0*paid_value/impression_count
+
+    for banner_id in KEYWORDS_SCORES:
+        yield db_utils.update_banner_scores(banner_id, KEYWORDS_SCORES[banner_id])
+
 
     KEYWORDS_BANNERS = {}
     for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
@@ -92,9 +138,6 @@ def recalculate_best_keywords():
             continue
 
         banner_size = banner['banner_size']
-
-        #banner_score_stats = yield db.get_scores_stats_collection().find_one({'banner_id':banner_id})
-
         for publisher_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
 
             keyword_impression_count = stats_cache.BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id)
@@ -110,9 +153,9 @@ def recalculate_best_keywords():
             for keyword, keyword_payment in \
                     stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id].iteritems():
 
-
                 if keyword not in KEYWORDS_BANNERS[publisher_id][banner_size]:
                     KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = []
+
 
                 score = 1.0*keyword_payment/keyword_impression_count
                 KEYWORDS_BANNERS[publisher_id][banner_size][keyword].append((score, banner_id))
@@ -143,6 +186,8 @@ def recalculate_best_keywords():
 
 
 def recalculate_stats():
+    # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS
+    recalculate_best_keywords()
 
     # Taking from database BANNERS_IMPRESSIONS_COUNT
     update_banners_impressions_count()
@@ -152,9 +197,6 @@ def recalculate_stats():
 
     # Creating new banners list
     load_new_banners()
-
-    # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS
-    recalculate_best_keywords()
 
 
 def recalculate_stats_task():

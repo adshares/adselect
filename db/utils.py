@@ -38,6 +38,13 @@ def delete_campaign_banners(campaign_id):
 ##### STATS ################
 ############################
 
+def get_banner_impression_count(banner_id):
+    return db.get_impressions_stats_collection().find_one({'banner_id':banner_id})
+
+
+def get_banner_impression_count_iter():
+    return db.get_impressions_stats_collection().find(cursor=True)
+
 
 def update_banner_impression_count(banner_id, counts_per_publisher_dict):
     impression_stats_collection = db.get_impressions_stats_collection()
@@ -46,16 +53,38 @@ def update_banner_impression_count(banner_id, counts_per_publisher_dict):
                                                    upsert=True)
 
 
-def get_banner_impression_count_iter():
-    return db.get_impressions_stats_collection().find(cursor=True)
-
-
-def update_banner_payment(banner_id, pay_per_publisher_per_keyword_dict):
-    payments_stats_collections = db.get_payments_stats_collection()
-    return payments_stats_collections.replace_one({"banner_id":banner_id},
-                                                  {"stats": pay_per_publisher_per_keyword_dict, "banner_id":banner_id},
-                                                  upsert=True)
+def get_banner_payment(banner_id):
+    return db.get_payments_stats_collection().find_one({'banner_id':banner_id})
 
 
 def get_banner_payment_iter():
     return db.get_payments_stats_collection().find(cursor=True)
+
+
+def update_banner_payment(banner_id, pay_per_publisher_per_size_per_keyword_dict):
+    payments_stats_collections = db.get_payments_stats_collection()
+    return payments_stats_collections.replace_one({"banner_id":banner_id},
+                                                  {"stats": pay_per_publisher_per_size_per_keyword_dict,
+                                                   "banner_id":banner_id},
+                                                  upsert=True)
+
+
+def get_banner_scores(banner_id):
+    return db.get_scores_stats_collection().find_one({'banner_id':banner_id})
+
+
+def get_banner_scores_iter():
+    return db.get_scores_stats_collection().find(cursor=True)
+
+
+def update_banner_scores(banner_id, score_per_publisher_per_keyword_dict):
+    score_stats_collection = db.get_scores_stats_collection()
+    return score_stats_collection.replace_one({'banner_id':banner_id},
+                                              {'stats':score_per_publisher_per_keyword_dict,
+                                               'banner_id':banner_id},
+                                              upsert=True)
+
+
+
+
+
