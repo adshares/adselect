@@ -5,12 +5,22 @@ from adselect.stats import cache as stats_cache
 from adselect.db import utils as db_utils
 from adselect import db
 
-
 @defer.inlineCallbacks
 def save_banners_impression_count():
     # Save BANNERS_IMPRESSIONS_COUNT to database
     for banner_id, counts_per_publisher_dict in stats_cache.BANNERS_IMPRESSIONS_COUNT.iteritems():
-        yield db_utils.update_banner_impression_count(banner_id, counts_per_publisher_dict)
+        banner_stats = yield db_utils.get_banner_impression_count(banner_id)
+
+        #Update db_stats with cache stats
+        db_banner_stats = banner_stats['stats'] if banner_stats else {}
+        for publisher_id, publisher_impression_count in counts_per_publisher_dict.items():
+            if publisher_id not in db_banner_stats:
+                db_banner_stats[publisher_id] = 0
+
+            db_banner_stats[publisher_id] += publisher_impression_count
+
+        yield db_utils.update_banner_impression_count(banner_id, db_banner_stats)
+        stats_cache.update_banners_impressions_count(banner_id, {})
 
 
 @defer.inlineCallbacks
@@ -37,7 +47,21 @@ def update_banners_impressions_count():
 def save_keyword_impression_paid_amount():
     #Save stats for KEYWORD_IMPRESSION_PAID_AMOUNT
     for banner_id, payment_stats_dict in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.iteritems():
-        yield db_utils.update_banner_payment(banner_id, payment_stats_dict)
+        banner_stats = yield db_utils.get_banner_payment(banner_id)
+
+        db_banner_stats = banner_stats['stats'] if banner_stats else {}
+        for publisher_id, publisher_keywords_payment in payment_stats_dict.items():
+            if publisher_id not in db_banner_stats:
+                db_banner_stats[publisher_id] = {}
+
+            for keyword, payment_amount in publisher_keywords_payment.items():
+                if keyword not in db_banner_stats[publisher_id]:
+                    db_banner_stats[publisher_id][keyword] = 0
+
+                db_banner_stats[publisher_id][keyword]+=payment_stats_dict[publisher_id][keyword]
+
+        yield db_utils.update_banner_payment(banner_id, db_banner_stats)
+        stats_cache.update_keyword_impression_paid_amount(banner_id, {})
 
 
 @defer.inlineCallbacks
@@ -106,10 +130,9 @@ def recalculate_best_keywords():
                         last_round_score = 1.0*last_round_keyword_payment/last_round_impression_count
 
                     KEYWORDS_SCORES[banner_id][publisher_id][keyword] = 0.5*score_value + 0.5*last_round_score
-
         docs, dfr = yield dfr
 
-    # Add scores for new banners
+    #Add scores for new banners
     for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
         if banner_id not in KEYWORDS_SCORES:
             KEYWORDS_SCORES[banner_id] = {}
@@ -128,9 +151,8 @@ def recalculate_best_keywords():
     for banner_id in KEYWORDS_SCORES:
         yield db_utils.update_banner_scores(banner_id, KEYWORDS_SCORES[banner_id])
 
-
     KEYWORDS_BANNERS = {}
-    for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
+    for banner_id in KEYWORDS_SCORES:
         banner = yield db_utils.get_banner(banner_id)
 
         if not banner:
@@ -138,27 +160,19 @@ def recalculate_best_keywords():
             continue
 
         banner_size = banner['banner_size']
-        for publisher_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
-
-            keyword_impression_count = stats_cache.BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id)
-            if not keyword_impression_count > 0:
-                continue
-
+        for publisher_id in KEYWORDS_SCORES[banner_id]:
             if publisher_id not in KEYWORDS_BANNERS:
                 KEYWORDS_BANNERS[publisher_id] = {}
 
             if banner['banner_size'] not in KEYWORDS_BANNERS[publisher_id]:
                 KEYWORDS_BANNERS[publisher_id][banner_size] = {}
 
-            for keyword, keyword_payment in \
-                    stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id].iteritems():
+            for keyword, keyword_score in KEYWORDS_SCORES[banner_id][publisher_id].iteritems():
 
                 if keyword not in KEYWORDS_BANNERS[publisher_id][banner_size]:
                     KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = []
 
-
-                score = 1.0*keyword_payment/keyword_impression_count
-                KEYWORDS_BANNERS[publisher_id][banner_size][keyword].append((score, banner_id))
+                KEYWORDS_BANNERS[publisher_id][banner_size][keyword].append((keyword_score, banner_id))
 
     for publisher_id in KEYWORDS_BANNERS:
         for banner_size in KEYWORDS_BANNERS[publisher_id]:
