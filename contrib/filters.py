@@ -2,8 +2,7 @@ class Filter(object):
     NAME = None
     NESTED_FILTERS = False
 
-    def __init__(self, elem_val, filter_arg):
-        self.elem_val = elem_val
+    def __init__(self, filter_arg):
         self.filter_arg = filter_arg
 
     def is_valid(self, value):
@@ -101,6 +100,6 @@ def json2filter(json_data):
         return
 
     filter_class = FILTERS_NAMES_DICT[filter_type]
-    if filter_type.NESTED_FILTERS:
+    if filter_class.NESTED_FILTERS:
         args = [json2filter(arg) for arg in args]
     return filter_class(args)

@@ -3,6 +3,9 @@ from adselect import db
 ########################
 #### CAMPAIGNS #########
 ########################
+def get_campaign(campaign_id):
+    return db.get_campaign_collection().find_one({'campaign_id':campaign_id})
+
 
 def update_campaign(campaign_doc):
     return db.get_campaign_collection().replace_one({'campaign_id':campaign_doc['campaign_id']},

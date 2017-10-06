@@ -28,10 +28,15 @@ class AdSelectIfaceServer(JSONRPCServer):
 
     #select banner interface
     def jsonrpc_banner_select(self, *impression_param_list):
+        def send_respone(responses):
+            return [response.to_json() for response in responses]
+
         banner_requests = [iface_proto.SelectBannerRequest(impression_param)
                           for impression_param in impression_param_list]
 
-        return [response.to_json() for response in iface_utils.select_banner(banner_requests)]
+        selected_banners = iface_utils.select_banner(banner_requests)
+        selected_banners.addCallback(send_respone)
+        return selected_banners
 
 
 def configure_iface(port = iface_config.SERVER_PORT):
