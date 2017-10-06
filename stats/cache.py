@@ -183,8 +183,6 @@ def select_best_banners(publisher_id,
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
-    paid_amount = 20
-
     # Update BANNERS_IMPRESSIONS_COUNT
     if BANNERS_IMPRESSIONS_COUNT is not None:
         if banner_id not in BANNERS_IMPRESSIONS_COUNT:

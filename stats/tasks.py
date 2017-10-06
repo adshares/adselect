@@ -199,6 +199,11 @@ def recalculate_best_keywords():
     stats_cache.update_best_keywords(BEST_KEYWORDS)
 
 
+def clean_database():
+    # Remove finished campaigns and associated stats
+    pass
+
+
 def recalculate_stats():
     # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS
     recalculate_best_keywords()
@@ -211,6 +216,9 @@ def recalculate_stats():
 
     # Creating new banners list
     load_new_banners()
+
+    # Clean database task
+    clean_database()
 
 
 def recalculate_stats_task():
