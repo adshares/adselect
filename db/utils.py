@@ -1,12 +1,19 @@
 from adselect import db
 
-def add_or_update_campaign(campaign_doc):
-    return db.get_campaign_collection().insert(campaign_doc, safe=True)
+########################
+#### CAMPAIGNS #########
+########################
 
+def update_campaign(campaign_doc):
+    return db.get_campaign_collection().replace_one({'campaign_id':campaign_doc['campaign_id']},
+                                                    campaign_doc, upsert=True)
 
-def add_or_update_banner(banner_doc):
-    return db.get_banner_collection().insert(banner_doc, safe=True)
+def delete_campaigns(campaign_id):
+    return db.get_campaign_collection().delete_many({'campaign_id':campaign_id})
 
+#########################
+##### BANNERS ###########
+#########################
 
 def get_banners_iter():
     return db.get_banner_collection().find(cursor=True)
@@ -16,10 +23,17 @@ def get_banner(banner_id):
     return db.get_banner_collection().find_one({'banner_id':banner_id})
 
 
-def delete_campaigns(campaigns_ids_list):
-    """
-        campaigns_ids_list list of id to delete
-    """
+def update_banner(banner_doc):
+    return db.get_banner_collection().replace_one({'banner_id':banner_doc['banner_id']},
+                                                  banner_doc, upsert=True)
+
+def delete_campaign_banners(campaign_id):
+    return db.get_banner_collection().delete_many({'campaign_id':campaign_id})
+
+
+############################
+##### STATS ################
+############################
 
 
 def update_banner_impression_count(banner_id, counts_per_publisher_dict):

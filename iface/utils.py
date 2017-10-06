@@ -6,23 +6,25 @@ from twisted.internet import defer
 
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
-    # Delete campaign if exists
-    delete_campaign(cmpobj.campaign_id)
-
     # Save changes only to database
     campaign_doc = cmpobj.to_json()
     del campaign_doc['banners']
-    yield db_utils.add_or_update_campaign(campaign_doc)
+    yield db_utils.update_campaign(campaign_doc)
+
+    # Delete previous banners
+    yield db_utils.delete_campaign_banners(cmpobj.campaign_id)
 
     for banner in cmpobj.banners:
         banner_doc = banner.to_json()
         banner_doc['campaign_id'] = cmpobj.campaign_id
-        yield db_utils.add_or_update_banner(banner_doc)
+        yield db_utils.update_banner(banner_doc)
 
 
-def delete_campaign(cmpid_list):
+@defer.inlineCallbacks
+def delete_campaign(campaign_id):
     # Save changes only to database
-    db_utils.delete_campaigns(cmpid_list)
+    yield db_utils.delete_campaigns(campaign_id)
+    yield db_utils.delete_campaign_banners(campaign_id)
 
 
 def add_impression(imobj):

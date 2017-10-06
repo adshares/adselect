@@ -16,7 +16,8 @@ class AdSelectIfaceServer(JSONRPCServer):
         return True
 
     def jsonrpc_campaign_delete(self, *campaign_id_list):
-        iface_utils.delete_campaign(campaign_id_list)
+        for campaign_id in campaign_id_list:
+            iface_utils.delete_campaign(campaign_id)
         return True
 
     #impressions interface
