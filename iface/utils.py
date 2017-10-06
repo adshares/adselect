@@ -1,8 +1,10 @@
+from twisted.internet import defer
+
+from adselect.contrib import filters as stats_filters
+from adselect.db import utils as db_utils
 from adselect.iface import protocol as iface_proto
 from adselect.stats import cache as stats_cache
-from adselect.db import utils as db_utils
 
-from twisted.internet import defer
 
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
@@ -44,22 +46,40 @@ def select_banner(banners_requests):
 
     """
 
-    response = []
+    responses_dict = {}
+    for banner_request in banners_requests:
+        responses_dict[banner_request.request_id] = None
+
+
     for banner_request in banners_requests:
         proposed_banners = stats_cache.select_best_banners(banner_request.publisher_id,
                                                            banner_request.banner_size,
                                                            banner_request.keywords)
 
-        #TODO: add banners filtering
+        for banner_id in proposed_banners:
+            if not validate_campaign_filters():
+                continue
 
-        response.append(
-            iface_proto.SelectBannerResponse(
-                request_id = banner_request.request_id,
-                banner_id = proposed_banners[0] if proposed_banners else None
-            )
-        )
+            if not validate_impression_filters():
+                continue
 
-    return response
+            responses_dict[banner_request.request_id] = banner_id
+            break
+
+    return [iface_proto.SelectBannerResponse(request_id=request_id, banner_id=responses_dict[request_id])
+            for request_id in responses_dict]
+
+
+def validate_campaign_filters():
+    return True
+
+
+def validate_impression_filters():
+    return True
+
+
+
+
 
 
 

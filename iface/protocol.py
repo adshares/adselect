@@ -40,6 +40,7 @@ class SelectBannerRequest(jsonobject.JsonObject):
     user_id = jsonobject.StringProperty()
     banner_size = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
+    banner_filters = jsonobject.ObjectProperty(RequireExcludeListObject)
 
 
 class SelectBannerResponse(jsonobject.JsonObject):
