@@ -11,7 +11,7 @@ def update_campaign(campaign_doc):
     return db.get_campaign_collection().replace_one({'campaign_id':campaign_doc['campaign_id']},
                                                     campaign_doc, upsert=True)
 
-def delete_campaigns(campaign_id):
+def delete_campaign(campaign_id):
     return db.get_campaign_collection().delete_many({'campaign_id':campaign_id})
 
 #########################

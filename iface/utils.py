@@ -25,7 +25,7 @@ def create_or_update_campaign(cmpobj):
 @defer.inlineCallbacks
 def delete_campaign(campaign_id):
     # Save changes only to database
-    yield db_utils.delete_campaigns(campaign_id)
+    yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
 
 
