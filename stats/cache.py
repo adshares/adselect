@@ -37,7 +37,7 @@ def update_keywords_banners(keywords_banners):
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = keywords_banners
 
-# Keep info about banners impression payments > 0
+# Keep info about last round banners impression payments > 0
 # KEYWORD_IMPRESSION_PAID_AMOUNT = {
 #   'campaignid2_bannerid2':{
 #       'publisher_id_1':{
@@ -50,32 +50,12 @@ def update_keywords_banners(keywords_banners):
 #       }
 #   }
 #  }
-KEYWORD_IMPRESSION_PAID_AMOUNT = None
-
-
-def initialize_keyword_impression_paid_amount():
-    global KEYWORD_IMPRESSION_PAID_AMOUNT
-    if KEYWORD_IMPRESSION_PAID_AMOUNT is None:
-        KEYWORD_IMPRESSION_PAID_AMOUNT = {}
+KEYWORD_IMPRESSION_PAID_AMOUNT = {}
 
 def update_keyword_impression_paid_amount(banner_id, stats):
-    initialize_keyword_impression_paid_amount()
     KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = stats
 
-
-# Keep info about new banners to display
-# NEW_BANNERS:{
-#   'size1':['campaignid1_bannerid1', 'campaignid2_bannerid2'],
-#   'size2':['campaignid3_bannerid3', 'campaignid1_bannerid1']
-# }
-NEW_BANNERS = {}
-
-
-def update_new_banners(new_banners):
-    global  NEW_BANNERS
-    NEW_BANNERS = new_banners
-
-# Keep data about impressions count of banners
+# Keep data about last round impressions count of banners
 # BANNERS_IMPRESSIONS_COUNT = {
 #   'campaignid1_bannerid1':{
 #           'publisher_id1':'impression_count_for_publisher_1',
@@ -84,22 +64,30 @@ def update_new_banners(new_banners):
 #   'campaignid2_bannerid2':{
 #   }
 # }
-BANNERS_IMPRESSIONS_COUNT = None
+BANNERS_IMPRESSIONS_COUNT = {}
 
 
-def initialize_banners_impressions_count():
-    global BANNERS_IMPRESSIONS_COUNT
-    if BANNERS_IMPRESSIONS_COUNT is None:
-        BANNERS_IMPRESSIONS_COUNT = {}
+# Keep info about new banners to display
+# NEW_BANNERS:{
+#   'size1':{
+#       'publisher_id1':{
+#           'campaignid1_bannerid1':'impression_count_for_publisher_1',
+#           'campaignid2_bannerid2':'impression_count_for_publisher_2'
+#       }
+#   }
+# }
+NEW_BANNERS = {}
+
+def update_new_banners(new_banners):
+    global  NEW_BANNERS
+    NEW_BANNERS = new_banners
 
 
 def update_banners_impressions_count(banner_id, impression_stats):
-    initialize_banners_impressions_count()
     BANNERS_IMPRESSIONS_COUNT[banner_id] = impression_stats
 
 
 def genkey(key, val, delimiter="_"):
-    #TODO: fix comma replacement
     keywal = "%s%s%s" % (key, delimiter, val)
     return keywal.replace(".", "")
 
@@ -116,18 +104,15 @@ def select_new_banners(publisher_id,
         publisher_id - publisher id
     """
 
-    #TODO: fix shuffle of whole list
-    new_banners = NEW_BANNERS.get(banner_size, [])
+    new_banners = NEW_BANNERS.get(banner_size, {}).get(publisher_id, {}).keys()
     random.shuffle(new_banners)
     random_banners = new_banners[:proposition_nb*filtering_population_factor]
-
-    if BANNERS_IMPRESSIONS_COUNT is None:
-        return random_banners[:proposition_nb]
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
-        if BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0) < notpaid_display_cutoff:
+        last_round_views = BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
+        if NEW_BANNERS[banner_size][publisher_id][banner_id] +last_round_views < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
         if len(selected_banners) > proposition_nb:

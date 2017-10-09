@@ -5,7 +5,6 @@ from adselect.stats import cache as stats_cache
 from adselect.stats import utils as stats_utils
 from adselect.db import utils as db_utils
 
-import time
 
 @defer.inlineCallbacks
 def save_banners_impression_count():
@@ -23,26 +22,6 @@ def save_banners_impression_count():
 
         yield db_utils.update_banner_impression_count(banner_id, db_banner_stats)
         stats_cache.update_banners_impressions_count(banner_id, {})
-
-
-@defer.inlineCallbacks
-def load_banners_impression_count():
-    # Load BANNERS_IMPRESSIONS_COUNT from database
-
-    docs, dfr = yield db_utils.get_banner_impression_count_iter()
-    while docs:
-        for record in docs:
-            stats_cache.update_banners_impressions_count(record['banner_id'], record['stats'])
-        docs, dfr = yield dfr
-
-    stats_cache.initialize_banners_impressions_count()
-
-
-def update_banners_impressions_count():
-    if stats_cache.BANNERS_IMPRESSIONS_COUNT is None:
-        load_banners_impression_count()
-    else:
-        save_banners_impression_count()
 
 
 @defer.inlineCallbacks
@@ -67,25 +46,6 @@ def save_keyword_impression_paid_amount():
 
 
 @defer.inlineCallbacks
-def load_keyword_impression_paid_amount():
-    #Load stats for KEYWORD_IMPRESSION_PAID_AMOUNT
-    docs, dfr = yield db_utils.get_banner_payment_iter()
-    while docs:
-        for record in docs:
-            stats_cache.update_keyword_impression_paid_amount(record['banner_id'], record['stats'])
-        docs, dfr = yield dfr
-
-    stats_cache.initialize_keyword_impression_paid_amount()
-
-
-def update_keyword_impression_paid_amount():
-    if stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT is None:
-        load_keyword_impression_paid_amount()
-    else:
-        save_keyword_impression_paid_amount()
-
-
-@defer.inlineCallbacks
 def load_new_banners():
     NEW_BANNERS = {}
 
@@ -100,11 +60,26 @@ def load_new_banners():
             if not stats_utils.is_campaign_active(campaign_doc):
                 continue
 
-            if not banner_size in NEW_BANNERS:
-                NEW_BANNERS[banner_size] = []
-            NEW_BANNERS[banner_size].append(banner_id)
-        docs, dfr = yield dfr
+            payment_stats = yield db_utils.get_banner_payment(banner_id)
+            if payment_stats is not None:
+                # If banner has payment stats it can't belong to new banners
+                if payment_stats['stats']:
+                    continue
 
+            if not banner_size in NEW_BANNERS:
+                NEW_BANNERS[banner_size] = {}
+
+            impression_stats = yield db_utils.get_banner_impression_count(banner_id)
+            if impression_stats is None:
+                continue
+
+            for publisher_id, views in impression_stats['stats'].items():
+                if publisher_id not in NEW_BANNERS[banner_size]:
+                    NEW_BANNERS[banner_size][publisher_id] = {}
+
+                NEW_BANNERS[banner_size][publisher_id][banner_id] = views
+
+        docs, dfr = yield dfr
     stats_cache.update_new_banners(NEW_BANNERS)
 
 
@@ -244,10 +219,10 @@ def recalculate_stats():
     recalculate_best_keywords()
 
     # Taking from database BANNERS_IMPRESSIONS_COUNT
-    update_banners_impressions_count()
+    save_banners_impression_count()
 
     # Taking from database KEYWORD_IMPRESSION_PAID_AMOUNT
-    update_keyword_impression_paid_amount()
+    save_keyword_impression_paid_amount()
 
     # Creating new banners list
     load_new_banners()
