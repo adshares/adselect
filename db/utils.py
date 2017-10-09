@@ -83,8 +83,3 @@ def update_banner_scores(banner_id, score_per_publisher_per_keyword_dict):
                                               {'stats':score_per_publisher_per_keyword_dict,
                                                'banner_id':banner_id},
                                               upsert=True)
-
-
-
-
-

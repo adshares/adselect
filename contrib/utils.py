@@ -1,4 +1,4 @@
-import heapq
+import heapq, time
 
 def merge(*iterables):
     """
@@ -27,3 +27,7 @@ def merge(*iterables):
             heapq.heappop(h)
         except IndexError:
             return
+
+
+def get_timestamp():
+    return int(time.time())

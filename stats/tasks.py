@@ -2,8 +2,10 @@ from twisted.internet import defer, reactor
 
 from adselect.stats import const as stats_consts
 from adselect.stats import cache as stats_cache
+from adselect.stats import utils as stats_utils
 from adselect.db import utils as db_utils
-from adselect import db
+
+import time
 
 @defer.inlineCallbacks
 def save_banners_impression_count():
@@ -91,6 +93,13 @@ def load_new_banners():
     while docs:
         for banner_doc in docs:
             banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
+            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+            if not campaign_doc:
+                continue
+
+            if not stats_utils.is_campaign_active(campaign_doc):
+                continue
+
             if not banner_size in NEW_BANNERS:
                 NEW_BANNERS[banner_size] = []
             NEW_BANNERS[banner_size].append(banner_id)
@@ -113,6 +122,18 @@ def recalculate_best_keywords():
     while docs:
         for score_doc in docs:
             banner_id, banner_stats = score_doc['banner_id'], score_doc['stats']
+
+            banner_doc = yield db_utils.get_banner(banner_id)
+            if banner_doc is None:
+                continue
+
+            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+            if campaign_doc is None:
+                continue
+
+            if not stats_utils.is_campaign_active(campaign_doc):
+                continue
+
             KEYWORDS_SCORES[banner_id] = {}
 
             for publisher_id in banner_stats:
@@ -134,6 +155,17 @@ def recalculate_best_keywords():
 
     #Add scores for new banners
     for banner_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
+        banner_doc = yield db_utils.get_banner(banner_id)
+        if banner_doc is None:
+            continue
+
+        campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+        if campaign_doc is None:
+            continue
+
+        if not stats_utils.is_campaign_active(campaign_doc):
+            continue
+
         if banner_id not in KEYWORDS_SCORES:
             KEYWORDS_SCORES[banner_id] = {}
 
@@ -142,6 +174,9 @@ def recalculate_best_keywords():
                 KEYWORDS_SCORES[banner_id][publisher_id] = {}
 
             for keyword, paid_value in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id].items():
+                if keyword in KEYWORDS_SCORES[banner_id][publisher_id]:
+                    continue
+
                 impression_count = stats_cache.BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
                 if impression_count == 0:
                     continue

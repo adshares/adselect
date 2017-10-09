@@ -4,6 +4,7 @@ from adselect.contrib import filters
 from adselect.db import utils as db_utils
 from adselect.iface import protocol as iface_proto
 from adselect.stats import cache as stats_cache
+from adselect.stats import utils as stats_utils
 
 
 @defer.inlineCallbacks
@@ -59,8 +60,16 @@ def select_banner(banners_requests):
 
         for banner_id in proposed_banners:
             banner_doc = yield db_utils.get_banner(banner_id)
+            if not banner_doc:
+                continue
+
             campaign_id = banner_doc['campaign_id']
             campaign_doc = yield db_utils.get_campaign(campaign_id)
+            if not campaign_doc:
+                continue
+
+            if not stats_utils.is_campaign_active(campaign_doc):
+                continue
 
             # Validate campaign filters
             if not validate_filters(campaign_doc['filters'], banner_request.keywords):
