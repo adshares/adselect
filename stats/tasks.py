@@ -60,9 +60,9 @@ def load_new_banners():
             if not stats_utils.is_campaign_active(campaign_doc):
                 continue
 
+            # If banner has payment stats it can't belong to new banners
             payment_stats = yield db_utils.get_banner_payment(banner_id)
             if payment_stats is not None:
-                # If banner has payment stats it can't belong to new banners
                 if payment_stats['stats']:
                     continue
 
@@ -85,11 +85,6 @@ def load_new_banners():
 
 @defer.inlineCallbacks
 def recalculate_best_keywords():
-    if stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT is None:
-        return
-
-    if stats_cache.BANNERS_IMPRESSIONS_COUNT is None:
-        return
 
     #Recalculate database scores
     KEYWORDS_SCORES = {}

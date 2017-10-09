@@ -137,13 +137,11 @@ def select_best_banners(publisher_id,
         banners_per_keyword_cutoff - cutoff of the banners numbers in every seleted keywords
         mixed_new_banners_percent - approximate percentage of new banners in proposed banners list
     """
-
     #selected best paid impression keywords
     publisher_best_keys = BEST_KEYWORDS.get(publisher_id, {}).get(banner_size, [])[:best_keywords_cutoff]
-    sbpik = set(impression_keywords_dict.keys())&set(publisher_best_keys)
+    sbpik = set([genkey(*item) for item in impression_keywords_dict.items()])&set(publisher_best_keys)
 
     #Select best paid banners with appropriate size
-
     selected_banners = []
     selected_banners_count = 0
 

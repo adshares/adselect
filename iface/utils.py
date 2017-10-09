@@ -30,16 +30,12 @@ def delete_campaign(campaign_id):
     yield db_utils.delete_campaign_banners(campaign_id)
 
 
-@defer.inlineCallbacks
 def add_impression(imobj):
     # Change counter only  in stats cache
-    banner_doc = yield db_utils.get_banner(imobj.banner_id)
-    if banner_doc is not None:
-        stats_cache.update_impression(imobj.banner_id,
-                                      banner_doc['banner_size'],
-                                      imobj.publisher_id,
-                                      imobj.keywords,
-                                      imobj.paid_amount)
+    stats_cache.update_impression(imobj.banner_id,
+                                  imobj.publisher_id,
+                                  imobj.keywords,
+                                  imobj.paid_amount)
 
 
 @defer.inlineCallbacks
