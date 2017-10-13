@@ -3,7 +3,7 @@ from twisted.web.server import Site
 
 from fastjsonrpc.server import JSONRPCServer
 
-from adselect.iface import config as iface_config
+from adselect.iface import const as iface_const
 from adselect.iface import utils as iface_utils
 from adselect.iface import protocol as iface_proto
 
@@ -39,6 +39,6 @@ class AdSelectIfaceServer(JSONRPCServer):
         return selected_banners
 
 
-def configure_iface(port = iface_config.SERVER_PORT):
+def configure_iface(port = iface_const.SERVER_PORT):
     site = Site(AdSelectIfaceServer())
     reactor.listenTCP(port, site)
