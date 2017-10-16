@@ -11,8 +11,16 @@ log.startLogging(sys.stdout)
 
 
 if __name__ == "__main__":
+    # Configuring database.
     db.configure_db()
+
+    # Initializing cache from database.
     stats_utils.initialize_stats()
+
+    # Initializing periodic tasks to recalculate scores.
     stats_tasks.configure_tasks()
+
+    # Start http interface to communicate with others adshares components.
     iface_server.configure_iface()
+
     reactor.run()
