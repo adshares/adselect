@@ -4,6 +4,7 @@ import sys
 
 from adselect.iface import server as iface_server
 from adselect.stats import tasks as stats_tasks
+from adselect.stats import utils as stats_utils
 from adselect import db
 
 log.startLogging(sys.stdout)
@@ -11,7 +12,7 @@ log.startLogging(sys.stdout)
 
 if __name__ == "__main__":
     db.configure_db()
+    stats_utils.initialize_stats()
     stats_tasks.configure_tasks()
     iface_server.configure_iface()
-
     reactor.run()

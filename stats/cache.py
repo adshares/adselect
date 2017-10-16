@@ -1,6 +1,7 @@
 import random, heapq, itertools
 
 from adselect.contrib import utils as contrib_utils
+from adselect.stats import const as stats_consts
 
 # Keep info about best paid keywords for the specific banner size
 # Kesywords in the list are ordered from the best paid
@@ -37,7 +38,7 @@ def update_keywords_banners(keywords_banners):
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = keywords_banners
 
-# Keep info about last round banners impression payments > 0
+# Keep info about last round impression payments > 0
 # KEYWORD_IMPRESSION_PAID_AMOUNT = {
 #   'campaignid2_bannerid2':{
 #       'publisher_id_1':{
@@ -55,8 +56,9 @@ KEYWORD_IMPRESSION_PAID_AMOUNT = {}
 def update_keyword_impression_paid_amount(banner_id, stats):
     KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = stats
 
-# Keep data about last round impressions count of banners
-# BANNERS_IMPRESSIONS_COUNT = {
+
+# Keep data about total impressions count of banners
+# IMPRESSIONS_COUNT = {
 #   'campaignid1_bannerid1':{
 #           'publisher_id1':'impression_count_for_publisher_1',
 #           'publisher_id2':'impression_count_for_publisher_2'
@@ -64,27 +66,22 @@ def update_keyword_impression_paid_amount(banner_id, stats):
 #   'campaignid2_bannerid2':{
 #   }
 # }
-BANNERS_IMPRESSIONS_COUNT = {}
+IMPRESSIONS_COUNT = {}
+
+def update_impressions_count(banner_id, impression_stats):
+    IMPRESSIONS_COUNT[banner_id] = impression_stats
 
 
-# Keep info about new banners to display
-# NEW_BANNERS:{
-#   'size1':{
-#       'publisher_id1':{
-#           'campaignid1_bannerid1':'impression_count_for_publisher_1',
-#           'campaignid2_bannerid2':'impression_count_for_publisher_2'
-#       }
-#   }
+# Keep info about active banners
+# BANNERS = {
+#     'size1':['campaignid1_bannerid1', 'campaignid2_bannerid2', ],
+#     'size2':['campaignid2_bannerid2']
 # }
-NEW_BANNERS = {}
+BANNERS = {}
 
-def update_new_banners(new_banners):
-    global  NEW_BANNERS
-    NEW_BANNERS = new_banners
-
-
-def update_banners_impressions_count(banner_id, impression_stats):
-    BANNERS_IMPRESSIONS_COUNT[banner_id] = impression_stats
+def update_banners(banners):
+    global BANNERS
+    BANNERS = banners
 
 
 def genkey(key, val, delimiter="_"):
@@ -95,7 +92,7 @@ def genkey(key, val, delimiter="_"):
 def select_new_banners(publisher_id,
                        banner_size,
                        proposition_nb,
-                       notpaid_display_cutoff=100,
+                       notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMRESSION_CUTOFF,
                        filtering_population_factor=4
                        ):
     """
@@ -104,15 +101,15 @@ def select_new_banners(publisher_id,
         publisher_id - publisher id
     """
 
-    new_banners = NEW_BANNERS.get(banner_size, {}).get(publisher_id, {}).keys()
-    random.shuffle(new_banners)
-    random_banners = new_banners[:proposition_nb*filtering_population_factor]
+    new_banners = BANNERS.get(banner_size, [])
+    random_banners = []
+    for i in range(proposition_nb*filtering_population_factor):
+        random_banners.append(random.choice(new_banners))
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
-        last_round_views = BANNERS_IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
-        if NEW_BANNERS[banner_size][publisher_id][banner_id] +last_round_views < notpaid_display_cutoff:
+        if IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0) < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
         if len(selected_banners) > proposition_nb:
@@ -167,14 +164,14 @@ def select_best_banners(publisher_id,
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
     # Update BANNERS_IMPRESSIONS_COUNT
-    if BANNERS_IMPRESSIONS_COUNT is not None:
-        if banner_id not in BANNERS_IMPRESSIONS_COUNT:
-            BANNERS_IMPRESSIONS_COUNT[banner_id] = {}
+    if IMPRESSIONS_COUNT is not None:
+        if banner_id not in IMPRESSIONS_COUNT:
+            IMPRESSIONS_COUNT[banner_id] = {}
 
-        if publisher_id not in BANNERS_IMPRESSIONS_COUNT[banner_id]:
-            BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]=0
+        if publisher_id not in IMPRESSIONS_COUNT[banner_id]:
+            IMPRESSIONS_COUNT[banner_id][publisher_id]=0
 
-        BANNERS_IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
+        IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
 
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
