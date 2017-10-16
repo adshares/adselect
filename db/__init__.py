@@ -18,7 +18,6 @@ def configure_db():
     get_banner_collection().create_index(banner_idx, unique=True)
     get_banner_collection().create_index(campaign_idx)
 
-
     #Stats collection
     get_impressions_stats_collection().create_index(banner_idx, unique=True)
     get_payments_stats_collection().create_index(banner_idx, unique=True)
