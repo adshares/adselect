@@ -9,7 +9,6 @@ from adselect import db
 
 log.startLogging(sys.stdout)
 
-
 if __name__ == "__main__":
     # Configuring database.
     db.configure_db()

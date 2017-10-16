@@ -1,8 +1,3 @@
-import random, heapq, itertools
-
-from adselect.contrib import utils as contrib_utils
-from adselect.stats import const as stats_consts
-
 # Keep info about best paid keywords for the specific banner size
 # Kesywords in the list are ordered from the best paid
 # BEST_KEYWORDS:{
@@ -87,79 +82,6 @@ def update_banners(banners):
 def genkey(key, val, delimiter="_"):
     keywal = "%s%s%s" % (key, delimiter, val)
     return keywal.replace(".", "")
-
-
-def select_new_banners(publisher_id,
-                       banner_size,
-                       proposition_nb,
-                       notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMRESSION_CUTOFF,
-                       filtering_population_factor=4
-                       ):
-    """
-        Return banners ids without payment statistic.
-        The function doesn't allow to display banners more than notpaid_display_cutoff times without payment.
-        publisher_id - publisher id
-    """
-
-    new_banners = BANNERS.get(banner_size, [])
-    random_banners = []
-    for i in range(proposition_nb*filtering_population_factor):
-        random_banners.append(random.choice(new_banners))
-
-    # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
-    selected_banners = []
-    for banner_id in random_banners:
-        if IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0) < notpaid_display_cutoff:
-            selected_banners.append(banner_id)
-
-        if len(selected_banners) > proposition_nb:
-            break
-
-    return selected_banners[:proposition_nb]
-
-
-def select_best_banners(publisher_id,
-                        banner_size,
-                        impression_keywords_dict,
-                        propositions_nb=100,
-                        best_keywords_cutoff=100,
-                        banners_per_keyword_cutoff=10,
-                        mixed_new_banners_percent=5
-                        ):
-    """
-        Select banners with appropriate size for given impression keywords.
-        proposition_nb - the amount of selected banners
-        publisher_id - publisher id
-        best_keywords_cutoff - cutoff of the best paid keywords taking into account
-        banners_per_keyword_cutoff - cutoff of the banners numbers in every seleted keywords
-        mixed_new_banners_percent - approximate percentage of new banners in proposed banners list
-    """
-    #selected best paid impression keywords
-    publisher_best_keys = BEST_KEYWORDS.get(publisher_id, {}).get(banner_size, [])[:best_keywords_cutoff]
-    sbpik = set([genkey(*item) for item in impression_keywords_dict.items()])&set(publisher_best_keys)
-
-    #Select best paid banners with appropriate size
-    selected_banners = []
-    selected_banners_count = 0
-
-    publisher_banners = KEYWORDS_BANNERS.get(publisher_id, {}).get(banner_size, {})
-    for avg_price, banner_id in contrib_utils.merge(
-            *[publisher_banners.get(keyword, [])[:banners_per_keyword_cutoff] for keyword in sbpik]
-    ):
-
-        selected_banners.append(banner_id)
-        selected_banners_count +=1
-
-        if selected_banners_count >= propositions_nb:
-            break
-
-    # Add new banners without payment statistic
-    new_banners_proposition_nb = int(mixed_new_banners_percent*propositions_nb/100.0)
-    selected_banners += select_new_banners(publisher_id, banner_size, new_banners_proposition_nb)
-    random.shuffle(selected_banners)
-
-    #Shuffle items in the list
-    return selected_banners[:propositions_nb]
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):

@@ -124,8 +124,6 @@ def clean_database():
 
 @defer.inlineCallbacks
 def recalculate_stats():
-    from adselect.stats import utils as stats_utils
-
     # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS.
     SCORES_STATS = yield save_scores()
 

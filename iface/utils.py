@@ -54,7 +54,7 @@ def select_banner(banners_requests):
 
 
     for banner_request in banners_requests:
-        proposed_banners = stats_cache.select_best_banners(banner_request.publisher_id,
+        proposed_banners = stats_utils.select_best_banners(banner_request.publisher_id,
                                                            banner_request.banner_size,
                                                            banner_request.keywords)
 
