@@ -29,8 +29,6 @@ def is_campaign_active(campaign_doc):
 @defer.inlineCallbacks
 def load_banners():
     """Load only active banners to cache."""
-    BANNERS = {}
-
     docs, dfr = yield db_utils.get_banners_iter()
     while docs:
         for banner_doc in docs:
@@ -42,13 +40,8 @@ def load_banners():
             if not is_campaign_active(campaign_doc):
                 continue
 
-            if not banner_size in BANNERS:
-                BANNERS[banner_size] = []
-
-            BANNERS[banner_size].append(banner_id)
-
+            stats_cache.add_banner(banner_id, banner_size)
         docs, dfr = yield dfr
-    stats_cache.set_banners(BANNERS)
 
 
 @defer.inlineCallbacks
@@ -155,7 +148,7 @@ def select_new_banners(publisher_id,
         publisher_id - publisher id
     """
 
-    new_banners = stats_cache.BANNERS.get(banner_size, [])
+    new_banners = stats_cache.get_banners(banner_size)
     random_banners = []
     for i in range(proposition_nb*filtering_population_factor):
         random_banners.append(random.choice(new_banners))

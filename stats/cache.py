@@ -92,8 +92,14 @@ def delete_impression_count(banner_id):
 # }
 BANNERS = {}
 
-def set_banners(banners):
-    global BANNERS
-    BANNERS = banners
+def add_banner(banner_id, banner_size):
+    if not banner_size in BANNERS:
+        BANNERS[banner_size] = []
+
+    BANNERS[banner_size].append(banner_id)
+
+
+def get_banners(size):
+    return BANNERS.get(size, [])
 
 
