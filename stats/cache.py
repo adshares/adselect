@@ -1,3 +1,7 @@
+#########################################
+########### BEST_KEYWORDS ###############
+#########################################
+
 # Keep info about best paid keywords for the specific banner size
 # Kesywords in the list are ordered from the best paid
 # BEST_KEYWORDS:{
@@ -32,6 +36,10 @@ KEYWORDS_BANNERS = {}
 def set_keywords_banners(keywords_banners):
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = keywords_banners
+
+#########################################
+### KEYWORD_IMPRESSION_PAID_AMOUNT ######
+#########################################
 
 # Keep info about last round impression payments > 0
 # KEYWORD_IMPRESSION_PAID_AMOUNT = {
@@ -85,6 +93,9 @@ def get_last_round_paid_banner_publishers(banner_id):
 def get_last_round_paid_banner_publisher_keywords(banner_id, publisher_id):
     return KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).get(publisher_id, {}).keys()
 
+#########################################
+######### IMPRESSIONS_COUNT #############
+#########################################
 
 # Keep data about total impressions count of banners
 # IMPRESSIONS_COUNT = {
@@ -123,12 +134,17 @@ def delete_impression_count(banner_id):
         del IMPRESSIONS_COUNT[banner_id]
 
 
+#########################################
+######### BANERS ########################
+#########################################
+
 # Keep info about active banners
 # BANNERS = {
 #     'size1':['campaignid1_bannerid1', 'campaignid2_bannerid2', ],
 #     'size2':['campaignid2_bannerid2']
 # }
 BANNERS = {}
+
 
 def add_banner(banner_id, banner_size):
     if not banner_size in BANNERS:
