@@ -9,7 +9,7 @@ from adselect.db import utils as db_utils
 @defer.inlineCallbacks
 def save_views():
     # Save BANNERS_IMPRESSIONS_COUNT to database
-    for banner_id, counts_per_publisher_dict in stats_cache.IMPRESSIONS_COUNT.iteritems():
+    for banner_id, counts_per_publisher_dict in stats_cache.get_impression_count_iter():
         yield db_utils.update_banner_impression_count(banner_id, counts_per_publisher_dict)
 
 

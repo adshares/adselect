@@ -73,7 +73,7 @@ def load_scores(SCORES_DB_STATS = None):
 
             docs, dfr = yield dfr
 
-    KEYWORDS_BANNERS = {}
+    keywords_banners = {}
     for banner_id in SCORES_DB_STATS:
         banner = yield db_utils.get_banner(banner_id)
 
@@ -83,43 +83,42 @@ def load_scores(SCORES_DB_STATS = None):
 
         banner_size = banner['banner_size']
         for publisher_id in SCORES_DB_STATS[banner_id]:
-            if publisher_id not in KEYWORDS_BANNERS:
-                KEYWORDS_BANNERS[publisher_id] = {}
+            if publisher_id not in keywords_banners:
+                keywords_banners[publisher_id] = {}
 
-            if banner['banner_size'] not in KEYWORDS_BANNERS[publisher_id]:
-                KEYWORDS_BANNERS[publisher_id][banner_size] = {}
+            if banner['banner_size'] not in keywords_banners[publisher_id]:
+                keywords_banners[publisher_id][banner_size] = {}
 
             for keyword, keyword_score in SCORES_DB_STATS[banner_id][publisher_id].iteritems():
 
-                if keyword not in KEYWORDS_BANNERS[publisher_id][banner_size]:
-                    KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = []
+                if keyword not in keywords_banners[publisher_id][banner_size]:
+                    keywords_banners[publisher_id][banner_size][keyword] = []
 
-                KEYWORDS_BANNERS[publisher_id][banner_size][keyword].append((keyword_score, banner_id))
+                keywords_banners[publisher_id][banner_size][keyword].append((keyword_score, banner_id))
 
-    for publisher_id in KEYWORDS_BANNERS:
-        for banner_size in KEYWORDS_BANNERS[publisher_id]:
-            for keyword in KEYWORDS_BANNERS[publisher_id][banner_size]:
-                KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = \
-                    sorted(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], reverse=True)
-    stats_cache.set_keywords_banners(KEYWORDS_BANNERS)
+    for publisher_id in keywords_banners:
+        for banner_size in keywords_banners[publisher_id]:
+            for keyword in keywords_banners[publisher_id][banner_size]:
+                keywords_banners[publisher_id][banner_size][keyword] = \
+                    sorted(keywords_banners[publisher_id][banner_size][keyword], reverse=True)
+    stats_cache.set_keywords_banners(keywords_banners)
 
+    best_keywords = {}
+    for publisher_id in keywords_banners:
+        best_keywords[publisher_id] = {}
 
-    BEST_KEYWORDS = {}
-    for publisher_id in stats_cache.KEYWORDS_BANNERS:
-        BEST_KEYWORDS[publisher_id] = {}
+        for size in keywords_banners[publisher_id]:
+            best_keywords[publisher_id][size] = []
 
-        for size in stats_cache.KEYWORDS_BANNERS[publisher_id]:
-            BEST_KEYWORDS[publisher_id][size] = []
-
-            for keyword, banners_list in stats_cache.KEYWORDS_BANNERS[publisher_id][size].iteritems():
+            for keyword, banners_list in keywords_banners[publisher_id][size].iteritems():
                 if not banners_list:
                     continue
 
-                BEST_KEYWORDS[publisher_id][size].append((banners_list[0][0], keyword))
+                best_keywords[publisher_id][size].append((banners_list[0][0], keyword))
 
-            BEST_KEYWORDS[publisher_id][size] = sorted(BEST_KEYWORDS[publisher_id][size], reverse=True)
-            BEST_KEYWORDS[publisher_id][size] = [elem[1] for elem in BEST_KEYWORDS[publisher_id][size]]
-    stats_cache.set_best_keywords(BEST_KEYWORDS)
+            best_keywords[publisher_id][size] = sorted(best_keywords[publisher_id][size], reverse=True)
+            best_keywords[publisher_id][size] = [elem[1] for elem in best_keywords[publisher_id][size]]
+    stats_cache.set_best_keywords(best_keywords)
 
 
 @defer.inlineCallbacks
@@ -182,14 +181,14 @@ def select_best_banners(publisher_id,
         mixed_new_banners_percent - approximate percentage of new banners in proposed banners list
     """
     #selected best paid impression keywords
-    publisher_best_keys = stats_cache.BEST_KEYWORDS.get(publisher_id, {}).get(banner_size, [])[:best_keywords_cutoff]
+    publisher_best_keys = stats_cache.get_best_keywords(publisher_id, banner_size)[:best_keywords_cutoff]
     sbpik = set([genkey(*item) for item in impression_keywords_dict.items()])&set(publisher_best_keys)
 
     #Select best paid banners with appropriate size
     selected_banners = []
     selected_banners_count = 0
 
-    publisher_banners = stats_cache.KEYWORDS_BANNERS.get(publisher_id, {}).get(banner_size, {})
+    publisher_banners = stats_cache.get_publisher_banners(publisher_id, banner_size)
     for avg_price, banner_id in contrib_utils.merge(
             *[publisher_banners.get(keyword, [])[:banners_per_keyword_cutoff] for keyword in sbpik]
     ):

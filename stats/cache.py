@@ -17,6 +17,10 @@ def set_best_keywords(best_keywords_dict):
     BEST_KEYWORDS = best_keywords_dict
 
 
+def get_best_keywords(publisher_id, banner_size):
+    return BEST_KEYWORDS.get(publisher_id, {}).get(banner_size, [])
+
+
 # KEYWORDS_BANNERS keeps sorted list of banners for given size and keyword
 # KEYWORDS_BANNERS = {
 #   'publisher_id1':{
@@ -36,6 +40,12 @@ KEYWORDS_BANNERS = {}
 def set_keywords_banners(keywords_banners):
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = keywords_banners
+
+
+def get_publisher_banners(publisher_id, banner_size):
+    return KEYWORDS_BANNERS.get(publisher_id, {}).get(banner_size, [])
+
+
 
 #########################################
 ### KEYWORD_IMPRESSION_PAID_AMOUNT ######
@@ -127,6 +137,10 @@ def inc_impression_count(banner_id, publisher_id, value=1):
 
 def get_impresion_count(banner_id, publisher_id):
     return IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
+
+
+def get_impression_count_iter():
+    return IMPRESSIONS_COUNT.iteritems()
 
 
 def delete_impression_count(banner_id):
