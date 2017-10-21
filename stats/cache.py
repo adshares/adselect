@@ -63,8 +63,14 @@ def update_keyword_impression_paid_amount(banner_id, stats):
 # }
 IMPRESSIONS_COUNT = {}
 
+
 def update_impressions_count(banner_id, impression_stats):
     IMPRESSIONS_COUNT[banner_id] = impression_stats
+
+
+def delete_impression_count(banner_id):
+    if banner_id in IMPRESSIONS_COUNT:
+        del IMPRESSIONS_COUNT[banner_id]
 
 
 # Keep info about active banners

@@ -118,8 +118,26 @@ def clean_database():
         for campaign_doc in docs:
             campaign_id = campaign_doc['campaign_id']
 
-            # remove payments_stats
+            if not stats_utils.is_campaign_active(campaign_doc):
+                campaigns_banners = yield db_utils.get_campaign_banners(campaign_id)
+                for banner_doc in campaigns_banners:
+                    banner_id = banner_doc['banner_id']
 
+                    # remove payments_stats
+                    db_utils.delete_banner_payments(banner_id)
+
+                    # remove impression_stats
+                    db_utils.delete_banner_impression_count(banner_id)
+                    stats_cache.delete_impression_count(banner_id)
+
+                    # remove scores stats
+                    db_utils.delete_banner_scores(banner_id)
+
+                # remove banners
+                db_utils.delete_campaign_banners(campaign_id)
+
+                # remove campaign
+                db_utils.delete_campaign(campaign_id)
 
         docs, dfr = yield dfr
 

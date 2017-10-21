@@ -34,6 +34,10 @@ def update_banner(banner_doc):
     return db.get_banner_collection().replace_one({'banner_id':banner_doc['banner_id']},
                                                   banner_doc, upsert=True)
 
+def get_campaign_banners(campaign_id):
+    return db.get_banner_collection().find({'campaign_id':campaign_id})
+
+
 def delete_campaign_banners(campaign_id):
     return db.get_banner_collection().delete_many({'campaign_id':campaign_id})
 
