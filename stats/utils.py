@@ -217,15 +217,6 @@ def update_impression(banner_id, publisher_id, impression_keywords, paid_amount)
     if not paid_amount > 0:
         return
 
-    if banner_id not in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
-        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
-
-    if publisher_id not in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
-        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
-
     for key, val in impression_keywords.items():
         stat_key = genkey(key, val)
-        if stat_key not in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
-            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
-
-        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount
+        stats_cache.inc_keyword_impression_paid_amount(banner_id, publisher_id, stat_key, paid_amount)

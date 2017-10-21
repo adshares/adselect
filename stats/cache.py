@@ -48,8 +48,42 @@ def set_keywords_banners(keywords_banners):
 #  }
 KEYWORD_IMPRESSION_PAID_AMOUNT = {}
 
+
 def set_keyword_impression_paid_amount(banner_id, stats):
     KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = stats
+
+
+def inc_keyword_impression_paid_amount(banner_id, publisher_id, keyword, value):
+    if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
+
+    if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
+
+    if keyword not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][keyword] = 0
+
+    KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][keyword] += value
+
+
+def get_keyword_impression_paid_amoun_iter():
+    return KEYWORD_IMPRESSION_PAID_AMOUNT.iteritems()
+
+
+def get_keyword_impression_paid_amount(banner_id, publisher_id, keyword):
+    return KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).get(publisher_id, {}).get(keyword, 0)
+
+
+def get_last_round_paid_banners():
+    return KEYWORD_IMPRESSION_PAID_AMOUNT.keys()
+
+
+def get_last_round_paid_banner_publishers(banner_id):
+    return KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).keys()
+
+
+def get_last_round_paid_banner_publisher_keywords(banner_id, publisher_id):
+    return KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).get(publisher_id, {}).keys()
 
 
 # Keep data about total impressions count of banners
@@ -78,6 +112,10 @@ def inc_impression_count(banner_id, publisher_id, value=1):
         IMPRESSIONS_COUNT[banner_id][publisher_id]=0
 
     IMPRESSIONS_COUNT[banner_id][publisher_id]+=value
+
+
+def get_impresion_count(banner_id, publisher_id):
+    return IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
 
 
 def delete_impression_count(banner_id):

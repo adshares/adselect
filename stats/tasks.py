@@ -16,7 +16,7 @@ def save_views():
 @defer.inlineCallbacks
 def save_payments():
     # Save stats for KEYWORD_IMPRESSION_PAID_AMOUNT
-    for banner_id, payment_stats_dict in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.iteritems():
+    for banner_id, payment_stats_dict in stats_cache.get_keyword_impression_paid_amoun_iter():
         banner_stats = yield db_utils.get_banner_payment(banner_id)
         db_banner_stats = banner_stats['stats'] if banner_stats else {}
 
@@ -68,10 +68,10 @@ def save_scores():
                 banner_scores[publisher_id] = {}
 
                 for keyword, score_value in banner_stats.get(publisher_id, {}).items():
-                    last_round_keyword_payment = stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).\
-                        get(publisher_id, {}).get(keyword, 0)
+                    last_round_keyword_payment = stats_cache.get_keyword_impression_paid_amount(banner_id,
+                                                                                                publisher_id, keyword)
 
-                    impression_count = stats_cache.IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
+                    impression_count = stats_cache.get_impresion_count(banner_id, publisher_id)
                     last_round_impression_count = max([0, impression_count-publisher_db_impression_count])
 
                     last_round_score = 0
@@ -85,7 +85,7 @@ def save_scores():
         docs, dfr = yield dfr
 
     # Add scores for new banners
-    for banner_id in set(stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT)-db_banners:
+    for banner_id in set(stats_cache.get_last_round_paid_banners())-db_banners:
         banner_doc = yield db_utils.get_banner(banner_id)
         if banner_doc is None:
             continue
@@ -98,11 +98,13 @@ def save_scores():
             continue
 
         banner_scores = {}
-        for publisher_id in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+        for publisher_id in stats_cache.get_last_round_paid_banner_publishers(banner_id):
             banner_scores[publisher_id] = {}
 
-            for keyword, paid_value in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id].items():
-                impression_count = stats_cache.IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
+            for keyword in stats_cache.get_last_round_paid_banner_publisher_keywords(banner_id, publisher_id):
+                paid_value = stats_cache.get_keyword_impression_paid_amount(banner_id, publisher_id, keyword)
+
+                impression_count = stats_cache.get_impresion_count(banner_id, publisher_id)
                 if impression_count == 0:
                     continue
 
