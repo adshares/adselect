@@ -155,7 +155,7 @@ def select_new_banners(publisher_id,
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
-        if stats_cache.get_impresion_count(banner_id, publisher_id) < notpaid_display_cutoff:
+        if stats_cache.get_impression_count(banner_id, publisher_id) < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
         if len(selected_banners) > proposition_nb:

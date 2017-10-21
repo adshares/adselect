@@ -16,7 +16,7 @@ def save_views():
 @defer.inlineCallbacks
 def save_payments():
     # Save stats for KEYWORD_IMPRESSION_PAID_AMOUNT
-    for banner_id, payment_stats_dict in stats_cache.get_keyword_impression_paid_amoun_iter():
+    for banner_id, payment_stats_dict in stats_cache.get_keyword_impression_paid_amount_iter():
         banner_stats = yield db_utils.get_banner_payment(banner_id)
         db_banner_stats = banner_stats['stats'] if banner_stats else {}
 
@@ -71,7 +71,7 @@ def save_scores():
                     last_round_keyword_payment = stats_cache.get_keyword_impression_paid_amount(banner_id,
                                                                                                 publisher_id, keyword)
 
-                    impression_count = stats_cache.get_impresion_count(banner_id, publisher_id)
+                    impression_count = stats_cache.get_impression_count(banner_id, publisher_id)
                     last_round_impression_count = max([0, impression_count-publisher_db_impression_count])
 
                     last_round_score = 0
@@ -104,7 +104,7 @@ def save_scores():
             for keyword in stats_cache.get_last_round_paid_banner_publisher_keywords(banner_id, publisher_id):
                 paid_value = stats_cache.get_keyword_impression_paid_amount(banner_id, publisher_id, keyword)
 
-                impression_count = stats_cache.get_impresion_count(banner_id, publisher_id)
+                impression_count = stats_cache.get_impression_count(banner_id, publisher_id)
                 if impression_count == 0:
                     continue
 

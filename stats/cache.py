@@ -12,6 +12,7 @@
 # }
 BEST_KEYWORDS = {}
 
+
 def set_best_keywords(best_keywords_dict):
     global BEST_KEYWORDS
     BEST_KEYWORDS = best_keywords_dict
@@ -37,6 +38,7 @@ def get_best_keywords(publisher_id, banner_size):
 # }
 KEYWORDS_BANNERS = {}
 
+
 def set_keywords_banners(keywords_banners):
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = keywords_banners
@@ -44,7 +46,6 @@ def set_keywords_banners(keywords_banners):
 
 def get_publisher_banners(publisher_id, banner_size):
     return KEYWORDS_BANNERS.get(publisher_id, {}).get(banner_size, [])
-
 
 
 #########################################
@@ -84,7 +85,7 @@ def inc_keyword_impression_paid_amount(banner_id, publisher_id, keyword, value):
     KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][keyword] += value
 
 
-def get_keyword_impression_paid_amoun_iter():
+def get_keyword_impression_paid_amount_iter():
     return KEYWORD_IMPRESSION_PAID_AMOUNT.iteritems()
 
 
@@ -135,7 +136,7 @@ def inc_impression_count(banner_id, publisher_id, value=1):
     IMPRESSIONS_COUNT[banner_id][publisher_id]+=value
 
 
-def get_impresion_count(banner_id, publisher_id):
+def get_impression_count(banner_id, publisher_id):
     return IMPRESSIONS_COUNT.get(banner_id, {}).get(publisher_id, 0)
 
 
@@ -169,5 +170,3 @@ def add_banner(banner_id, banner_size):
 
 def get_banners(size):
     return BANNERS.get(size, [])
-
-
