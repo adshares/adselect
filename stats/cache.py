@@ -64,8 +64,20 @@ def update_keyword_impression_paid_amount(banner_id, stats):
 IMPRESSIONS_COUNT = {}
 
 
-def update_impressions_count(banner_id, impression_stats):
-    IMPRESSIONS_COUNT[banner_id] = impression_stats
+def set_impression_count(banner_id, publisher_id, value):
+    if banner_id not in IMPRESSIONS_COUNT:
+        IMPRESSIONS_COUNT[banner_id] = {}
+    IMPRESSIONS_COUNT[banner_id][publisher_id] = value
+
+
+def inc_impression_count(banner_id, publisher_id, value=1):
+    if banner_id not in IMPRESSIONS_COUNT:
+        IMPRESSIONS_COUNT[banner_id] = {}
+
+    if publisher_id not in IMPRESSIONS_COUNT[banner_id]:
+        IMPRESSIONS_COUNT[banner_id][publisher_id]=0
+
+    IMPRESSIONS_COUNT[banner_id][publisher_id]+=value
 
 
 def delete_impression_count(banner_id):
@@ -92,30 +104,21 @@ def genkey(key, val, delimiter="_"):
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
     # Update BANNERS_IMPRESSIONS_COUNT
-    if IMPRESSIONS_COUNT is not None:
-        if banner_id not in IMPRESSIONS_COUNT:
-            IMPRESSIONS_COUNT[banner_id] = {}
-
-        if publisher_id not in IMPRESSIONS_COUNT[banner_id]:
-            IMPRESSIONS_COUNT[banner_id][publisher_id]=0
-
-        IMPRESSIONS_COUNT[banner_id][publisher_id]+=1
-
+    inc_impression_count(banner_id, publisher_id, 1)
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
-    if KEYWORD_IMPRESSION_PAID_AMOUNT is not None:
-        if not paid_amount > 0:
-            return
+    if not paid_amount > 0:
+        return
 
-        if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
-            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
+    if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
 
-        if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
-            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
+    if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
 
-        for key, val in impression_keywords.items():
-            stat_key = genkey(key, val)
-            if stat_key not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
-                KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
+    for key, val in impression_keywords.items():
+        stat_key = genkey(key, val)
+        if stat_key not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
+            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
 
-            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount
+        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount

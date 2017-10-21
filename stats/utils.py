@@ -54,7 +54,8 @@ def load_impression_counts():
     while docs:
         for stats_doc in docs:
             banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
-            stats_cache.update_impressions_count(banner_id, stats)
+            for publisher_id, value in stats.iteritems():
+                stats_cache.set_impression_count(banner_id, publisher_id, value)
         docs, dfr = yield dfr
 
 
