@@ -1,4 +1,4 @@
-from twisted.internet import defer, reactor
+from twisted.internet import defer
 import random
 
 from adselect.contrib import utils as contrib_utils
@@ -58,38 +58,38 @@ def load_impression_counts():
 
 
 @defer.inlineCallbacks
-def load_scores(SCORES_DB_STATS = None):
+def load_scores(scores_db_stats=None):
     """Load best paid keywords taking into account scores"""
 
     # TODO: need optimalization.
-    if SCORES_DB_STATS is None:
-        SCORES_DB_STATS = {}
+    if scores_db_stats is None:
+        scores_db_stats = {}
 
         docs, dfr = yield db_utils.get_banner_scores_iter()
         while docs:
             for stats_doc in docs:
                 banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
-                SCORES_DB_STATS[banner_id] = stats
+                scores_db_stats[banner_id] = stats
 
             docs, dfr = yield dfr
 
     keywords_banners = {}
-    for banner_id in SCORES_DB_STATS:
+    for banner_id in scores_db_stats:
         banner = yield db_utils.get_banner(banner_id)
 
         if not banner:
-            print "Warning! Banner %s not in database" %banner_id
+            print "Warning! Banner %s not in database" % banner_id
             continue
 
         banner_size = banner['banner_size']
-        for publisher_id in SCORES_DB_STATS[banner_id]:
+        for publisher_id in scores_db_stats[banner_id]:
             if publisher_id not in keywords_banners:
                 keywords_banners[publisher_id] = {}
 
             if banner['banner_size'] not in keywords_banners[publisher_id]:
                 keywords_banners[publisher_id][banner_size] = {}
 
-            for keyword, keyword_score in SCORES_DB_STATS[banner_id][publisher_id].iteritems():
+            for keyword, keyword_score in scores_db_stats[banner_id][publisher_id].iteritems():
 
                 if keyword not in keywords_banners[publisher_id][banner_size]:
                     keywords_banners[publisher_id][banner_size][keyword] = []
@@ -144,7 +144,7 @@ def select_new_banners(publisher_id,
 
     new_banners = stats_cache.get_banners(banner_size)
     random_banners = []
-    for i in range(proposition_nb*filtering_population_factor):
+    for i in range(proposition_nb * filtering_population_factor):
         random_banners.append(random.choice(new_banners))
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
@@ -175,11 +175,11 @@ def select_best_banners(publisher_id,
         banners_per_keyword_cutoff - cutoff of the banners numbers in every seleted keywords
         mixed_new_banners_percent - approximate percentage of new banners in proposed banners list
     """
-    #selected best paid impression keywords
+    # selected best paid impression keywords
     publisher_best_keys = stats_cache.get_best_keywords(publisher_id, banner_size)[:best_keywords_cutoff]
-    sbpik = set([genkey(*item) for item in impression_keywords_dict.items()])&set(publisher_best_keys)
+    sbpik = set([genkey(*item) for item in impression_keywords_dict.items()]) & set(publisher_best_keys)
 
-    #Select best paid banners with appropriate size
+    # Select best paid banners with appropriate size
     selected_banners = []
     selected_banners_count = 0
 
@@ -189,17 +189,17 @@ def select_best_banners(publisher_id,
     ):
 
         selected_banners.append(banner_id)
-        selected_banners_count +=1
+        selected_banners_count += 1
 
         if selected_banners_count >= propositions_nb:
             break
 
     # Add new banners without payment statistic
-    new_banners_proposition_nb = int(mixed_new_banners_percent*propositions_nb/100.0)
+    new_banners_proposition_nb = int(mixed_new_banners_percent * propositions_nb / 100.0)
     selected_banners += select_new_banners(publisher_id, banner_size, new_banners_proposition_nb)
     random.shuffle(selected_banners)
 
-    #Shuffle items in the list
+    # Shuffle items in the list
     return selected_banners[:propositions_nb]
 
 

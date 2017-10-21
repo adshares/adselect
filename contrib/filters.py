@@ -14,8 +14,8 @@ class AndFilter(Filter):
     NESTED_FILTERS = True
 
     def is_valid(self, value):
-        for filter in self.filter_arg:
-            if not filter.is_valid(value):
+        for filter_obj in self.filter_arg:
+            if not filter_obj.is_valid(value):
                 return False
         return True
 
@@ -25,8 +25,8 @@ class OrFilter(Filter):
     NESTED_FILTERS = True
 
     def is_valid(self, value):
-        for filter in self.filter_arg:
-            if filter.is_valid(value):
+        for filter_obj in self.filter_arg:
+            if filter_obj.is_valid(value):
                 return True
         return False
 

@@ -1,5 +1,6 @@
 import heapq, time
 
+
 def merge(*iterables):
     """
         Sort iterables of tuples in descending mode.

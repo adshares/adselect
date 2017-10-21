@@ -7,18 +7,18 @@ import txmongo
 def configure_db():
     get_mongo_db()
 
-    #Creating indexes when daemon starts
+    # Creating indexes when daemon starts
     campaign_idx = filter.sort(filter.ASCENDING("campaign_id"))
     banner_idx = filter.sort(filter.ASCENDING("banner_id"))
 
-    #Campaign collection
+    # Campaign collection
     get_campaign_collection().create_index(campaign_idx, unique=True)
 
-    #Banner collection
+    # Banner collection
     get_banner_collection().create_index(banner_idx, unique=True)
     get_banner_collection().create_index(campaign_idx)
 
-    #Stats collection
+    # Stats collection
     get_impressions_stats_collection().create_index(banner_idx, unique=True)
     get_payments_stats_collection().create_index(banner_idx, unique=True)
     get_scores_stats_collection().create_index(banner_idx, unique=True)
@@ -51,6 +51,8 @@ def get_scores_stats_collection():
 
 
 MONGO_CONNECTION = None
+
+
 def get_mongo_connection():
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:

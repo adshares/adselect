@@ -32,7 +32,7 @@ def get_best_keywords(publisher_id, banner_size):
 #          keyword2:[(pay_score, campaignid1_bannerid1), (pay_score, campaignid2_bannerid2), ..., ...]
 #       },
 #       'size2':{
-#           keyword1:[(avg_pay_amount, campaignid1_bannerid1), (avg_pay_amount, campaignid2_bannerid2), ...]
+#           keyword1:[(pay_score, campaignid1_bannerid1), (pay_score, campaignid2_bannerid2), ...]
 #       }
 #   },
 #   'publisher_id2':{
@@ -106,6 +106,7 @@ def get_last_round_paid_banner_publishers(banner_id):
 def get_last_round_paid_banner_publisher_keywords(banner_id, publisher_id):
     return KEYWORD_IMPRESSION_PAID_AMOUNT.get(banner_id, {}).get(publisher_id, {}).keys()
 
+
 #########################################
 ######### IMPRESSIONS_COUNT #############
 #########################################
@@ -133,9 +134,9 @@ def inc_impression_count(banner_id, publisher_id, value=1):
         IMPRESSIONS_COUNT[banner_id] = {}
 
     if publisher_id not in IMPRESSIONS_COUNT[banner_id]:
-        IMPRESSIONS_COUNT[banner_id][publisher_id]=0
+        IMPRESSIONS_COUNT[banner_id][publisher_id] = 0
 
-    IMPRESSIONS_COUNT[banner_id][publisher_id]+=value
+    IMPRESSIONS_COUNT[banner_id][publisher_id] += value
 
 
 def get_impression_count(banner_id, publisher_id):
@@ -164,7 +165,7 @@ BANNERS = {}
 
 
 def add_banner(banner_id, banner_size):
-    if not banner_size in BANNERS:
+    if banner_size not in BANNERS:
         BANNERS[banner_size] = []
 
     BANNERS[banner_size].append(banner_id)

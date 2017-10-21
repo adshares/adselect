@@ -72,20 +72,20 @@ def save_scores():
                                                                                                 publisher_id, keyword)
 
                     impression_count = stats_cache.get_impression_count(banner_id, publisher_id)
-                    last_round_impression_count = max([0, impression_count-publisher_db_impression_count])
+                    last_round_impression_count = max([0, impression_count - publisher_db_impression_count])
 
                     last_round_score = 0
-                    if last_round_impression_count>0:
-                        last_round_score = 1.0*last_round_keyword_payment/last_round_impression_count
+                    if last_round_impression_count > 0:
+                        last_round_score = 1.0 * last_round_keyword_payment / last_round_impression_count
 
-                    banner_scores[publisher_id][keyword] = 0.5*score_value + 0.5*last_round_score
+                    banner_scores[publisher_id][keyword] = 0.5 * score_value + 0.5 * last_round_score
 
             yield db_utils.update_banner_scores(banner_id, banner_scores)
             db_banners |= {banner_id}
         docs, dfr = yield dfr
 
     # Add scores for new banners
-    for banner_id in set(stats_cache.get_last_round_paid_banners())-db_banners:
+    for banner_id in set(stats_cache.get_last_round_paid_banners()) - db_banners:
         banner_doc = yield db_utils.get_banner(banner_id)
         if banner_doc is None:
             continue
@@ -108,7 +108,7 @@ def save_scores():
                 if impression_count == 0:
                     continue
 
-                banner_scores[publisher_id][keyword] = 1.0*paid_value/impression_count
+                banner_scores[publisher_id][keyword] = 1.0 * paid_value / impression_count
         yield db_utils.update_banner_scores(banner_id, banner_scores)
 
 
@@ -147,7 +147,7 @@ def clean_database():
 @defer.inlineCallbacks
 def recalculate_stats():
     # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS.
-    SCORES_STATS = yield save_scores()
+    scores_stats = yield save_scores()
 
     # Taking from database BANNERS_IMPRESSIONS_COUNT.
     yield save_views()
@@ -159,7 +159,7 @@ def recalculate_stats():
     yield stats_utils.load_banners()
 
     # Load scores
-    yield stats_utils.load_scores(SCORES_STATS)
+    yield stats_utils.load_scores(scores_stats)
 
     # Clean database task.
     yield clean_database()
