@@ -1,3 +1,5 @@
+from adselect.contrib import utils as contrib_utils
+
 #########################################
 ########### BEST_KEYWORDS ###############
 #########################################
@@ -24,6 +26,11 @@ def get_best_keywords(publisher_id, banner_size):
     return BEST_KEYWORDS.get(publisher_id, {}).get(banner_size, [])
 
 
+def delete_best_keywords():
+    global BEST_KEYWORDS
+    BEST_KEYWORDS = {}
+
+
 # KEYWORDS_BANNERS keeps sorted list of banners for given size and keyword
 # KEYWORDS_BANNERS = {
 #   'publisher_id1':{
@@ -41,13 +48,27 @@ def get_best_keywords(publisher_id, banner_size):
 KEYWORDS_BANNERS = {}
 
 
-def set_keywords_banners(keywords_banners):
-    global KEYWORDS_BANNERS
-    KEYWORDS_BANNERS = keywords_banners
+def add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id, limit=100):
+    if publisher_id not in KEYWORDS_BANNERS:
+        KEYWORDS_BANNERS[publisher_id] = {}
+
+    if banner_size not in KEYWORDS_BANNERS[publisher_id]:
+        KEYWORDS_BANNERS[publisher_id][banner_size] = {}
+
+    if keyword not in KEYWORDS_BANNERS[publisher_id][banner_size]:
+        KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = []
+
+    contrib_utils.reverse_insort(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], (keyword_score, banner_id))
+    KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = KEYWORDS_BANNERS[publisher_id][banner_size][keyword][:limit]
 
 
-def get_publisher_banners(publisher_id, banner_size):
+def get_keyword_banners(publisher_id, banner_size):
     return KEYWORDS_BANNERS.get(publisher_id, {}).get(banner_size, [])
+
+
+def delete_keyword_banners():
+    global KEYWORDS_BANNERS
+    KEYWORDS_BANNERS = {}
 
 
 #########################################
