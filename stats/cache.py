@@ -13,9 +13,11 @@
 BEST_KEYWORDS = {}
 
 
-def set_best_keywords(best_keywords_dict):
-    global BEST_KEYWORDS
-    BEST_KEYWORDS = best_keywords_dict
+def set_best_keywords(publisher_id, banner_size, keywords_list):
+    if publisher_id not in BEST_KEYWORDS:
+        BEST_KEYWORDS[publisher_id] = {}
+
+    BEST_KEYWORDS[publisher_id][banner_size] = keywords_list
 
 
 def get_best_keywords(publisher_id, banner_size):

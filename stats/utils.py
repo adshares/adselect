@@ -103,22 +103,17 @@ def load_scores(SCORES_DB_STATS = None):
                     sorted(keywords_banners[publisher_id][banner_size][keyword], reverse=True)
     stats_cache.set_keywords_banners(keywords_banners)
 
-    best_keywords = {}
     for publisher_id in keywords_banners:
-        best_keywords[publisher_id] = {}
-
-        for size in keywords_banners[publisher_id]:
-            best_keywords[publisher_id][size] = []
-
-            for keyword, banners_list in keywords_banners[publisher_id][size].iteritems():
+        for banner_size in keywords_banners[publisher_id]:
+            keywords_list = []
+            for keyword, banners_list in keywords_banners[publisher_id][banner_size].iteritems():
                 if not banners_list:
                     continue
 
-                best_keywords[publisher_id][size].append((banners_list[0][0], keyword))
+                keywords_list.append((banners_list[0][0], keyword))
 
-            best_keywords[publisher_id][size] = sorted(best_keywords[publisher_id][size], reverse=True)
-            best_keywords[publisher_id][size] = [elem[1] for elem in best_keywords[publisher_id][size]]
-    stats_cache.set_best_keywords(best_keywords)
+            keywords_list = sorted(keywords_list, reverse=True)
+            stats_cache.set_best_keywords(publisher_id, banner_size, [elem[1] for elem in keywords_list])
 
 
 @defer.inlineCallbacks
