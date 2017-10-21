@@ -8,7 +8,7 @@
 # }
 BEST_KEYWORDS = {}
 
-def update_best_keywords(best_keywords_dict):
+def set_best_keywords(best_keywords_dict):
     global BEST_KEYWORDS
     BEST_KEYWORDS = best_keywords_dict
 
@@ -29,7 +29,7 @@ def update_best_keywords(best_keywords_dict):
 # }
 KEYWORDS_BANNERS = {}
 
-def update_keywords_banners(keywords_banners):
+def set_keywords_banners(keywords_banners):
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = keywords_banners
 
@@ -48,7 +48,7 @@ def update_keywords_banners(keywords_banners):
 #  }
 KEYWORD_IMPRESSION_PAID_AMOUNT = {}
 
-def update_keyword_impression_paid_amount(banner_id, stats):
+def set_keyword_impression_paid_amount(banner_id, stats):
     KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = stats
 
 
@@ -92,33 +92,8 @@ def delete_impression_count(banner_id):
 # }
 BANNERS = {}
 
-def update_banners(banners):
+def set_banners(banners):
     global BANNERS
     BANNERS = banners
 
 
-def genkey(key, val, delimiter="_"):
-    keywal = "%s%s%s" % (key, delimiter, val)
-    return keywal.replace(".", "")
-
-
-def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
-    # Update BANNERS_IMPRESSIONS_COUNT
-    inc_impression_count(banner_id, publisher_id, 1)
-
-    # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
-    if not paid_amount > 0:
-        return
-
-    if banner_id not in KEYWORD_IMPRESSION_PAID_AMOUNT:
-        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
-
-    if publisher_id not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
-        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
-
-    for key, val in impression_keywords.items():
-        stat_key = genkey(key, val)
-        if stat_key not in KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
-            KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
-
-        KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount

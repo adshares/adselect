@@ -32,7 +32,7 @@ def delete_campaign(campaign_id):
 
 def add_impression(imobj):
     # Change counter only  in stats cache
-    stats_cache.update_impression(imobj.banner_id,
+    stats_utils.update_impression(imobj.banner_id,
                                   imobj.publisher_id,
                                   imobj.keywords,
                                   imobj.paid_amount)

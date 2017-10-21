@@ -7,6 +7,11 @@ from adselect.db import utils as db_utils
 from adselect.stats import cache as stats_cache
 
 
+def genkey(key, val, delimiter="_"):
+    keywal = "%s%s%s" % (key, delimiter, val)
+    return keywal.replace(".", "")
+
+
 def is_campaign_active(campaign_doc):
     timestamp = contrib_utils.get_timestamp()
 
@@ -43,7 +48,7 @@ def load_banners():
             BANNERS[banner_size].append(banner_id)
 
         docs, dfr = yield dfr
-    stats_cache.update_banners(BANNERS)
+    stats_cache.set_banners(BANNERS)
 
 
 @defer.inlineCallbacks
@@ -103,7 +108,7 @@ def load_scores(SCORES_DB_STATS = None):
             for keyword in KEYWORDS_BANNERS[publisher_id][banner_size]:
                 KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = \
                     sorted(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], reverse=True)
-    stats_cache.update_keywords_banners(KEYWORDS_BANNERS)
+    stats_cache.set_keywords_banners(KEYWORDS_BANNERS)
 
 
     BEST_KEYWORDS = {}
@@ -121,7 +126,7 @@ def load_scores(SCORES_DB_STATS = None):
 
             BEST_KEYWORDS[publisher_id][size] = sorted(BEST_KEYWORDS[publisher_id][size], reverse=True)
             BEST_KEYWORDS[publisher_id][size] = [elem[1] for elem in BEST_KEYWORDS[publisher_id][size]]
-    stats_cache.update_best_keywords(BEST_KEYWORDS)
+    stats_cache.set_best_keywords(BEST_KEYWORDS)
 
 
 @defer.inlineCallbacks
@@ -185,7 +190,7 @@ def select_best_banners(publisher_id,
     """
     #selected best paid impression keywords
     publisher_best_keys = stats_cache.BEST_KEYWORDS.get(publisher_id, {}).get(banner_size, [])[:best_keywords_cutoff]
-    sbpik = set([stats_cache.genkey(*item) for item in impression_keywords_dict.items()])&set(publisher_best_keys)
+    sbpik = set([genkey(*item) for item in impression_keywords_dict.items()])&set(publisher_best_keys)
 
     #Select best paid banners with appropriate size
     selected_banners = []
@@ -209,3 +214,25 @@ def select_best_banners(publisher_id,
 
     #Shuffle items in the list
     return selected_banners[:propositions_nb]
+
+
+def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+    # Update BANNERS_IMPRESSIONS_COUNT
+    stats_cache.inc_impression_count(banner_id, publisher_id, 1)
+
+    # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
+    if not paid_amount > 0:
+        return
+
+    if banner_id not in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT:
+        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id] = {}
+
+    if publisher_id not in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id]:
+        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id] = {}
+
+    for key, val in impression_keywords.items():
+        stat_key = genkey(key, val)
+        if stat_key not in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id]:
+            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] = 0
+
+        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key]+=paid_amount

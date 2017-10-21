@@ -32,7 +32,7 @@ def save_payments():
         yield db_utils.update_banner_payment(banner_id, db_banner_stats)
 
         # Clear payment stats for another round
-        stats_cache.update_keyword_impression_paid_amount(banner_id, {})
+        stats_cache.set_keyword_impression_paid_amount(banner_id, {})
 
 
 @defer.inlineCallbacks
