@@ -29,32 +29,37 @@ def is_campaign_active(campaign_doc):
 @defer.inlineCallbacks
 def load_banners():
     """Load only active banners to cache."""
-    docs, dfr = yield db_utils.get_banners_iter()
-    while docs:
-        for banner_doc in docs:
-            banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
-            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-            if not campaign_doc:
-                continue
 
-            if not is_campaign_active(campaign_doc):
-                continue
+    banners_iter = yield db_utils.get_banners_iter()
+    while True:
+        banner_doc = yield banners_iter.next()
+        if not banner_doc:
+            break
 
-            stats_cache.add_banner(banner_id, banner_size)
-        docs, dfr = yield dfr
+        banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
+        campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+        if not campaign_doc:
+            continue
+
+        if not is_campaign_active(campaign_doc):
+            continue
+
+        stats_cache.add_banner(banner_id, banner_size)
 
 
 @defer.inlineCallbacks
 def load_impression_counts():
     """Load impressions/events counts to cache."""
 
-    docs, dfr = yield db_utils.get_banner_impression_count_iter()
-    while docs:
-        for stats_doc in docs:
-            banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
-            for publisher_id, value in stats.iteritems():
-                stats_cache.set_impression_count(banner_id, publisher_id, value)
-        docs, dfr = yield dfr
+    banner_impression_count_iter = yield db_utils.get_banner_impression_count_iter()
+    while True:
+        stats_doc = yield banner_impression_count_iter.next()
+        if not stats_doc:
+            break
+
+        banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
+        for publisher_id, value in stats.iteritems():
+            stats_cache.set_impression_count(banner_id, publisher_id, value)
 
 
 @defer.inlineCallbacks
@@ -64,13 +69,14 @@ def load_scores(scores_db_stats=None):
     if scores_db_stats is None:
         scores_db_stats = {}
 
-        docs, dfr = yield db_utils.get_banner_scores_iter()
-        while docs:
-            for stats_doc in docs:
-                banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
-                scores_db_stats[banner_id] = stats
+        banner_scores_iter = yield db_utils.get_banner_scores_iter()
+        while True:
+            stats_doc = yield banner_scores_iter.next()
+            if not stats_doc:
+                break
 
-            docs, dfr = yield dfr
+            banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
+            scores_db_stats[banner_id] = stats
 
     best_keywords = {}
     for banner_id in scores_db_stats:
