@@ -52,3 +52,17 @@ $ supervisord -c ~/adselect/adselect/config/supervisord.conf
 $ cd ~/adselect/adselect
 $ trial iface stats
 ```
+## TL;DR
+apt-get install python-virtualenv mongodb
+screen -S adselect
+cd /home/adshares
+virtualenv adselect
+export VIRTUALENV_ROOT=$HOME/adselect
+export PYTHONPATH=$HOME/adselect:$PYTHONPATH
+source ./adselect/bin/activate
+mkdir -p ./adselect/db/mongo
+mkdir -p ./adselect/log/supervisor ./adselect/log/adselect ./adselect/log/mongo
+mkdir -p ./adselect/run/supervisor ./adselect/run/adselect ./adselect/run/mongo
+git clone https://github.com/adshares/adselect.git ./adselect/adselect
+pip install -r ./adselect/adselect/requirements.txt
+supervisord -c ./adselect/adselect/config/supervisord.conf
