@@ -53,6 +53,7 @@ $ cd ~/adselect/adselect
 $ trial iface stats
 ```
 ## TL;DR
+```
 apt-get install python-virtualenv mongodb
 screen -S adselect
 cd /home/adshares
@@ -66,3 +67,4 @@ mkdir -p ./adselect/run/supervisor ./adselect/run/adselect ./adselect/run/mongo
 git clone https://github.com/adshares/adselect.git ./adselect/adselect
 pip install -r ./adselect/adselect/requirements.txt
 supervisord -c ./adselect/adselect/config/supervisord.conf
+```
