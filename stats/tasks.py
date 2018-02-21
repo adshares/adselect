@@ -40,51 +40,49 @@ def save_scores():
     db_banners = set()
 
     # Recalculate database scores
-    banner_scores_iter = yield db_utils.get_banner_scores_iter()
-    while True:
-        score_doc = yield banner_scores_iter.next()
-        if not score_doc:
-            break
+    docs, dfr = yield db_utils.get_banner_scores_iter()
+    while docs:
+        for score_doc in docs:
+            banner_id, banner_stats = score_doc['banner_id'], score_doc['stats']
 
-        banner_id, banner_stats = score_doc['banner_id'], score_doc['stats']
+            banner_doc = yield db_utils.get_banner(banner_id)
+            if banner_doc is None:
+                continue
 
-        banner_doc = yield db_utils.get_banner(banner_id)
-        if banner_doc is None:
-            continue
+            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+            if campaign_doc is None:
+                continue
 
-        campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-        if campaign_doc is None:
-            continue
+            if not stats_utils.is_campaign_active(campaign_doc):
+                continue
 
-        if not stats_utils.is_campaign_active(campaign_doc):
-            continue
+            banner_scores = {}
 
-        banner_scores = {}
+            banner_impression_count = yield db_utils.get_banner_impression_count(banner_id)
+            if banner_impression_count is None:
+                banner_impression_count = {}
 
-        banner_impression_count = yield db_utils.get_banner_impression_count(banner_id)
-        if banner_impression_count is None:
-            banner_impression_count = {}
+            for publisher_id in banner_stats:
+                publisher_db_impression_count = banner_impression_count.get(publisher_id, 0)
 
-        for publisher_id in banner_stats:
-            publisher_db_impression_count = banner_impression_count.get(publisher_id, 0)
+                banner_scores[publisher_id] = {}
 
-            banner_scores[publisher_id] = {}
+                for keyword, score_value in banner_stats.get(publisher_id, {}).items():
+                    last_round_keyword_payment = stats_cache.get_keyword_impression_paid_amount(banner_id,
+                                                                                                publisher_id, keyword)
 
-            for keyword, score_value in banner_stats.get(publisher_id, {}).items():
-                last_round_keyword_payment = stats_cache.get_keyword_impression_paid_amount(banner_id,
-                                                                                            publisher_id, keyword)
+                    impression_count = stats_cache.get_impression_count(banner_id, publisher_id)
+                    last_round_impression_count = max([0, impression_count - publisher_db_impression_count])
 
-                impression_count = stats_cache.get_impression_count(banner_id, publisher_id)
-                last_round_impression_count = max([0, impression_count - publisher_db_impression_count])
+                    last_round_score = 0
+                    if last_round_impression_count > 0:
+                        last_round_score = 1.0 * last_round_keyword_payment / last_round_impression_count
 
-                last_round_score = 0
-                if last_round_impression_count > 0:
-                    last_round_score = 1.0 * last_round_keyword_payment / last_round_impression_count
+                    banner_scores[publisher_id][keyword] = 0.5 * score_value + 0.5 * last_round_score
 
-                banner_scores[publisher_id][keyword] = 0.5 * score_value + 0.5 * last_round_score
-
-        yield db_utils.update_banner_scores(banner_id, banner_scores)
-        db_banners |= {banner_id}
+            yield db_utils.update_banner_scores(banner_id, banner_scores)
+            db_banners |= {banner_id}
+        docs, dfr = yield dfr
 
     # Add scores for new banners
     for banner_id in set(stats_cache.get_last_round_paid_banners()) - db_banners:
@@ -117,35 +115,33 @@ def save_scores():
 @defer.inlineCallbacks
 def clean_database():
     # Remove finished campaigns and associated stats.
-    campaign_iter = yield db_utils.get_campaigns_iter()
-    while True:
-        campaign_doc = yield campaign_iter.next()
-        if not campaign_doc:
-            break
+    docs, dfr = yield db_utils.get_campaigns_iter()
+    while docs:
+        for campaign_doc in docs:
+            campaign_id = campaign_doc['campaign_id']
 
-        if stats_utils.is_campaign_active(campaign_doc):
-            continue
+            if not stats_utils.is_campaign_active(campaign_doc):
+                campaigns_banners = yield db_utils.get_campaign_banners(campaign_id)
+                for banner_doc in campaigns_banners:
+                    banner_id = banner_doc['banner_id']
 
-        campaign_id = campaign_doc['campaign_id']
-        campaigns_banners = yield db_utils.get_campaign_banners(campaign_id)
-        for banner_doc in campaigns_banners:
-            banner_id = banner_doc['banner_id']
+                    # remove payments_stats
+                    db_utils.delete_banner_payments(banner_id)
 
-            # remove payments_stats
-            yield db_utils.delete_banner_payments(banner_id)
+                    # remove impression_stats
+                    db_utils.delete_banner_impression_count(banner_id)
+                    stats_cache.delete_impression_count(banner_id)
 
-            # remove impression_stats
-            yield db_utils.delete_banner_impression_count(banner_id)
-            yield stats_cache.delete_impression_count(banner_id)
+                    # remove scores stats
+                    db_utils.delete_banner_scores(banner_id)
 
-            # remove scores stats
-            yield db_utils.delete_banner_scores(banner_id)
+                # remove banners
+                db_utils.delete_campaign_banners(campaign_id)
 
-        # remove banners
-        yield db_utils.delete_campaign_banners(campaign_id)
+                # remove campaign
+                db_utils.delete_campaign(campaign_id)
 
-        # remove campaign
-        yield db_utils.delete_campaign(campaign_id)
+        docs, dfr = yield dfr
 
 
 @defer.inlineCallbacks
