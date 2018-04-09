@@ -15,6 +15,7 @@ class BannerObject(jsonobject.JsonObject):
     banner_id = jsonobject.StringProperty()
     banner_size = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
+    campaign_id = jsonobject.StringProperty()
 
 
 class CamapaignObject(jsonobject.JsonObject):
