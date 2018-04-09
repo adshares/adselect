@@ -57,17 +57,24 @@ def update_banner(banner_doc):
     defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def get_campaign_banners(campaign_id):
-    return db.get_banner_collection().find({'campaign_id': campaign_id})
+    banner_coll = yield db.get_banner_collection()
+    return_value = yield banner_coll.find({'campaign_id': campaign_id})
+    defer.returnValue(return_value)
 
 
+@defer.inlineCallbacks
 def delete_campaign_banners(campaign_id):
-    return db.get_banner_collection().delete_many({'campaign_id': campaign_id})
-
+    banner_coll = yield db.get_banner_collection()
+    return_value = yield banner_coll.delete_many({'campaign_id': campaign_id})
+    defer.returnValue(return_value)
 
 # STATS #
 
 # IMPRESSION COUNTS #
+
+
 @defer.inlineCallbacks
 def get_banner_impression_count(banner_id):
     collection = yield db.get_impressions_stats_collection()
