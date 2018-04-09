@@ -22,8 +22,8 @@ def configure_db():
     yield banner_collection.create_index(campaign_idx)
 
     # Stats collection
-    impressions_collection = yield get_impressions_stats_collection()
-    yield impressions_collection.create_index(banner_idx, unique=True)
+    impressions_stats_collection = yield get_impressions_stats_collection()
+    yield impressions_stats_collection.create_index(banner_idx, unique=True)
 
     payments_stats_collection = yield get_payments_stats_collection()
     yield payments_stats_collection.create_index(banner_idx, unique=True)
