@@ -41,4 +41,4 @@ class AdSelectIfaceServer(JSONRPCServer):
 
 def configure_iface(port=iface_const.SERVER_PORT):
     site = Site(AdSelectIfaceServer())
-    reactor.listenTCP(port, site)
+    return reactor.listenTCP(port, site)
