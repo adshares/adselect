@@ -5,6 +5,7 @@ from adselect.contrib import utils as contrib_utils
 from adselect.stats import const as stats_consts
 from adselect.db import utils as db_utils
 from adselect.stats import cache as stats_cache
+import logging
 
 
 def genkey(key, val, delimiter="_"):
@@ -27,20 +28,27 @@ def is_campaign_active(campaign_doc):
 
 
 @defer.inlineCallbacks
+def is_banner_active(banner_doc):
+
+    campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+    if campaign_doc and is_campaign_active(campaign_doc):
+        defer.returnValue(True)
+
+    defer.returnValue(False)
+
+
+@defer.inlineCallbacks
 def load_banners():
     """Load only active banners to cache."""
-    docs, dfr = yield db_utils.get_banners_iter()
+
+    docs, dfr = yield db_utils.get_collection_iter('banner')
     while docs:
         for banner_doc in docs:
-            banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
-            campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-            if not campaign_doc:
-                continue
-
-            if not is_campaign_active(campaign_doc):
-                continue
-
-            stats_cache.add_banner(banner_id, banner_size)
+            active = yield is_banner_active(banner_doc)
+            active = True
+            if active:
+                banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
+                stats_cache.add_banner(banner_id, banner_size)
         docs, dfr = yield dfr
 
 
@@ -193,13 +201,17 @@ def select_best_banners(publisher_id,
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+
+    logger = logging.getLogger(__name__)
+
     # Update BANNERS_IMPRESSIONS_COUNT
     stats_cache.inc_impression_count(banner_id, publisher_id, 1)
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
-    if not paid_amount > 0:
+    if paid_amount < 0:
         return
 
     for key, val in impression_keywords.items():
         stat_key = genkey(key, val)
         stats_cache.inc_keyword_impression_paid_amount(banner_id, publisher_id, stat_key, paid_amount)
+
