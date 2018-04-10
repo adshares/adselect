@@ -13,77 +13,43 @@ def configure_db():
     banner_idx = filter.sort(filter.ASCENDING("banner_id"))
 
     # Campaign collection
-    campaign_collection = yield get_campaign_collection()
-    yield campaign_collection.create_index(campaign_idx, unique=True)
+    yield get_collection('campaign').create_index(campaign_idx, unique=True)
 
     # Banner collection
-    banner_collection = yield get_banner_collection()
+    banner_collection = yield get_collection('banner')
     yield banner_collection.create_index(banner_idx, unique=True)
     yield banner_collection.create_index(campaign_idx)
 
     # Stats collection
-    impressions_stats_collection = yield get_impressions_stats_collection()
-    yield impressions_stats_collection.create_index(banner_idx, unique=True)
-
-    payments_stats_collection = yield get_payments_stats_collection()
-    yield payments_stats_collection.create_index(banner_idx, unique=True)
-
-    scores_stats_collection = yield get_scores_stats_collection()
-    yield scores_stats_collection.create_index(banner_idx, unique=True)
+    yield get_collection('impressions_stats').create_index(banner_idx, unique=True)
+    yield get_collection('payment_stats').create_index(banner_idx, unique=True)
+    yield get_collection('scores_stats').create_index(banner_idx, unique=True)
 
 
-@defer.inlineCallbacks
 def get_mongo_db():
-    conn = yield get_mongo_connection()
-    defer.returnValue(conn.spotree)
+    conn = get_mongo_connection()
+    return conn.adselect
 
 
-@defer.inlineCallbacks
-def get_campaign_collection():
-    # Keep information about campaigns
-    db = yield get_mongo_db()
-    defer.returnValue(db.campaign)
-
-
-@defer.inlineCallbacks
-def get_banner_collection():
-    # Keep information about banners
-    db = yield get_mongo_db()
-    defer.returnValue(db.banners)
-
-
-@defer.inlineCallbacks
-def get_payments_stats_collection():
-    db = yield get_mongo_db()
-    defer.returnValue(db.pay_stats)
-
-
-@defer.inlineCallbacks
-def get_impressions_stats_collection():
-    db = yield get_mongo_db()
-    defer.returnValue(db.imp_stats)
-
-
-@defer.inlineCallbacks
-def get_scores_stats_collection():
-    db = yield get_mongo_db()
-    defer.returnValue(db.score_status)
+def get_collection(name):
+    db = get_mongo_db()
+    return getattr(db, name)
 
 
 MONGO_CONNECTION = None
 
 
-@defer.inlineCallbacks
 def get_mongo_connection():
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
-        MONGO_CONNECTION = yield txmongo.lazyMongoConnectionPool(port=db_consts.MONGO_DB_PORT)
-    defer.returnValue(MONGO_CONNECTION)
+        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool(port=db_consts.MONGO_DB_PORT)
+    return MONGO_CONNECTION
 
 
 @defer.inlineCallbacks
 def disconnect():
     global MONGO_CONNECTION
-    conn = yield get_mongo_connection()
-    yield conn.disconnect()
-    MONGO_CONNECTION = None
+    if MONGO_CONNECTION:
+        conn = yield get_mongo_connection()
+        yield conn.disconnect()
+        MONGO_CONNECTION = None
