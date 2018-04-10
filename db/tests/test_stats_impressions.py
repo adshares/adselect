@@ -7,28 +7,6 @@ from adselect.db import utils as db_utils
 class DBTestCase(db_tests.DBTestCase):
     @defer.inlineCallbacks
     def test_impressions(self):
-        IMPRESSIONS = [{
-            'banner_id': 'banner1',
-            'keywords': {},
-            'publisher_id': 'publisher_id',
-            'user_id': 'user_1',
-            'paid_amount': '0.01'
-        },
-            {
-                'banner_id': 'banner2',
-                'keywords': {},
-                'publisher_id': 'publisher_id',
-                'user_id': 'user_1',
-                'paid_amount': '0.02'
-            },
-            {
-                'banner_id': 'banner1',
-                'keywords': {},
-                'publisher_id': 'publisher_id',
-                'user_id': 'user_2',
-                'paid_amount': '0.01'
-            }
-        ]
 
         yield db_utils.update_banner_impression_count('banner1',
                                                       {'publisher1': 1,
