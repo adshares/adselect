@@ -11,17 +11,20 @@ class DBTestCase(db_tests.DBTestCase):
         banner1 = {
                     'banner_id': 'banner1',
                     'banner_size': '100x200',
-                    'keywords': {}
+                    'keywords': {},
+                    'campaign_id': 'campaign_id'
                     }
         banner2 = {
                     'banner_id': 'banner2',
                     'banner_size': '150x250',
-                    'keywords': {}
+                    'keywords': {},
+                    'campaign_id': 'campaign_id'
                   }
         banner3 = {
             'banner_id': 'banner3',
             'banner_size': '150x250',
-            'keywords': {}
+            'keywords': {},
+            'campaign_id': 'campaign_id'
         }
 
         yield db_utils.update_banner(banner1)
@@ -34,9 +37,13 @@ class DBTestCase(db_tests.DBTestCase):
         banner2_doc = yield db_utils.get_banner("banner2")
         self.assertEqual(banner2_doc['banner_id'], "banner2")
 
-        banners, dfr = yield db_utils.get_banners_iter()
+        banners, dfr = yield db_utils.get_collection_iter('banner')
         while banners:
             for banner_doc in banners:
                 self.assertIn(banner_doc['banner_id'], ['banner1', 'banner2', 'banner3'])
 
             banners, dfr = yield dfr
+
+        yield db_utils.delete_campaign_banners("campaign_id")
+        banners, dfr = yield db_utils.get_collection_iter('banner')
+        self.assertFalse(banners)
