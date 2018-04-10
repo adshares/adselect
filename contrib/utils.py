@@ -1,4 +1,5 @@
-import heapq, time
+import heapq
+import time
 
 
 def merge(*iterables):
@@ -9,9 +10,9 @@ def merge(*iterables):
     h = []
     for it in map(iter, iterables):
         try:
-            next = it.next
-            v = next()
-            h.append([(-v[0], v[1]), next])
+            nxt = it.next
+            v = nxt()
+            h.append([(-v[0], v[1]), nxt])
         except StopIteration:
             pass
     heapq.heapify(h)
@@ -19,9 +20,9 @@ def merge(*iterables):
     while True:
         try:
             while True:
-                v, next = s = h[0]
+                v, nxt = s = h[0]
                 yield -v[0], v[1]
-                v = next()
+                v = nxt()
                 s[0] = -v[0], v[1]
                 heapq._siftup(h, 0)
         except StopIteration:
@@ -41,12 +42,17 @@ def reverse_insort(a, x, lo=0, hi=None):
     """
     if lo < 0:
         raise ValueError('lo must be non-negative')
+
     if hi is None:
         hi = len(a)
+
     while lo < hi:
         mid = (lo+hi)//2
-        if x > a[mid]: hi = mid
-        else: lo = mid+1
+        if x > a[mid]:
+            hi = mid
+        else:
+            lo = mid+1
+
     a.insert(lo, x)
 
 
