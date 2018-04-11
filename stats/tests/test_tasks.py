@@ -1,19 +1,13 @@
 from twisted.internet import defer
 
-from adselect.contrib.data_generators import banner_generator, impression_generator
+from adselect.data_generators import banner_generator, impression_generator
 from adselect.stats.tests import StatsTestCase
-from adselect.stats import utils as stats_utils
 from adselect.stats import tasks as stats_tasks
 
-from adselect.stats import const as stats_consts
 from adselect.stats import cache as stats_cache
 from adselect.iface import utils as iface_utils
 from adselect.iface import protocol as iface_proto
 from adselect.db import utils as db_utils
-import re
-from adselect.contrib import utils as contrib_utils
-import time
-import adselect.contrib.log_setup
 import logging
 
 

@@ -2,8 +2,6 @@ from twisted.trial import unittest
 from twisted.internet import defer
 
 from adselect import db
-import uuid
-import random
 
 
 class StatsTestCase(unittest.TestCase):

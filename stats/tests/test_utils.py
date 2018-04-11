@@ -2,9 +2,7 @@ import re
 
 from adselect.stats.tests import StatsTestCase
 from adselect.stats import utils as stats_utils
-from adselect.stats import const as stats_consts
 from adselect.contrib import utils as contrib_utils
-import adselect.contrib.log_setup
 
 
 class StatsUtilsCampaignTestCase(StatsTestCase):
