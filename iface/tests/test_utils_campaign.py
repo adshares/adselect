@@ -4,7 +4,6 @@ from adselect.iface.tests import IfaceTestCase
 from adselect.db import utils as db_utils
 from adselect.iface import utils as iface_utils
 from adselect.iface import protocol as iface_proto
-import copy
 
 
 class InterfaceUtilsCampaignTestCase(IfaceTestCase):

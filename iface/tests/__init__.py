@@ -13,8 +13,6 @@ from adselect.iface import const as iface_consts
 from adselect import db
 
 import json
-import uuid
-import random
 
 
 class StringProducer(object):
