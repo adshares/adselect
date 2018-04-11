@@ -64,9 +64,9 @@ def get_banner_impression_count(banner_id):
 @defer.inlineCallbacks
 def update_banner_impression_count(banner_id, counts_per_publisher_dict):
     return_value = yield db.get_collection('impression_stats').replace_one({"banner_id": banner_id},
-                                                                            {"banner_id": banner_id,
-                                                                             "stats": counts_per_publisher_dict},
-                                                                             upsert=True)
+                                                                           {"banner_id": banner_id,
+                                                                            "stats": counts_per_publisher_dict},
+                                                                           upsert=True)
     defer.returnValue(return_value)
 
 
