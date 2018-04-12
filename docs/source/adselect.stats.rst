@@ -1,11 +1,13 @@
 adselect.stats package
 ======================
 
+
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 2
+
+    adselect.stats.tests
 
 
 Submodules
@@ -36,6 +38,7 @@ adselect.stats.tasks module
     :undoc-members:
     :show-inheritance:
 
+
 adselect.stats.utils module
 ---------------------------
 
@@ -52,6 +55,3 @@ Module contents
     :members:
     :undoc-members:
     :show-inheritance:
-    :private-members:
-    :special-members:
-
