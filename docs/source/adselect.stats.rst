@@ -6,7 +6,7 @@ Subpackages
 
 .. toctree::
    :maxdepth: 2
-   adselect.stats.tests
+
 
 Submodules
 ----------
