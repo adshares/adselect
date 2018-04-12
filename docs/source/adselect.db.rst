@@ -27,10 +27,6 @@ adselect.db.utils module
     :undoc-members:
     :show-inheritance:
 
-.. autoclass:: adselect.db.utils.Test
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 Module contents
 ---------------
