@@ -6,6 +6,9 @@ import txmongo
 
 @defer.inlineCallbacks
 def configure_db():
+    """
+    Configures the database
+    """
     yield get_mongo_db()
 
     # Creating indexes when daemon starts
@@ -27,11 +30,20 @@ def configure_db():
 
 
 def get_mongo_db():
+    """
+
+    :return: MongoDB instance
+    """
     conn = get_mongo_connection()
     return conn.adselect
 
 
 def get_collection(name):
+    """
+
+    :param name: Name of MongoDB collection
+    :return: deferred instance of :class:`txmongo.collection.Collection`.
+    """
     db = get_mongo_db()
     return getattr(db, name)
 
@@ -40,6 +52,10 @@ MONGO_CONNECTION = None
 
 
 def get_mongo_connection():
+    """
+
+    :return: Global connection to MongoDB
+    """
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
         MONGO_CONNECTION = txmongo.lazyMongoConnectionPool(port=db_consts.MONGO_DB_PORT)
@@ -48,6 +64,9 @@ def get_mongo_connection():
 
 @defer.inlineCallbacks
 def disconnect():
+    """
+    Disconnects asynchronously and removes global connection.
+    """
     global MONGO_CONNECTION
     if MONGO_CONNECTION:
         conn = yield get_mongo_connection()
