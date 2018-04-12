@@ -8,6 +8,11 @@ from adselect.db import utils as db_utils
 
 @defer.inlineCallbacks
 def save_views():
+    """
+    Save impression count data from cache to database.
+
+    :return:
+    """
     # Save BANNERS_IMPRESSIONS_COUNT to database
     for banner_id, counts_per_publisher_dict in stats_cache.get_impression_count_iter():
         yield db_utils.update_banner_impression_count(banner_id, counts_per_publisher_dict)
@@ -15,6 +20,11 @@ def save_views():
 
 @defer.inlineCallbacks
 def save_payments():
+    """
+    Save payment per keywords data from cache to database.
+
+    :return:
+    """
     # Save stats for KEYWORD_IMPRESSION_PAID_AMOUNT
     for banner_id, payment_stats_dict in stats_cache.get_keyword_impression_paid_amount_iter():
         banner_stats = yield db_utils.get_banner_payment(banner_id)
@@ -37,6 +47,11 @@ def save_payments():
 
 @defer.inlineCallbacks
 def save_scores():
+    """
+    Save scores.
+
+    :return:
+    """
     db_banners = set()
 
     # Recalculate database scores
@@ -114,7 +129,11 @@ def save_scores():
 
 @defer.inlineCallbacks
 def clean_database():
-    # Remove finished campaigns and associated stats.
+    """
+    Remove finished campaigns and associated stats.
+
+    :return:
+    """
     docs, dfr = yield db_utils.get_campaigns_iter()
     while docs:
         for campaign_doc in docs:
@@ -146,6 +165,11 @@ def clean_database():
 
 @defer.inlineCallbacks
 def recalculate_stats():
+    """
+    Dump all data from cache to database, reload cache data and recacalculate everything.
+
+    :return:
+    """
     # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS.
     scores_stats = yield save_scores()
 
@@ -168,4 +192,9 @@ def recalculate_stats():
 
 
 def configure_tasks():
+    """
+    Recalculate stats.
+
+    :return:
+    """
     reactor.callLater(stats_consts.RECALCULATE_TASK_SECONDS_INTERVAL, recalculate_stats)

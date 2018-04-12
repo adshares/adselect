@@ -9,11 +9,26 @@ import logging
 
 
 def genkey(key, val, delimiter="_"):
+    """
+    Generate keyword identifier, ex. {'animal': 'dog'} becomes 'animal_dog'
+
+    :param key: Key
+    :param val: Value
+    :param delimiter: Delimiter, default "_"
+    :return: Generated identifier
+    """
     keywal = "%s%s%s" % (key, delimiter, val)
     return keywal.replace(".", "")
 
 
 def is_campaign_active(campaign_doc):
+    """
+    Compare campaign's start and end times with current time.
+
+    :param campaign_doc: Campaign document.
+    :return: True for active campaigns, False for inactive.
+    """
+
     timestamp = contrib_utils.get_timestamp()
 
     # Campaign will not start in this round
@@ -29,6 +44,12 @@ def is_campaign_active(campaign_doc):
 
 @defer.inlineCallbacks
 def is_banner_active(banner_doc):
+    """
+    Check if banner's campaign is still active.
+
+    :param banner_doc: Banner document
+    :return: True for active, False for inactive.
+    """
 
     campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
     if campaign_doc and is_campaign_active(campaign_doc):
@@ -39,7 +60,9 @@ def is_banner_active(banner_doc):
 
 @defer.inlineCallbacks
 def load_banners():
-    """Load only active banners to cache."""
+    """
+    Load only active banners to cache.
+    """
 
     docs, dfr = yield db_utils.get_collection_iter('banner')
     while docs:
@@ -54,7 +77,9 @@ def load_banners():
 
 @defer.inlineCallbacks
 def load_impression_counts():
-    """Load impressions/events counts to cache."""
+    """
+    Load impressions/events counts to cache.
+    """
 
     docs, dfr = yield db_utils.get_banner_impression_count_iter()
     while docs:
@@ -67,7 +92,9 @@ def load_impression_counts():
 
 @defer.inlineCallbacks
 def load_scores(scores_db_stats=None):
-    """Load best paid keywords taking into account scores"""
+    """
+    Load best paid keywords taking into account scores
+    """
 
     if scores_db_stats is None:
         scores_db_stats = {}
@@ -115,6 +142,11 @@ def load_scores(scores_db_stats=None):
 
 @defer.inlineCallbacks
 def initialize_stats():
+    """
+    Initialize data cache.
+
+    :return:
+    """
     # Load all banners to show randomly new banners.
     yield load_banners()
 
@@ -130,15 +162,21 @@ def initialize_stats():
 def select_new_banners(publisher_id,
                        banner_size,
                        proposition_nb,
-                       notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMRESSION_CUTOFF,
+                       notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF,
                        filtering_population_factor=4
                        ):
     """
-        Return banners ids without payment statistic.
-        The function doesn't allow to display banners more than notpaid_display_cutoff times without payment.
-        publisher_id - publisher id
-    """
+    Return banners ids without payment statistic.
 
+    The function doesn't allow to display banners more than notpaid_display_cutoff times without payment.
+
+    :param publisher_id:
+    :param banner_size:
+    :param proposition_nb:
+    :param notpaid_display_cutoff:
+    :param filtering_population_factor:
+    :return:
+    """
     new_banners = stats_cache.get_banners(banner_size)
     random_banners = []
     for i in range(proposition_nb * filtering_population_factor):
@@ -165,12 +203,16 @@ def select_best_banners(publisher_id,
                         mixed_new_banners_percent=5
                         ):
     """
-        Select banners with appropriate size for given impression keywords.
-        proposition_nb - the amount of selected banners
-        publisher_id - publisher id
-        best_keywords_cutoff - cutoff of the best paid keywords taking into account
-        banners_per_keyword_cutoff - cutoff of the banners numbers in every seleted keywords
-        mixed_new_banners_percent - approximate percentage of new banners in proposed banners list
+    Select banners with appropriate size for given impression keywords.
+
+    :param publisher_id:
+    :param banner_size:
+    :param impression_keywords_dict:
+    :param propositions_nb: the amount of selected banners (default: 100)
+    :param best_keywords_cutoff: cutoff of the best paid keywords taking into account
+    :param banners_per_keyword_cutoff: cutoff of the banners numbers in every seleted keywords
+    :param mixed_new_banners_percent: approximate percentage of new banners in proposed banners list
+    :return:
     """
     # selected best paid impression keywords
     publisher_best_keys = stats_cache.get_best_keywords(publisher_id, banner_size)[:best_keywords_cutoff]
@@ -201,6 +243,19 @@ def select_best_banners(publisher_id,
 
 
 def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+    """
+    Update impression cache.
+
+    1. Increase impression count
+    2. If paid, Update keyword paid amount.
+
+    :param banner_id:
+    :param publisher_id:
+    :param impression_keywords:
+    :param paid_amount:
+    :return:
+    """
+
 
     logger = logging.getLogger(__name__)
 
@@ -208,10 +263,9 @@ def update_impression(banner_id, publisher_id, impression_keywords, paid_amount)
     stats_cache.inc_impression_count(banner_id, publisher_id, 1)
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
-    if paid_amount < 0:
+    if not paid_amount > 0:
         return
 
     for key, val in impression_keywords.items():
         stat_key = genkey(key, val)
         stats_cache.inc_keyword_impression_paid_amount(banner_id, publisher_id, stat_key, paid_amount)
-
