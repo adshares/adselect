@@ -7,7 +7,7 @@ from adselect.db import utils as db_utils
 class DBTestCase(db_tests.DBTestCase):
     @defer.inlineCallbacks
     def test_campaign(self):
-        CAMPAIGN_DATA = {
+        campaign_data = {
             'campaign_id': 'campaign_id',
             'time_start': 12345,
             'time_end': 34567,
@@ -27,16 +27,16 @@ class DBTestCase(db_tests.DBTestCase):
             ],
         }
 
-        yield db_utils.update_campaign(CAMPAIGN_DATA)
+        yield db_utils.update_campaign(campaign_data)
 
-        campaign_doc = yield db_utils.get_campaign(CAMPAIGN_DATA['campaign_id'])
-        self.assertEqual(campaign_doc['campaign_id'], CAMPAIGN_DATA['campaign_id'])
+        campaign_doc = yield db_utils.get_campaign(campaign_data['campaign_id'])
+        self.assertEqual(campaign_doc['campaign_id'], campaign_data['campaign_id'])
 
-        CAMPAIGN_DATA['time_end'] = 48999
-        yield db_utils.update_campaign(CAMPAIGN_DATA)
-        campaign_doc = yield db_utils.get_campaign(CAMPAIGN_DATA['campaign_id'])
+        campaign_data['time_end'] = 48999
+        yield db_utils.update_campaign(campaign_data)
+        campaign_doc = yield db_utils.get_campaign(campaign_data['campaign_id'])
         self.assertEqual(campaign_doc['time_end'], 48999)
 
         yield db_utils.delete_campaign('campaign_id')
-        campaign_doc = yield db_utils.get_campaign(CAMPAIGN_DATA['campaign_id'])
+        campaign_doc = yield db_utils.get_campaign(campaign_data['campaign_id'])
         self.assertIsNone(campaign_doc)
