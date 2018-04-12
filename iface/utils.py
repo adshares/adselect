@@ -3,12 +3,21 @@ from twisted.internet import defer
 from adselect.contrib import filters
 from adselect.db import utils as db_utils
 from adselect.iface import protocol as iface_proto
-from adselect.stats import cache as stats_cache
 from adselect.stats import utils as stats_utils
 
 
 @defer.inlineCallbacks
 def create_or_update_campaign(cmpobj):
+    """
+    Create or update (if existing) campaign data, asynchronously. The data can contain banners.
+
+    1. Add campaign data.
+    2. Remove old banners for this campaign.
+    3. Create or update banner data, if included with the campaign data.
+
+    :param cmpobj: Campaign document.
+    :return:
+    """
     # Save changes only to database
     campaign_doc = cmpobj.to_json()
     del campaign_doc['banners']
@@ -25,12 +34,24 @@ def create_or_update_campaign(cmpobj):
 
 @defer.inlineCallbacks
 def delete_campaign(campaign_id):
+    """
+    Remove campaign and banners for that campaign.
+
+    :param campaign_id: Identifier of the campaign.
+    :return:
+    """
     # Save changes only to database
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
 
 
 def add_impression(imobj):
+    """
+    Record the impression, by passing it to the Statistics module.
+
+    :param imobj: Impression document.
+    :return:
+    """
     # Change counter only  in stats cache
     stats_utils.update_impression(imobj.banner_id,
                                   imobj.publisher_id,
@@ -41,11 +62,14 @@ def add_impression(imobj):
 @defer.inlineCallbacks
 def select_banner(banners_requests):
     """
-        select_banner function should work as follow:
-        1) Select banners which are paid a lot.
-        2) Some percent of selected banners should be new banners without payments stats
-        3) The same user shoudn't take the same banners every time.
+    Select_banner function should work as follow:
 
+    1. Select banners which are paid a lot.
+    2. Some percent of selected banners should be new banners without payments stats
+    3. The same user shouldn't take the same banners every time.
+
+    :param banners_requests: Iterable of banner documents.
+    :return:
     """
 
     responses_dict = {}
@@ -71,11 +95,11 @@ def select_banner(banners_requests):
                 continue
 
             # Validate campaign filters
-            if not validate_filters(campaign_doc['filters'], banner_request.keywords):
+            if not validate_keywords(campaign_doc['filters'], banner_request.keywords):
                 continue
 
             # Validate impression filters
-            if not validate_filters(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
+            if not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
                 continue
 
             responses_dict[banner_request.request_id] = banner_id
@@ -86,7 +110,15 @@ def select_banner(banners_requests):
     defer.returnValue(responses)
 
 
-def validate_filters(filters_dict, keywords):
+def validate_keywords(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
+
     for filter_json in filters_dict.get('require'):
         keyword = filter_json['keyword']
         if keyword not in keywords:
@@ -117,4 +149,4 @@ if __name__ == "__main__":
                 u'platform_name': u'macosx', u'context_generate': 1, u'screen_height': 1080}
     filters_dict = {u'exclude': [],
                     u'require': [{u'filter': {u'args': u'mac', u'type': u'='}, u'keyword': u'platform_name'}]}
-    print validate_filters(filters_dict, keywords)
+    print validate_keywords(filters_dict, keywords)
