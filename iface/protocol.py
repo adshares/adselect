@@ -12,6 +12,17 @@ class RequireExcludeListObject(jsonobject.JsonObject):
 
 
 class BannerObject(jsonobject.JsonObject):
+    """
+    Object fields (attributes):
+
+    banner_id - Main banner identifier (String).
+
+    banner_size - Banner size, in pixels, width x height (String).
+
+    keywords - Keywords (Dictionary of Strings).
+
+    campaign_id - Campaign identifier (String).
+    """
     banner_id = jsonobject.StringProperty()
     banner_size = jsonobject.StringProperty()
     keywords = jsonobject.DictProperty()
@@ -19,6 +30,7 @@ class BannerObject(jsonobject.JsonObject):
 
 
 class CamapaignObject(jsonobject.JsonObject):
+
     campaign_id = jsonobject.StringProperty()
     time_start = jsonobject.IntegerProperty()
     time_end = jsonobject.IntegerProperty()
