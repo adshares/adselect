@@ -6,9 +6,10 @@ from twisted.internet import defer
 
 
 def get_collection_iter(collection_name):
-    """Returns a batch of documents iterable and a deferred. The deferred can be called to get another batch.
-    :param collection_name:
-        Name of the collection we iterate over.
+    """
+    Returns a batch of documents iterable and a deferred. The deferred can be called to get another batch.
+
+    :param collection_name: Name of the collection we iterate over.
     """
     return db.get_collection(collection_name).find(cursor=True)
 
@@ -26,6 +27,7 @@ def get_campaign(campaign_id):
 def update_campaign(campaign_doc):
     """
     Update campaign data or create one if doesn't exist.
+
     :param campaign_doc: New campaign data, must include campaign_id to identify existing data.
     :return: deferred instance of :class:`pymongo.results.UpdateResult`.
     """
@@ -38,6 +40,7 @@ def update_campaign(campaign_doc):
 def delete_campaign(campaign_id):
     """
     Remove campaign data. Doesn't remove banners or other associated data.
+
     :param campaign_id: id of the campaign
     :return: deferred
     """
@@ -59,6 +62,7 @@ def get_banner(banner_id):
 def update_banner(banner_doc):
     """
     Update banner data or create a new one if doesn't exist.
+
     :param banner_doc: New banner data, must include banner_id.
     :return: deferred instance of :class:`pymongo.results.UpdateResult`.
     """
@@ -82,6 +86,7 @@ def get_campaign_banners(campaign_id):
 def delete_campaign_banners(campaign_id):
     """
     Remove banners.
+
     :param campaign_id: campaign_id, to which the banners belong to
     :return: deferred
     """
@@ -96,7 +101,6 @@ def delete_campaign_banners(campaign_id):
 
 def get_banner_impression_count(banner_id):
     """
-
     :param banner_id: banner identification
     :return: Impression count object for banner.
     """
@@ -107,6 +111,7 @@ def get_banner_impression_count(banner_id):
 def update_banner_impression_count(banner_id, counts_per_publisher_dict):
     """
     Updates the banner impression count
+
     :param banner_id: banner identification
     :param counts_per_publisher_dict: Dictionary for
     :return: deferred instance of :class:`pymongo.results.UpdateResult`.
@@ -122,6 +127,7 @@ def update_banner_impression_count(banner_id, counts_per_publisher_dict):
 def delete_banner_impression_count(banner_id):
     """
     Removes all count information about banner impressions.
+
     :param banner_id: Banner identification
     :return:
     """
@@ -167,6 +173,7 @@ def update_banner_payment(banner_id, pay_per_publisher_per_size_per_keyword_dict
 def delete_banner_payments(banner_id):
     """
     Removes banner payment information.
+
     :param banner_id: Banner identifier.
     :return:
     """
@@ -205,6 +212,7 @@ def update_banner_scores(banner_id, score_per_publisher_per_keyword_dict):
 def delete_banner_scores(banner_id):
     """
     Removes all banner scores for a given banner.
+
     :param banner_id: Banner identifier.
     :return:
     """

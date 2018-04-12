@@ -48,6 +48,7 @@ def get_collection(name):
     return getattr(db, name)
 
 
+#: Global MongoDB connection.
 MONGO_CONNECTION = None
 
 
