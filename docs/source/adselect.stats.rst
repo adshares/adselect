@@ -26,13 +26,7 @@ adselect.stats.cache module
     :members:
     :undoc-members:
     :show-inheritance:
-adselect.stats.cache2 module
----------------------------
 
-.. automodule:: adselect.stats.cache2
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 adselect.stats.tasks module
 ---------------------------
