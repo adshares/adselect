@@ -6,7 +6,7 @@ from adselect.contrib import utils as contrib_utils
 #: BEST_KEYWORDS: { 'publisher_id1':
 #:    { 'size1':[keyword1, keyword2, ...], 'size2':[keyword1, keyword2, ...] }
 #:    }
-BEST_KEYWORDS = defaultdict(list)
+BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 
 
 def set_best_keywords(publisher_id, banner_size, keywords_list):
@@ -38,7 +38,7 @@ def delete_best_keywords():
     :return: None
     """
     global BEST_KEYWORDS
-    BEST_KEYWORDS = defaultdict(list)
+    BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 
 
 #: KEYWORDS_BANNERS keeps sorted list of banners for given size and keyword
@@ -62,9 +62,6 @@ KEYWORDS_BANNERS = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
 
 def add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id, limit=100):
-
-    if keyword not in KEYWORDS_BANNERS[publisher_id][banner_size]:
-        KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = []
 
     contrib_utils.reverse_insort(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], (keyword_score, banner_id))
     KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = KEYWORDS_BANNERS[publisher_id][banner_size][keyword][:limit]
