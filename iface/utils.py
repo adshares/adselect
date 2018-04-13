@@ -2,7 +2,6 @@ from twisted.internet import defer
 
 from adselect.contrib import filters
 from adselect.db import utils as db_utils
-from adselect.iface import protocol as iface_proto
 from adselect.stats import utils as stats_utils
 
 
@@ -105,9 +104,7 @@ def select_banner(banners_requests):
             responses_dict[banner_request.request_id] = banner_id
             break
 
-    responses = [iface_proto.SelectBannerResponse(request_id=request_id, banner_id=responses_dict[request_id])
-                 for request_id in responses_dict]
-    defer.returnValue(responses)
+    defer.returnValue(responses_dict)
 
 
 def validate_keywords(filters_dict, keywords):

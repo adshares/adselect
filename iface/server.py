@@ -55,7 +55,11 @@ class AdSelectIfaceServer(JSONRPCServer):
         :param impression_param_list: List of impression parameters
         :return: Selected banners data in JSON.
         """
-        def send_respone(responses):
+        def send_respone(responses_dict):
+
+            responses = [iface_proto.SelectBannerResponse(request_id=request_id, banner_id=responses_dict[request_id])
+                         for request_id in responses_dict]
+
             return [response.to_json() for response in responses]
 
         banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
