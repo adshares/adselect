@@ -10,23 +10,23 @@ from adselect.iface import protocol as iface_proto
 
 class AdSelectIfaceServer(JSONRPCServer):
     """
-    JSONRPC endpoint.
+    JSON-RPC endpoint.
     """
     # campaign interface
     def jsonrpc_campaign_update(self, *campaign_data_list):
         """
-        JSONRPC campaign_update method handler.
+        JSON-RPC campaign_update method handler.
 
         :param campaign_data_list: List of campaign data.
         :return: True
         """
         for campaign_data in campaign_data_list:
-            iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(campaign_data))
+            iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
         return True
 
     def jsonrpc_campaign_delete(self, *campaign_id_list):
         """
-        JSONPRC campaign_delete method handler.
+        JSON-RPC campaign_delete method handler.
 
         :param campaign_id_list: List of campaign identifiers.
         :return: True
@@ -38,7 +38,7 @@ class AdSelectIfaceServer(JSONRPCServer):
     # impressions interface
     def jsonrpc_impression_add(self, *impressions_data_list):
         """
-        JSONPRC impression_add method handler.
+        JSON-RPC impression_add method handler.
 
         :param impressions_data_list: List of impression data.
         :return: True
@@ -50,7 +50,7 @@ class AdSelectIfaceServer(JSONRPCServer):
     # select banner interface
     def jsonrpc_banner_select(self, *impression_param_list):
         """
-        JSONPRC banner_select method handler.
+        JSON-RPC banner_select method handler.
 
         :param impression_param_list: List of impression parameters
         :return: Selected banners data in JSON.

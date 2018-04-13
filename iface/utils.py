@@ -16,7 +16,7 @@ def create_or_update_campaign(cmpobj):
     3. Create or update banner data, if included with the campaign data.
 
     :param cmpobj: Campaign document.
-    :return:
+    :return: Deferred instance of :class:`pymongo.results.UpdateResult`.
     """
     # Save changes only to database
     campaign_doc = cmpobj.to_json()
@@ -38,7 +38,7 @@ def delete_campaign(campaign_id):
     Remove campaign and banners for that campaign.
 
     :param campaign_id: Identifier of the campaign.
-    :return:
+    :return: Deferred.
     """
     # Save changes only to database
     yield db_utils.delete_campaign(campaign_id)
