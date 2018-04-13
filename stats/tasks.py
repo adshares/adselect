@@ -166,7 +166,7 @@ def clean_database():
 @defer.inlineCallbacks
 def recalculate_stats():
     """
-    Dump all data from cache to database, reload cache data and recacalculate everything.
+    Dump all data from cache to database, reload cache data and recalculate everything.
 
     :return:
     """
