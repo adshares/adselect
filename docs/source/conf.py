@@ -14,9 +14,20 @@
 #
 import os
 import sys
+
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(0, os.path.abspath('../../../'))
+sys.path.insert(0, os.path.abspath('../../../../'))
+
+# Sphinx / readthedocs output
+print "sys.paths:"
+for sp in sys.path:
+    print sp
 
 # -- Project information -----------------------------------------------------
+
 
 project = u'AdSelect'
 copyright = u'2018, Adshares.net'
