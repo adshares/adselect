@@ -1,5 +1,6 @@
 from twisted.internet import defer
 import random
+from collections import defaultdict
 
 from adselect.contrib import utils as contrib_utils
 from adselect.stats import const as stats_consts
@@ -68,7 +69,6 @@ def load_banners():
     while docs:
         for banner_doc in docs:
             active = yield is_banner_active(banner_doc)
-            active = True
             if active:
                 banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
                 stats_cache.add_banner(banner_id, banner_size)
@@ -93,7 +93,13 @@ def load_impression_counts():
 @defer.inlineCallbacks
 def load_scores(scores_db_stats=None):
     """
-    Load best paid keywords taking into account scores
+    Load best paid keywords taking into account scores.
+
+    1. Get banner scores.
+    2. For each one, get banner.
+    3. Get
+
+    :param scores_db_stats:
     """
 
     if scores_db_stats is None:
@@ -107,7 +113,8 @@ def load_scores(scores_db_stats=None):
 
             docs, dfr = yield dfr
 
-    best_keywords = {}
+    best_keywords = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+
     for banner_id in scores_db_stats:
         banner = yield db_utils.get_banner(banner_id)
 
@@ -117,11 +124,6 @@ def load_scores(scores_db_stats=None):
 
         banner_size = banner['banner_size']
         for publisher_id in scores_db_stats[banner_id]:
-            if publisher_id not in best_keywords:
-                best_keywords[publisher_id] = {}
-
-            if banner_size not in best_keywords[publisher_id]:
-                best_keywords[publisher_id][banner_size] = {}
 
             for keyword, keyword_score in scores_db_stats[banner_id][publisher_id].iteritems():
                 stats_cache.add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id)
@@ -143,7 +145,7 @@ def load_scores(scores_db_stats=None):
 @defer.inlineCallbacks
 def initialize_stats():
     """
-    Initialize data cache.
+    Initialize data cache. Load data from the database into memory.
 
     :return:
     """
@@ -168,14 +170,19 @@ def select_new_banners(publisher_id,
     """
     Return banners ids without payment statistic.
 
-    The function doesn't allow to display banners more than notpaid_display_cutoff times without payment.
+    The function doesn't allow to display banners more than *notpaid_display_cutoff* times without payment.
 
-    :param publisher_id:
-    :param banner_size:
-    :param proposition_nb:
+    1. Get banners with the right size.
+    2. Choose random banners from that population.
+    3. Filter out banners which were displayed more times than *notpaid_display_cutoff*
+    4. Return chosen banners.
+
+    :param publisher_id: Publisher identifier.
+    :param banner_size: Banner size (width x height) in string format.
+    :param proposition_nb: The amount of returned banners.
     :param notpaid_display_cutoff:
     :param filtering_population_factor:
-    :return:
+    :return: List of banners.
     """
     new_banners = stats_cache.get_banners(banner_size)
     random_banners = []
@@ -203,16 +210,23 @@ def select_best_banners(publisher_id,
                         mixed_new_banners_percent=5
                         ):
     """
-    Select banners with appropriate size for given impression keywords.
+    Select banners with appropriate size for given keywords.
 
-    :param publisher_id:
-    :param banner_size:
-    :param impression_keywords_dict:
-    :param propositions_nb: the amount of selected banners (default: 100)
-    :param best_keywords_cutoff: cutoff of the best paid keywords taking into account
-    :param banners_per_keyword_cutoff: cutoff of the banners numbers in every seleted keywords
-    :param mixed_new_banners_percent: approximate percentage of new banners in proposed banners list
-    :return:
+    1. Get best paid keywords (limited to a cutoff value)
+    2. Find common keywords from given keywords and best paid keywords.
+    3. Find best paid banners for give keywords and size.
+    4. Add new banners, which have no payments statistic yet.
+    5. Shuffle the banners.
+    6. Return a list of banners, size limited to the defined cutoff value.
+
+    :param publisher_id: Publisher identifier.
+    :param banner_size: Banner size (width x height) in string format.
+    :param impression_keywords_dict: Dictionary of keywords for the request.
+    :param propositions_nb: The amount of returned banners.
+    :param best_keywords_cutoff: Cutoff of the number of best paid keywords taking into account.
+    :param banners_per_keyword_cutoff: Cutoff of the banners number in every selected keywords.
+    :param mixed_new_banners_percent: Approximate percentage of new banners in proposed banners list.
+    :return: List of banners.
     """
     # selected best paid impression keywords
     publisher_best_keys = stats_cache.get_best_keywords(publisher_id, banner_size)[:best_keywords_cutoff]
@@ -246,26 +260,22 @@ def update_impression(banner_id, publisher_id, impression_keywords, paid_amount)
     """
     Update impression cache.
 
-    1. Increase impression count
-    2. If paid, Update keyword paid amount.
+    1. Increase impression count.
+    2. If paid (paid > 0), update keyword paid amount.
 
-    :param banner_id:
-    :param publisher_id:
-    :param impression_keywords:
-    :param paid_amount:
+    :param banner_id: Banner identifier.
+    :param publisher_id: Publisher identifier.
+    :param impression_keywords: Dictionary of keywords (with values).
+    :param paid_amount: Amount paid for the impression.
     :return:
     """
-
-
-    logger = logging.getLogger(__name__)
 
     # Update BANNERS_IMPRESSIONS_COUNT
     stats_cache.inc_impression_count(banner_id, publisher_id, 1)
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
-    if not paid_amount > 0:
-        return
+    if paid_amount > 0:
 
-    for key, val in impression_keywords.items():
-        stat_key = genkey(key, val)
-        stats_cache.inc_keyword_impression_paid_amount(banner_id, publisher_id, stat_key, paid_amount)
+        for key, val in impression_keywords.items():
+            stat_key = genkey(key, val)
+            stats_cache.inc_keyword_impression_paid_amount(banner_id, publisher_id, stat_key, paid_amount)
