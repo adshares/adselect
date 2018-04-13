@@ -22,22 +22,6 @@ adselect.daemon module
     :undoc-members:
     :show-inheritance:
 
-adselect.data\_generators module
---------------------------------
-
-.. automodule:: adselect.data_generators
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-adselect.log\_setup module
---------------------------
-
-.. automodule:: adselect.log_setup
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------
