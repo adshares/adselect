@@ -1,12 +1,13 @@
-from twisted.internet import defer
 import random
+from __future__ import print_function
 from collections import defaultdict
+
+from twisted.internet import defer
 
 from adselect.contrib import utils as contrib_utils
 from adselect.stats import const as stats_consts
 from adselect.db import utils as db_utils
 from adselect.stats import cache as stats_cache
-import logging
 
 
 def genkey(key, val, delimiter="_"):
@@ -42,6 +43,22 @@ def is_campaign_active(campaign_doc):
 
     return True
 
+@defer.inlineCallbacks
+def is_banner_live(banner_id):
+
+    banner_doc = yield db_utils.get_banner(banner_id)
+    if not banner_doc:
+        defer.returnValue(False)
+
+    campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+    if not campaign_doc:
+        defer.returnValue(False)
+
+    if not is_campaign_active(campaign_doc):
+        defer.returnValue(False)
+
+    defer.returnValue(True)
+
 
 @defer.inlineCallbacks
 def is_banner_active(banner_doc):
@@ -60,7 +77,33 @@ def is_banner_active(banner_doc):
 
 
 @defer.inlineCallbacks
+def iterate_deferred(deferred, func):
+    data, dfr = yield deferred
+
+    while data:
+        for data_element in data:
+            yield func(data_element)
+        data, dfr = yield dfr
+
+
+@defer.inlineCallbacks
 def load_banners():
+    """
+    Load only active banners to cache.
+    """
+
+    @defer.inlineCallbacks
+    def func(banner_doc):
+        active = yield is_banner_active(banner_doc)
+        if active:
+            banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
+            stats_cache.BANNERS[banner_size].append(banner_id)
+
+    yield iterate_deferred(db_utils.get_collection_iter('banner'), func)
+
+
+@defer.inlineCallbacks
+def load_banners2():
     """
     Load only active banners to cache.
     """
@@ -71,7 +114,7 @@ def load_banners():
             active = yield is_banner_active(banner_doc)
             if active:
                 banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
-                stats_cache.add_banner(banner_id, banner_size)
+                stats_cache.BANNERS[banner_size].append(banner_id)
         docs, dfr = yield dfr
 
 
@@ -86,7 +129,7 @@ def load_impression_counts():
         for stats_doc in docs:
             banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
             for publisher_id, value in stats.iteritems():
-                stats_cache.set_impression_count(banner_id, publisher_id, value)
+                stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] = value
         docs, dfr = yield dfr
 
 
@@ -105,13 +148,13 @@ def load_scores(scores_db_stats=None):
     if scores_db_stats is None:
         scores_db_stats = {}
 
-        docs, dfr = yield db_utils.get_banner_scores_iter()
-        while docs:
-            for stats_doc in docs:
+        @defer.inlineCallbacks
+        def func(stats_docs):
+            for stats_doc in stats_docs:
                 banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
                 scores_db_stats[banner_id] = stats
 
-            docs, dfr = yield dfr
+        yield iterate_deferred(db_utils.get_collection_iter('banner_scores'), func)
 
     best_keywords = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
@@ -119,7 +162,7 @@ def load_scores(scores_db_stats=None):
         banner = yield db_utils.get_banner(banner_id)
 
         if not banner:
-            print "Warning! Banner %s not in database" % banner_id
+            print("Warning! Banner %s not in database" % banner_id)
             continue
 
         banner_size = banner['banner_size']
@@ -129,17 +172,15 @@ def load_scores(scores_db_stats=None):
                 stats_cache.add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id)
 
                 best_keywords[publisher_id][banner_size][keyword] = max(
-                    [keyword_score, best_keywords[publisher_id][banner_size].get(keyword, 0)])
+                    [keyword_score, best_keywords[publisher_id][banner_size][keyword]])
 
     for publisher_id in best_keywords:
         for banner_size in best_keywords[publisher_id]:
 
-            keywords_list = []
-            for keyword, keyword_score in best_keywords[publisher_id][banner_size].iteritems():
-                keywords_list.append((keyword_score, keyword))
-
+            keywords_list = [(keyword_score, keyword) for keyword, keyword_score
+                             in best_keywords[publisher_id][banner_size].iteritems()]
             keywords_list = sorted(keywords_list, reverse=True)
-            stats_cache.set_best_keywords(publisher_id, banner_size, [elem[1] for elem in keywords_list])
+            stats_cache.BEST_KEYWORDS[publisher_id][banner_size] = [elem[1] for elem in keywords_list]
 
 
 @defer.inlineCallbacks
@@ -184,7 +225,7 @@ def select_new_banners(publisher_id,
     :param filtering_population_factor:
     :return: List of banners.
     """
-    new_banners = stats_cache.get_banners(banner_size)
+    new_banners = stats_cache.BANNERS[banner_size]
     random_banners = []
     for i in range(proposition_nb * filtering_population_factor):
         random_banners.append(random.choice(new_banners))
@@ -192,7 +233,7 @@ def select_new_banners(publisher_id,
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
-        if stats_cache.get_impression_count(banner_id, publisher_id) < notpaid_display_cutoff:
+        if stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
         if len(selected_banners) > proposition_nb:
@@ -229,8 +270,9 @@ def select_best_banners(publisher_id,
     :return: List of banners.
     """
     # selected best paid impression keywords
-    publisher_best_keys = stats_cache.get_best_keywords(publisher_id, banner_size)[:best_keywords_cutoff]
-    sbpik = set([genkey(*item) for item in impression_keywords_dict.items()]) & set(publisher_best_keys)
+    publisher_best_keys = stats_cache.BEST_KEYWORDS[publisher_id][banner_size][:best_keywords_cutoff]
+
+    sbpik = set([genkey(key, value) for key, value in impression_keywords_dict.items()]) & set(publisher_best_keys)
 
     # Select best paid banners with appropriate size
     selected_banners = []
@@ -271,11 +313,11 @@ def update_impression(banner_id, publisher_id, impression_keywords, paid_amount)
     """
 
     # Update BANNERS_IMPRESSIONS_COUNT
-    stats_cache.inc_impression_count(banner_id, publisher_id, 1)
+    stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] += 1
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
     if paid_amount > 0:
 
         for key, val in impression_keywords.items():
             stat_key = genkey(key, val)
-            stats_cache.inc_keyword_impression_paid_amount(banner_id, publisher_id, stat_key, paid_amount)
+            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += 1
