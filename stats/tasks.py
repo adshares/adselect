@@ -7,7 +7,7 @@ from adselect.db import utils as db_utils
 
 
 @defer.inlineCallbacks
-def save_views():
+def save_impressions():
     """
     Save impression count data from cache to database.
 
@@ -19,7 +19,7 @@ def save_views():
 
 
 @defer.inlineCallbacks
-def save_payments():
+def save_keyword_payments():
     """
     Save payment per keywords data from cache to database.
 
@@ -46,7 +46,7 @@ def save_payments():
 
 
 @defer.inlineCallbacks
-def save_scores():
+def save_banner_scores():
     """
     Save scores.
     1. Get scores from database.
@@ -158,13 +158,13 @@ def recalculate_stats():
     :return:
     """
     # Recalculate KEYWORDS_BANNERS and BEST_KEYWORDS.
-    scores_stats = yield save_scores()
+    scores_stats = yield save_banner_scores()
 
     # Taking from database BANNERS_IMPRESSIONS_COUNT.
-    yield save_views()
+    yield save_impressions()
 
     # Taking from database KEYWORD_IMPRESSION_PAID_AMOUNT.
-    yield save_payments()
+    yield save_keyword_payments()
 
     # Load banners.
     yield stats_utils.load_banners()
