@@ -2,7 +2,7 @@ from twisted.trial import unittest
 from adselect.iface.utils import validate_keywords
 
 
-class ValidateKeywordsTestCase(unittest):
+class ValidateKeywordsTestCase(unittest.TestCase):
 
     def test_validate_keywords(self):
 
@@ -19,4 +19,4 @@ class ValidateKeywordsTestCase(unittest):
                     u'browser_name': u'firefox', u'context_information': 1,
                     u'platform_name': u'macosx', u'context_generate': 1, u'screen_height': 1080}
 
-        self.assertTrue(validate_keywords(filters_dict, keywords))
+        self.assertFalse(validate_keywords(filters_dict, keywords))
