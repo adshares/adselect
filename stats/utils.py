@@ -104,22 +104,6 @@ def load_banners():
 
 
 @defer.inlineCallbacks
-def load_banners2():
-    """
-    Load only active banners to cache.
-    """
-
-    docs, dfr = yield db_utils.get_collection_iter('banner')
-    while docs:
-        for banner_doc in docs:
-            active = yield is_banner_active(banner_doc)
-            if active:
-                banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
-                stats_cache.BANNERS[banner_size].append(banner_id)
-        docs, dfr = yield dfr
-
-
-@defer.inlineCallbacks
 def load_impression_counts():
     """
     Load impressions/events counts to cache.
@@ -135,7 +119,7 @@ def load_impression_counts():
 
 
 @defer.inlineCallbacks
-def load_scores(scores_db_stats=None):
+def load_best_keywords_scores(scores_db_stats=None):
     """
     Load best paid keywords taking into account scores.
 
@@ -200,7 +184,7 @@ def initialize_stats():
     # We do not load payments as it is kept per calculation round.
 
     # Load best keywords taking into account scores.
-    yield load_scores()
+    yield load_best_keywords_scores()
 
 
 def select_new_banners(publisher_id,
@@ -299,7 +283,7 @@ def select_best_banners(publisher_id,
     return selected_banners[:propositions_nb]
 
 
-def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+def process_impression(banner_id, publisher_id, impression_keywords, paid_amount):
     """
     Update impression cache.
 

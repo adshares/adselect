@@ -170,7 +170,7 @@ def recalculate_stats():
     yield stats_utils.load_banners()
 
     # Load scores
-    yield stats_utils.load_scores(scores_stats)
+    yield stats_utils.load_best_keywords_scores(scores_stats)
 
     # Clean database task.
     yield clean_database()
