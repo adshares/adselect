@@ -43,6 +43,7 @@ def is_campaign_active(campaign_doc):
 
     return True
 
+
 @defer.inlineCallbacks
 def is_banner_live(banner_id):
 
@@ -124,7 +125,7 @@ def load_impression_counts():
     Load impressions/events counts to cache.
     """
 
-    docs, dfr = yield db_utils.get_banner_impression_count_iter()
+    docs, dfr = yield db_utils.get_collection_iter('banner')
     while docs:
         for stats_doc in docs:
             banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
@@ -151,8 +152,8 @@ def load_scores(scores_db_stats=None):
         @defer.inlineCallbacks
         def func(stats_docs):
             for stats_doc in stats_docs:
-                banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
-                scores_db_stats[banner_id] = stats
+                bannerid, stats = stats_doc['banner_id'], stats_doc['stats']
+                scores_db_stats[bannerid] = stats
 
         yield iterate_deferred(db_utils.get_collection_iter('banner_scores'), func)
 
