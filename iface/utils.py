@@ -80,16 +80,20 @@ def select_banner(banners_requests):
                                                            banner_request.banner_size,
                                                            banner_request.keywords)
 
+        # Validate banners
         for banner_id in proposed_banners:
+            # Check if they actually exist (active)
             banner_doc = yield db_utils.get_banner(banner_id)
             if not banner_doc:
                 continue
 
             campaign_id = banner_doc['campaign_id']
             campaign_doc = yield db_utils.get_campaign(campaign_id)
+            # Check if campaign exists
             if not campaign_doc:
                 continue
 
+            # Is campaign active?
             if not stats_utils.is_campaign_active(campaign_doc):
                 continue
 
