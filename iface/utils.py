@@ -52,10 +52,10 @@ def add_impression(imobj):
     :return:
     """
     # Change counter only  in stats cache
-    stats_utils.update_impression(imobj.banner_id,
-                                  imobj.publisher_id,
-                                  imobj.keywords,
-                                  imobj.paid_amount)
+    stats_utils.process_impression(imobj.banner_id,
+                                   imobj.publisher_id,
+                                   imobj.keywords,
+                                   imobj.paid_amount)
 
 
 @defer.inlineCallbacks
