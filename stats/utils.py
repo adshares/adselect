@@ -189,7 +189,7 @@ def initialize_stats():
 
 def select_new_banners(publisher_id,
                        banner_size,
-                       proposition_nb,
+                       banner_amount,
                        notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF,
                        filtering_population_factor=4
                        ):
@@ -205,14 +205,14 @@ def select_new_banners(publisher_id,
 
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
-    :param proposition_nb: The amount of returned banners.
+    :param banner_amount: The amount of returned banners.
     :param notpaid_display_cutoff:
     :param filtering_population_factor:
     :return: List of banners.
     """
     new_banners = stats_cache.BANNERS[banner_size]
     random_banners = []
-    for i in range(proposition_nb * filtering_population_factor):
+    for i in range(banner_amount * filtering_population_factor):
         random_banners.append(random.choice(new_banners))
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
@@ -221,10 +221,10 @@ def select_new_banners(publisher_id,
         if stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
-        if len(selected_banners) > proposition_nb:
+        if len(selected_banners) > banner_amount:
             break
 
-    return selected_banners[:proposition_nb]
+    return selected_banners[:banner_amount]
 
 
 def select_best_banners(publisher_id,
@@ -305,4 +305,4 @@ def process_impression(banner_id, publisher_id, impression_keywords, paid_amount
 
         for key, val in impression_keywords.items():
             stat_key = genkey(key, val)
-            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += 1
+            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += paid_amount
