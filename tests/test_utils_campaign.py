@@ -1,12 +1,12 @@
 from twisted.internet import defer
 
-from adselect.iface.tests import IfaceTestCase
+import tests
 from adselect.db import utils as db_utils
 from adselect.iface import utils as iface_utils
 from adselect.iface import protocol as iface_proto
 
 
-class InterfaceUtilsCampaignTestCase(IfaceTestCase):
+class InterfaceUtilsCampaignTestCase(tests.IfaceTestCase):
 
     CAMPAIGN_DATA = {
         'campaign_id': 'campaign_id',

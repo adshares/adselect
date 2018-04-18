@@ -2,13 +2,12 @@ import time
 
 from twisted.internet import defer
 
-from adselect.stats.tests import StatsTestCase
-from adselect.stats import utils as stats_utils
+import tests
 from adselect.stats import cache as stats_cache
 from adselect.db import utils as db_utils
 
 
-class TasksTestCase(StatsTestCase):
+class TasksTestCase(tests.StatsTestCase):
     campaign = {'time_start': int(time.time()) - 1000,
                 'campaign_id': 'Marla',
                 'time_end': int(time.time()) + 1000,

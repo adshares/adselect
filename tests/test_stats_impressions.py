@@ -1,10 +1,10 @@
 from twisted.internet import defer
 
-from adselect.db import tests as db_tests
+import tests
 from adselect.db import utils as db_utils
 
 
-class DBTestCase(db_tests.DBTestCase):
+class DBTestCase(tests.DBTestCase):
     @defer.inlineCallbacks
     def test_impressions(self):
 

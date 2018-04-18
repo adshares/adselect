@@ -1,11 +1,11 @@
 import re
 
-from adselect.stats.tests import StatsTestCase
+import tests
 from adselect.stats import utils as stats_utils
 from adselect.contrib import utils as contrib_utils
 
 
-class StatsUtilsCampaignTestCase(StatsTestCase):
+class StatsUtilsCampaignTestCase(tests.StatsTestCase):
 
     def test_genkey(self):
         # Test for no '.'
