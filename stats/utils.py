@@ -104,6 +104,22 @@ def load_banners():
 
 
 @defer.inlineCallbacks
+def load_banners2():
+    """
+    Load only active banners to cache.
+    """
+
+    docs, dfr = yield db_utils.get_collection_iter('banner')
+    while docs:
+        for banner_doc in docs:
+            active = yield is_banner_active(banner_doc)
+            if active:
+                banner_size, banner_id = banner_doc['banner_size'], banner_doc['banner_id']
+                stats_cache.BANNERS[banner_size].append(banner_id)
+        docs, dfr = yield dfr
+
+
+@defer.inlineCallbacks
 def load_impression_counts():
     """
     Load impressions/events counts to cache.
@@ -119,7 +135,7 @@ def load_impression_counts():
 
 
 @defer.inlineCallbacks
-def load_best_keywords_scores(scores_db_stats=None):
+def load_scores(scores_db_stats=None):
     """
     Load best paid keywords taking into account scores.
 
@@ -184,12 +200,12 @@ def initialize_stats():
     # We do not load payments as it is kept per calculation round.
 
     # Load best keywords taking into account scores.
-    yield load_best_keywords_scores()
+    yield load_scores()
 
 
 def select_new_banners(publisher_id,
                        banner_size,
-                       banner_amount,
+                       proposition_nb,
                        notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF,
                        filtering_population_factor=4
                        ):
@@ -205,14 +221,14 @@ def select_new_banners(publisher_id,
 
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
-    :param banner_amount: The amount of returned banners.
+    :param proposition_nb: The amount of returned banners.
     :param notpaid_display_cutoff:
     :param filtering_population_factor:
     :return: List of banners.
     """
     new_banners = stats_cache.BANNERS[banner_size]
     random_banners = []
-    for i in range(banner_amount * filtering_population_factor):
+    for i in range(proposition_nb * filtering_population_factor):
         random_banners.append(random.choice(new_banners))
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
@@ -221,10 +237,10 @@ def select_new_banners(publisher_id,
         if stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
-        if len(selected_banners) > banner_amount:
+        if len(selected_banners) > proposition_nb:
             break
 
-    return selected_banners[:banner_amount]
+    return selected_banners[:proposition_nb]
 
 
 def select_best_banners(publisher_id,
@@ -283,7 +299,7 @@ def select_best_banners(publisher_id,
     return selected_banners[:propositions_nb]
 
 
-def process_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
     """
     Update impression cache.
 
@@ -305,4 +321,4 @@ def process_impression(banner_id, publisher_id, impression_keywords, paid_amount
 
         for key, val in impression_keywords.items():
             stat_key = genkey(key, val)
-            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += paid_amount
+            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += 1
