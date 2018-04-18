@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from twisted.internet import defer, reactor
 
 from adselect.stats import const as stats_consts
@@ -66,16 +68,14 @@ def save_banner_scores():
             if not stats_utils.is_banner_live(banner_id):
                 continue
 
-            banner_scores = {}
+            banner_scores = defaultdict(dict)
 
             banner_impression_count = yield db_utils.get_banner_impression_count(banner_id)
-            if banner_impression_count is None:
-                banner_impression_count = {}
+            if not banner_impression_count:
+                banner_impression_count = defaultdict(lambda: defaultdict(lambda: int(0)))
 
             for publisher_id in banner_stats:
-                publisher_db_impression_count = banner_impression_count.get(publisher_id, 0)
-
-                banner_scores[publisher_id] = {}
+                publisher_db_impression_count = banner_impression_count[publisher_id]
 
                 for keyword, score_value in banner_stats.get(publisher_id, {}).items():
                     last_round_keyword_payment = stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][keyword]
