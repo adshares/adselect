@@ -7,6 +7,7 @@ from adselect.iface import protocol as iface_proto
 
 
 class InterfaceUtilsCampaignTestCase(IfaceTestCase):
+
     CAMPAIGN_DATA = {
         'campaign_id': 'campaign_id',
         'advertiser_id': 'advertiser_id',
@@ -14,24 +15,13 @@ class InterfaceUtilsCampaignTestCase(IfaceTestCase):
         'time_end': 34567,
         'filters': {},
         'keywords': {},
-        'banners': [
-            {
-                'banner_id': 'banner1',
-                'banner_size': '100x200',
-                'keywords': {}
-            },
-            {
-                 'banner_id': 'banner2',
-                 'banner_size': '150x250',
-                 'keywords': {}
-            }
-        ]
+        'banners': []
     }
 
     @defer.inlineCallbacks
-    def test_utils(self):
+    def test_campaign_add_and_delete(self):
 
-        yield iface_utils.create_or_update_campaign(iface_proto.CamapaignObject(self.CAMPAIGN_DATA))
+        yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(self.CAMPAIGN_DATA))
         campaign = yield db_utils.get_campaign(self.CAMPAIGN_DATA['campaign_id'])
         self.assertEqual(campaign['campaign_id'], self.CAMPAIGN_DATA['campaign_id'])
 
