@@ -253,22 +253,21 @@ def select_best_banners(publisher_id,
     """
     # selected best paid impression keywords
     publisher_best_keys = stats_cache.BEST_KEYWORDS[publisher_id][banner_size][:best_keywords_cutoff]
-
-    sbpik = set([genkey(key, value) for key, value in impression_keywords_dict.items()]) & set(publisher_best_keys)
+    impression_keys_set = set([genkey(key, value) for key, value in impression_keywords_dict.items()])
+    # selected best paid impression keywords
+    sbest_pi_keys = impression_keys_set.intersection(set(publisher_best_keys))
 
     # Select best paid banners with appropriate size
-    selected_banners = []
-    selected_banners_count = 0
 
     publisher_banners = stats_cache.KEYWORDS_BANNERS['publisher_id']['banner_size']
-    for avg_price, banner_id in contrib_utils.merge(
-            *[publisher_banners.get(keyword, [])[:banners_per_keyword_cutoff] for keyword in sbpik]
-    ):
+    banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
+
+    selected_banners = []
+
+    for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik):
 
         selected_banners.append(banner_id)
-        selected_banners_count += 1
-
-        if selected_banners_count >= propositions_nb:
+        if len(selected_banners) >= propositions_nb:
             break
 
     # Add new banners without payment statistic
