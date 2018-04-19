@@ -5,7 +5,7 @@ from adselect.stats import utils as stats_utils
 from adselect.contrib import utils as contrib_utils
 
 
-class StatsUtilsCampaignTestCase(tests.StatsTestCase):
+class StatsUtilsCampaignTestCase(tests.DBTestCase):
 
     def test_genkey(self):
         # Test for no '.'

@@ -1,3 +1,4 @@
+import socket
 import json
 
 from twisted.trial import unittest
@@ -13,37 +14,6 @@ from zope.interface import implements
 from adselect.iface import server as iface_server
 from adselect.iface import const as iface_consts
 from adselect import db
-
-
-class StatsTestCase(unittest.TestCase):
-    @defer.inlineCallbacks
-    def setUp(self):
-        self.conn = yield db.get_mongo_connection()
-        self.db = yield db.get_mongo_db()
-
-        yield db.configure_db()
-        self.timeout = 5
-
-    @defer.inlineCallbacks
-    def tearDown(self):
-        yield self.conn.drop_database(self.db)
-        yield db.disconnect()
-
-
-class DBTestCase(unittest.TestCase):
-    @defer.inlineCallbacks
-    def setUp(self):
-        self.conn = yield db.get_mongo_connection()
-        self.db = yield db.get_mongo_db()
-
-        yield db.configure_db()
-        self.timeout = 5
-
-    @defer.inlineCallbacks
-    def tearDown(self):
-        yield self.conn.drop_database(self.db)
-
-        yield db.disconnect()
 
 
 class StringProducer(object):
@@ -76,23 +46,33 @@ class ReceiverProtocol(Protocol):
         self.finished.callback(''.join(self.body))
 
 
-class WebTestCase(unittest.TestCase):
+class DBTestCase(unittest.TestCase):
     @defer.inlineCallbacks
     def setUp(self):
         self.conn = yield db.get_mongo_connection()
         self.db = yield db.get_mongo_db()
+
         yield db.configure_db()
-
-        self.port = iface_server.configure_iface()
-        self.client = Agent(reactor)
-
         self.timeout = 5
 
     @defer.inlineCallbacks
     def tearDown(self):
-
         yield self.conn.drop_database(self.db)
         yield db.disconnect()
+
+
+class WebTestCase(DBTestCase):
+
+    @defer.inlineCallbacks
+    def setUp(self):
+        yield super(WebTestCase, self).setUp()
+
+        self.port = iface_server.configure_iface()
+        self.client = Agent(reactor)
+
+    @defer.inlineCallbacks
+    def tearDown(self):
+        yield super(WebTestCase, self).tearDown()
 
         self.port.stopListening()
 
@@ -105,8 +85,10 @@ class WebTestCase(unittest.TestCase):
             "params": params
         }))
 
+        host = socket.gethostbyname(socket.gethostname())
+
         response = yield self.client.request('POST',
-                                             'http://127.0.0.1:%s' % iface_consts.SERVER_PORT,
+                                             'http://{0}:{1}'.format(host, iface_consts.SERVER_PORT),
                                              Headers({'content-type': ['text/plain']}),
                                              post_data)
 
@@ -114,19 +96,3 @@ class WebTestCase(unittest.TestCase):
         response.deliverBody(ReceiverProtocol(finished))
         data = yield finished
         defer.returnValue(json.loads(data) if data else None)
-
-
-class IfaceTestCase(unittest.TestCase):
-    @defer.inlineCallbacks
-    def setUp(self):
-        self.conn = yield db.get_mongo_connection()
-        self.db = yield db.get_mongo_db()
-
-        yield db.configure_db()
-        self.timeout = 5
-
-    @defer.inlineCallbacks
-    def tearDown(self):
-        yield self.conn.drop_database(self.db)
-
-        yield db.disconnect()

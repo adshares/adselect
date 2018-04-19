@@ -10,7 +10,7 @@ from adselect.iface import protocol as iface_proto
 from adselect.db import utils as db_utils
 
 
-class CacheUtilsCampaignTestCase(tests.StatsTestCase):
+class CacheUtilsCampaignTestCase(tests.DBTestCase):
     campaign = {'time_start': int(time.time()) - 1000,
                 'campaign_id': 'Marla',
                 'time_end': int(time.time()) + 1000,

@@ -6,7 +6,7 @@ from adselect.iface import utils as iface_utils
 from adselect.iface import protocol as iface_proto
 
 
-class InterfaceUtilsCampaignTestCase(tests.IfaceTestCase):
+class InterfaceUtilsCampaignTestCase(tests.DBTestCase):
 
     CAMPAIGN_DATA = {
         'campaign_id': 'campaign_id',

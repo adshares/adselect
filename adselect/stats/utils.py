@@ -279,7 +279,7 @@ def select_best_banners(publisher_id,
     return selected_banners[:propositions_nb]
 
 
-def update_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+def process_impression(banner_id, publisher_id, impression_keywords, paid_amount):
     """
     Update impression cache.
 

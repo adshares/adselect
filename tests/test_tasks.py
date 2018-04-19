@@ -7,7 +7,7 @@ from adselect.stats import cache as stats_cache
 from adselect.db import utils as db_utils
 
 
-class TasksTestCase(tests.StatsTestCase):
+class TasksTestCase(tests.DBTestCase):
     campaign = {'time_start': int(time.time()) - 1000,
                 'campaign_id': 'Marla',
                 'time_end': int(time.time()) + 1000,
@@ -40,9 +40,10 @@ class TasksTestCase(tests.StatsTestCase):
     @defer.inlineCallbacks
     def test_save_keyword_payments(self):
 
-        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT = [('banner_id', 'payment_stats_dict')]
+        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT = {'banner_id': {'publisher1': {'keyword1': 0.5,
+                                                                                   'keyword2': 0.9}}}
 
-        for banner_id, payment_stats_dict in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.iteritems():
+        for banner_id, payment_stats_dict in stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT.items():
             banner_stats = yield db_utils.get_banner_payment(banner_id)
             db_banner_stats = banner_stats['stats'] if banner_stats else {}
 
