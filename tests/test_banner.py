@@ -44,6 +44,9 @@ class DBTestCase(tests.DBTestCase):
 
             banners, dfr = yield dfr
 
+        banners = yield db_utils.get_campaign_banners('campaign_id')
+        self.assertEqual(len(banners), 3)
+
         yield db_utils.delete_campaign_banners("campaign_id")
         banners, dfr = yield db_utils.get_collection_iter('banner')
         self.assertFalse(banners)
