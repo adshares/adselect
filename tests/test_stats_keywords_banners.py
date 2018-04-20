@@ -15,8 +15,6 @@ class TestSetKeywordsBanners(TestCase):
 
         self.assertEqual(len(stats_cache.get_keyword_banners('publisher1', '100x100')), 0)
 
-        print stats_cache.get_keyword_banners('publisher1', '100x100')
-
         stats_cache.add_keyword_banner(publisher_id='publisher1',
                                        banner_size='100x100',
                                        keyword='keyword1',
