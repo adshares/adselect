@@ -59,6 +59,44 @@ def add_impression(imobj):
 
 
 @defer.inlineCallbacks
+def validate_banner_with_banner_request(banner_request, proposed_banner_id):
+    """
+    Make sure the banner is ok for this request.
+
+    1. Does the banner exist?
+    2. Does the campaign for this banner exist?
+    3. Is the campaign active?
+    4. Are banner keywords ok for this campaign?
+    4. Are banner keywords ok for this campaign?
+
+    :param banner_request:
+    :param proposed_banner_id:
+    :return:
+    """
+    # Check if they actually exist (active)
+    banner_doc = yield db_utils.get_banner(proposed_banner_id)
+    if not banner_doc:
+        defer.returnValue(False)
+
+    campaign_id = banner_doc['campaign_id']
+    campaign_doc = yield db_utils.get_campaign(campaign_id)
+
+    # Check if campaign is live (active).
+    if not (campaign_doc or stats_utils.is_campaign_active(campaign_doc)):
+        defer.returnValue(False)
+
+    # Validate campaign filters
+    if not validate_keywords(campaign_doc['filters'], banner_request.keywords):
+        defer.returnValue(False)
+
+    # Validate impression filters
+    if not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
+        defer.returnValue(False)
+
+    defer.returnValue(True)
+
+
+@defer.inlineCallbacks
 def select_banner(banners_requests):
     """
     Select_banner function should work as follow:
@@ -82,31 +120,11 @@ def select_banner(banners_requests):
 
         # Validate banners
         for banner_id in proposed_banners:
-            # Check if they actually exist (active)
-            banner_doc = yield db_utils.get_banner(banner_id)
-            if not banner_doc:
-                continue
 
-            campaign_id = banner_doc['campaign_id']
-            campaign_doc = yield db_utils.get_campaign(campaign_id)
-            # Check if campaign exists
-            if not campaign_doc:
-                continue
-
-            # Is campaign active?
-            if not stats_utils.is_campaign_active(campaign_doc):
-                continue
-
-            # Validate campaign filters
-            if not validate_keywords(campaign_doc['filters'], banner_request.keywords):
-                continue
-
-            # Validate impression filters
-            if not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
-                continue
-
-            responses_dict[banner_request.request_id] = banner_id
-            break
+            banner_ok = yield validate_banner_with_banner_request(banner_request, banner_id)
+            if banner_ok:
+                responses_dict[banner_request.request_id] = banner_id
+                break
 
     defer.returnValue(responses_dict)
 
