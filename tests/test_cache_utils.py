@@ -82,5 +82,8 @@ class CacheUtilsCampaignTestCase(tests.DBTestCase):
 
             self.assertEqual(10, stats_cache.IMPRESSIONS_COUNT[banner['banner_id']]['publisher1'])
 
-    def test_load_scores(self):
-        pass
+    def test_delete_impression_count(self):
+
+        stats_cache.IMPRESSIONS_COUNT['banner_id'] = {'publisher1': 1}
+        stats_cache.delete_impression_count('banner_id')
+        self.assertTrue('banner_id' not in stats_cache.IMPRESSIONS_COUNT)
