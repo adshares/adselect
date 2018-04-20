@@ -108,3 +108,6 @@ TODO.txt
 *.launch
 .settings/
 *.sublime-workspace
+
+# Sonar scanner
+.scannerwork
