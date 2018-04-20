@@ -12,11 +12,6 @@ sudo: false
 #ervices:
 #  - mysql
 
-# Cache composer packages so "composer install" is faster
-cache:
-  directories:
-    - $HOME/.composer/cache/files
-
 addons:
   sonarcloud:
     organization: "adshares-github"
@@ -43,7 +38,7 @@ jobs:
       script: sonar-scanner
     # Python unit tests
     - stage: test
-      script: pytest
+      script: trial
 
 # After a build, send email notification with the build results
 notifications:
