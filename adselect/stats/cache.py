@@ -97,5 +97,5 @@ def delete_impression_count(banner_id):
     :param banner_id: Banner identifier.
     :return:
     """
-    if banner_id in IMPRESSIONS_COUNT:
+    if banner_id in IMPRESSIONS_COUNT:  # pragma: no cover
         del IMPRESSIONS_COUNT[banner_id]
