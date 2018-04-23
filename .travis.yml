@@ -8,10 +8,6 @@ python:
 # Allows use container-based infrastructure
 sudo: false
 
-# Start mysql service
-#ervices:
-#  - mysql
-
 addons:
   sonarcloud:
     organization: "adshares-github"
@@ -20,25 +16,23 @@ addons:
     github_token:
       secure: "KVEz+mR1roJkpNHTqbVgRcZhpEN6G9AEeKJDycMEyE3+YbLSJO+INMy5szylHPvImP9S9BSYlRuVWkVuS0gC1G15J4RpMx5+8i7bgKsU/48rjLttcBSXvguhfrzSRnTOff+5C0Xq1duJ3v1YOhkO7qhKMYFNbAMBGyhDV67OTnRCVPeZ5W0yVz/dLzPyystYqkPCYQFEtwicjbBGt3PGOPb4+6mNoRKnsxaf79sN3LR8qFLdKHgE7V7ONem+6fwqa8BBOJ1b6GO/gInSeFDG9FeWoo2ufkA7RVYJ2LQPFkGq88YhddZ/28Trjy/gP0MglZHHoSSWJH24XsJD/k4HC5Lv2SBLIimDmQXTR744JxoF6RDvF7HY3GB635B6rjfgPyRs7IbQfL1xLv54addJ2RsPTqdIIGGOpq4A48QInWtqzbaaAoaxtBqaBn20prpQF4a5V4DNk6kPV5cRAS8V+KzCNPXkk2fRwXpFZR+uF+oGclRoO/xzcFKjf8El2V5LuakO90SAwe2tcXo13yUOOjkjNo1JCMh7d/kgtzGvyVcd6d4XZP35AE0u45PhzSyNFIONPft7fOWfZ4lzWasE3X0+i4ujHKV9t/vvVZGaG0odiwBP/AATkpF738FgVueX7qOlxwA6b8sSmBgiulC+Xhjcoos/D0FOXuVz9IV4CjI="
     
-# Install dependencies,
-# Create database, schema and fixtures
 install:
   - pip install -r requirements.txt
+  - pip install coverage
 
 stages:
-  - quality
   - test
-#  - name: deploy
-#      if: branch = master
+  - quality
 
 jobs:
   include:
+    # Python unit tests
+    - stage: test
+      script: coverage run `which trial` tests
     # Sonar Qube
     - stage: quality
       script: sonar-scanner
-    # Python unit tests
-    - stage: test
-      script: trial
+
 
 # After a build, send email notification with the build results
 notifications:
