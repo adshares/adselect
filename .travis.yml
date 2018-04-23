@@ -29,7 +29,7 @@ jobs:
     # Python unit tests and coverage generation
     - stage: test
       script:
-       - $(shell export PYTHONPATH=$PYTHONPATH:$(pwd))
+       - export PYTHONPATH=$PYTHONPATH:$(pwd)
        - coverage run `which trial` tests
        - coverage xml -i
     # Sonar Qube
