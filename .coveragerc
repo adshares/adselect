@@ -4,3 +4,5 @@ omit =
     /usr/*
     # omit tests directory
     */tests/*.py
+    # omit Travis-CI virtualenv directory
+    */lib/python*/site-packages/*
