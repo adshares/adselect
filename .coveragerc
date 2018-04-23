@@ -5,4 +5,5 @@ omit =
     # omit tests directory
     */tests/*.py
     # omit Travis-CI virtualenv directory
+    */virtualenv/python*
     */lib/python*/site-packages/*
