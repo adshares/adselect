@@ -27,30 +27,6 @@ BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 #: }
 KEYWORDS_BANNERS = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
-#: Keep info about active banners
-#:
-#: BANNERS = {
-#:     'size1': ['campaignid1_bannerid1',
-#:                 'campaignid2_bannerid2'],
-#:     'size2': ['campaignid2_bannerid2']
-#: }
-BANNERS = defaultdict(list)
-
-#: Keep info about last round impression payments > 0
-#: KEYWORD_IMPRESSION_PAID_AMOUNT = {
-#:   'campaignid2_bannerid2': {
-#:       'publisher_id_1': {
-#:           'keyword1': 'total_payment_amount',
-#:           'keyword2': 'total_payment_amount',
-#:       },
-#:       'publisher_id_2': {
-#:           'keyword1': 'total_payment_amount',
-#:           'keyword2': 'total_payment_amount',
-#:       }
-#:   }
-#:  }
-KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: float(0.0))))
-
 
 def add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id, limit=100):
 
@@ -76,6 +52,31 @@ def reset_keyword_banners():
     """
     global KEYWORDS_BANNERS
     KEYWORDS_BANNERS = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+
+
+#: Keep info about active banners
+#:
+#: BANNERS = {
+#:     'size1': ['campaignid1_bannerid1',
+#:                 'campaignid2_bannerid2'],
+#:     'size2': ['campaignid2_bannerid2']
+#: }
+BANNERS = defaultdict(list)
+
+#: Keep info about last round impression payments > 0
+#: KEYWORD_IMPRESSION_PAID_AMOUNT = {
+#:   'campaignid2_bannerid2': {
+#:       'publisher_id_1': {
+#:           'keyword1': 'total_payment_amount',
+#:           'keyword2': 'total_payment_amount',
+#:       },
+#:       'publisher_id_2': {
+#:           'keyword1': 'total_payment_amount',
+#:           'keyword2': 'total_payment_amount',
+#:       }
+#:   }
+#:  }
+KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: float(0.0))))
 
 
 #: Keep data about total impressions count of banners
