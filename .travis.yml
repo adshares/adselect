@@ -26,9 +26,12 @@ stages:
 
 jobs:
   include:
-    # Python unit tests
+    # Python unit tests and coverage generation
     - stage: test
-      script: coverage run `which trial` tests
+      script:
+       - $(shell export PYTHONPATH=$PYTHONPATH:$(pwd))
+       - coverage run `which trial` tests
+       - coverage xml -i
     # Sonar Qube
     - stage: quality
       script: sonar-scanner
