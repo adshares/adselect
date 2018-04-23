@@ -13,7 +13,7 @@ class TestSetKeywordsBanners(TestCase):
 
     def test_get_keyword_banners(self):
 
-        self.assertEqual(len(stats_cache.get_keyword_banners('publisher1', '100x100')), 0)
+        self.assertEqual(len(stats_cache.KEYWORDS_BANNERS['publisher1']['100x100']), 0)
 
         stats_cache.add_keyword_banner(publisher_id='publisher1',
                                        banner_size='100x100',
@@ -22,12 +22,12 @@ class TestSetKeywordsBanners(TestCase):
                                        banner_id='banner1',
                                        limit=100)
 
-        self.assertEqual(stats_cache.get_keyword_banners('publisher1', '100x100'),
+        self.assertEqual(stats_cache.KEYWORDS_BANNERS['publisher1']['100x100'],
                          {'keyword1': [(0.5, 'banner1')]})
 
     def test_add_keyword_banner(self):
 
-        self.assertEqual(stats_cache.get_keyword_banners('publisher1', '100x100'), [])
+        self.assertEqual(len(stats_cache.KEYWORDS_BANNERS['publisher1']['100x100']), 0)
 
         stats_cache.add_keyword_banner(publisher_id='publisher1',
                                        banner_size='100x100',
