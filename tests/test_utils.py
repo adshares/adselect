@@ -1,11 +1,11 @@
 import re
+from twisted.trial import unittest
 
-import tests
 from adselect.stats import utils as stats_utils
 from adselect.contrib import utils as contrib_utils
 
 
-class StatsUtilsCampaignTestCase(tests.DBTestCase):
+class StatsUtilsCampaignTestCase(unittest.TestCase):
 
     def test_genkey(self):
         # Test for no '.'
