@@ -34,16 +34,6 @@ def add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner
     KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = KEYWORDS_BANNERS[publisher_id][banner_size][keyword][:limit]
 
 
-def get_keyword_banners(publisher_id, banner_size):
-    """
-
-    :param publisher_id: Publisher identifier.
-    :param banner_size:  Banner size.
-    :return: List of keywords or empty list.
-    """
-    return KEYWORDS_BANNERS.get(publisher_id, {}).get(banner_size, [])
-
-
 def reset_keyword_banners():
     """
     Reset the KEYWORDS_BANNERS cache to empty.
