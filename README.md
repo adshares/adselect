@@ -1,5 +1,5 @@
 # adselect
-
+[![Build Status](https://travis-ci.org/adshares/adselect.svg?branch=master)](https://travis-ci.org/adshares/adselect)
 ## Build
 adselect is fully implemented in python.
 
