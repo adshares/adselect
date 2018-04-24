@@ -1,5 +1,8 @@
 import socket
 import json
+from mock import MagicMock
+
+import txmongo
 
 from twisted.trial import unittest
 from twisted.internet import defer, reactor
@@ -96,3 +99,28 @@ class WebTestCase(DBTestCase):
         response.deliverBody(ReceiverProtocol(finished))
         data = yield finished
         defer.returnValue(json.loads(data) if data else None)
+
+
+class MockDBTestCase(unittest.TestCase):
+
+    def setUp(self):
+
+        db.MONGO_CONNECTION = None
+
+        self.banner_collection = MagicMock()
+
+        self.mock_database = MagicMock()
+        self.mock_database.banner = self.banner_collection
+
+        self.mock_connection = MagicMock()
+        self.mock_connection.adselect = self.mock_database
+        self.mock_connection.disconnect.return_value = True
+
+        self.mock_lazyMongoConnectionPool = MagicMock()
+        self.mock_lazyMongoConnectionPool.return_value = self.mock_connection
+
+        self.original_lazyMongoConnectionPool = txmongo.lazyMongoConnectionPool
+        self.patch(txmongo, 'lazyMongoConnectionPool', self.mock_lazyMongoConnectionPool)
+
+    def tearDown(self):
+        txmongo.lazyMongoConnectionPool = self.original_lazyMongoConnectionPool
