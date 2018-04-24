@@ -1,10 +1,13 @@
 import re
-import time
+
+from mock import patch, Mock, MagicMock
 
 from twisted.trial import unittest
+from twisted.internet import defer
 
 from adselect.stats import cache as stats_cache
 from adselect.stats import utils as stats_utils
+import time
 
 
 class StatsUtilsTestCase(unittest.TestCase):
@@ -67,3 +70,44 @@ class StatsUtilsTestCase(unittest.TestCase):
                         'time_end': timestamp - 1000}
 
         self.assertFalse(stats_utils.is_campaign_active(campaign_doc))
+
+    @patch('adselect.stats.utils.load_banners', Mock())
+    @patch('adselect.stats.utils.load_impression_counts', Mock())
+    @patch('adselect.stats.utils.load_scores', Mock())
+    def test_initialize_stats(self):
+        stats_utils.initialize_stats()
+
+    @defer.inlineCallbacks
+    def test_is_banner_active(self):
+
+        banner_id = 'banner_id'
+        banner_doc = {'banner_id': banner_id,
+                      'campaign_id': 'campaign_id'}
+
+        campaign_doc = {'campaign_id': 'campaign_id',
+                        'time_start': int(time.time() - 1000),
+                        'time_end': int(time.time() + 1000)}
+
+        mock_db_utils = MagicMock()
+        mock_db_utils.get_banner.return_value = banner_doc
+        mock_db_utils.get_campaign.return_value = campaign_doc
+
+        self.patch(stats_utils, 'db_utils', mock_db_utils)
+
+        # All ok
+
+        result = yield stats_utils.is_banner_active(banner_id)
+        self.assertTrue(result)
+
+        result = yield stats_utils.is_banner_active(banner_doc)
+        self.assertTrue(result)
+
+        # Campaign is wrong
+        mock_db_utils.get_campaign.return_value = None
+        result = yield stats_utils.is_banner_active(banner_id)
+        self.assertFalse(result)
+
+        # Banner id is wrong
+        mock_db_utils.get_banner.return_value = None
+        result = yield stats_utils.is_banner_active(banner_id)
+        self.assertFalse(result)
