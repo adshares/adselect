@@ -20,6 +20,7 @@ def merge(*iterables):
             h.append([(-v[0], v[1]), nxt])
         except StopIteration:
             pass
+
     heapq.heapify(h)
 
     while True:
