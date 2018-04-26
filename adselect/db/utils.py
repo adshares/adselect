@@ -116,10 +116,10 @@ def update_banner_impression_count(banner_id, counts_per_publisher_dict):
     :param counts_per_publisher_dict: Dictionary for
     :return: deferred instance of :class:`pymongo.results.UpdateResult`.
     """
-    return_value = yield db.get_collection('impression_stats').replace_one({"banner_id": banner_id},
-                                                                           {"banner_id": banner_id,
-                                                                            "stats": counts_per_publisher_dict},
-                                                                           upsert=True)
+    return_value = yield db.get_collection('impressions_stats').replace_one({"banner_id": banner_id},
+                                                                            {"banner_id": banner_id,
+                                                                             "stats": counts_per_publisher_dict},
+                                                                            upsert=True)
     defer.returnValue(return_value)
 
 
