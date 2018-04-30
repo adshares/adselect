@@ -177,7 +177,8 @@ def initialize_stats():
 
 def select_new_banners(publisher_id,
                        banner_size,
-                       proposition_nb,
+                       mixed_new_banners_percent,
+                       propositions_nb,
                        notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF,
                        filtering_population_factor=4):
     """
@@ -197,8 +198,11 @@ def select_new_banners(publisher_id,
     :param filtering_population_factor: Random population sample.
     :return: List of banners.
     """
+
+    new_banners_proposition_nb = int(mixed_new_banners_percent * propositions_nb / 100.0)
+
     all_banners = stats_cache.BANNERS[banner_size]
-    random_banner_number = proposition_nb * filtering_population_factor
+    random_banner_number = new_banners_proposition_nb * filtering_population_factor
     if random_banner_number < len(all_banners):
         random_banners = random.sample(all_banners, random_banner_number)
     else:
@@ -210,18 +214,41 @@ def select_new_banners(publisher_id,
         if stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] < notpaid_display_cutoff:
             selected_banners.append(banner_id)
 
-        if len(selected_banners) == proposition_nb:
+        if len(selected_banners) == new_banners_proposition_nb:
             break
 
-    return selected_banners
+    return selected_banners[:new_banners_proposition_nb]
+
+
+def select_best_keywords(publisher_id, banner_size, impression_keywords_dict, best_keywords_cutoff=100):
+    """
+
+    :param publisher_id: Publisher identifier.
+    :param banner_size: Banner size (width x height) in string format.
+    :param impression_keywords_dict: Dictionary of keywords for the request.
+    :param best_keywords_cutoff: Cutoff of the number of best paid keywords taking into account.
+    :return:
+    """
+    publisher_best_keys = stats_cache.BEST_KEYWORDS[publisher_id][banner_size][:best_keywords_cutoff]
+    impression_keys_set = set([genkey(k, v) for k, v in impression_keywords_dict.items()])
+
+    # selected best paid impression keywords
+
+    sbest_pi_keys = impression_keys_set.intersection(set(publisher_best_keys))
+    return sbest_pi_keys
+
+
+def get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys, banners_per_keyword_cutoff=10):
+
+    publisher_banners = stats_cache.KEYWORDS_BANNERS[publisher_id][banner_size]
+    banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
+    return banners_for_sbpik
 
 
 def select_best_banners(publisher_id,
                         banner_size,
-                        impression_keywords_dict,
+                        sbest_pi_keys,
                         propositions_nb=100,
-                        best_keywords_cutoff=100,
-                        banners_per_keyword_cutoff=10,
                         mixed_new_banners_percent=5):
     """
     Select banners with appropriate size for given keywords.
@@ -235,41 +262,35 @@ def select_best_banners(publisher_id,
 
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
-    :param impression_keywords_dict: Dictionary of keywords for the request.
+    :param sbest_pi_keys: Best Keywords for this impression and publisher
     :param propositions_nb: The amount of returned banners.
-    :param best_keywords_cutoff: Cutoff of the number of best paid keywords taking into account.
     :param banners_per_keyword_cutoff: Cutoff of the banners number in every selected keywords.
     :param mixed_new_banners_percent: Approximate percentage of new banners in proposed banners list.
     :return: List of banners.
     """
 
-    # selected best paid impression keywords
-    publisher_best_keys = stats_cache.BEST_KEYWORDS[publisher_id][banner_size][:best_keywords_cutoff]
-    impression_keys_set = set([genkey(k, v) for k, v in impression_keywords_dict.items()])
-
-    # selected best paid impression keywords
-    sbest_pi_keys = impression_keys_set.intersection(set(publisher_best_keys))
-
     # Select best paid banners with appropriate size
+    banners_for_sbpik = get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys)
 
-    publisher_banners = stats_cache.KEYWORDS_BANNERS[publisher_id][banner_size]
+    selected_banners = [banner_id for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik)]
 
-    banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
+    selected_banners = selected_banners[:propositions_nb]
 
-    selected_banners = []
-
-    for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik):
-
-        selected_banners.append(banner_id)
-        if len(selected_banners) >= propositions_nb:
-            break
-
-    # Add new banners without payment statistic
     new_banners_proposition_nb = int(mixed_new_banners_percent * propositions_nb / 100.0)
-    selected_banners += select_new_banners(publisher_id, banner_size, new_banners_proposition_nb)
-    random.shuffle(selected_banners)
+
+    new_banners = select_new_banners(publisher_id, banner_size, mixed_new_banners_percent, propositions_nb)
+    selected_banners = mixin_new_banners(selected_banners, new_banners_proposition_nb, new_banners)
 
     # Shuffle items in the list
+    return selected_banners[:propositions_nb]
+
+
+def mixin_new_banners(selected_banners, propositions_nb, new_banners):
+
+    # Add new banners without payment statistic
+
+    selected_banners += new_banners
+    random.shuffle(selected_banners)
     return selected_banners[:propositions_nb]
 
 
