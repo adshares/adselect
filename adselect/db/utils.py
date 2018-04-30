@@ -104,7 +104,7 @@ def get_banner_impression_count(banner_id):
     :param banner_id: banner identification
     :return: Impression count object for banner.
     """
-    return db.get_collection('impression_stats').find_one({'banner_id': banner_id})
+    return db.get_collection('impressions_stats').find_one({'banner_id': banner_id})
 
 
 @defer.inlineCallbacks
@@ -131,7 +131,7 @@ def delete_banner_impression_count(banner_id):
     :param banner_id: Banner identification
     :return:
     """
-    collection = yield db.get_collection('impression_stats')
+    collection = yield db.get_collection('impressions_stats')
     return_value = yield collection.delete_many({'banner_id': banner_id})
     defer.returnValue(return_value)
 
@@ -144,13 +144,6 @@ def get_banner_payment(banner_id):
     :return: Payment information for the banner.
     """
     return db.get_collection('payments_stats').find_one({'banner_id': banner_id})
-  
-
-def get_banner_payment_iter():
-    """
-    :return: Deferred instance with a tuple. See :method:`txmongo.collection.Collection.find_with_cursor`.
-    """
-    return db.get_collection('payments_stats').find(cursor=True)
 
 
 @defer.inlineCallbacks

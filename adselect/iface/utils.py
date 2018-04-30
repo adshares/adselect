@@ -74,6 +74,7 @@ def validate_banner_with_banner_request(banner_request, proposed_banner_id):
     :return:
     """
     # Check if they actually exist (active)
+
     banner_doc = yield db_utils.get_banner(proposed_banner_id)
     if not banner_doc:
         defer.returnValue(False)
@@ -81,16 +82,16 @@ def validate_banner_with_banner_request(banner_request, proposed_banner_id):
     campaign_id = banner_doc['campaign_id']
     campaign_doc = yield db_utils.get_campaign(campaign_id)
 
-    # Check if campaign is live (active).
-    if not (campaign_doc or stats_utils.is_campaign_active(campaign_doc)):
+    # Check if campaign is active.
+    if not campaign_doc:
         defer.returnValue(False)
 
-    # Validate campaign filters
-    if not validate_keywords(campaign_doc['filters'], banner_request.keywords):
+    if not stats_utils.is_campaign_active(campaign_doc):
         defer.returnValue(False)
 
-    # Validate impression filters
-    if not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
+    # Validate campaign filters, Validate impression filters
+    if not validate_keywords(campaign_doc['filters'], banner_request.keywords) or \
+       not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
         defer.returnValue(False)
 
     defer.returnValue(True)
