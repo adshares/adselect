@@ -35,5 +35,6 @@ class TestContribuUtils(unittest.TestCase):
 
         # StopIterator pass
         iterable.append([])
+        generated = [x for x in contrib_utils.merge(*iterable)]
+        self.assertIsNotNone(generated)
 
-        # TODO

@@ -2,23 +2,21 @@ from twisted.internet import defer
 
 from adselect import db
 
-from tests import MockDBTestCase
+from tests import db_test_case
 
 
-class DbInitTestCase(MockDBTestCase):
+class DbInitTestCase(db_test_case):
 
     def test_get_mongo_db(self):
 
         database = db.get_mongo_db()
-        self.assertIs(database, self.mock_database)
+        self.assertIsNotNone(database)
+        self.assertEqual(database.name, 'adselect')
 
     def test_get_mongo_connection(self):
 
-        self.assertIsNone(db.MONGO_CONNECTION)
-
         connection = db.get_mongo_connection()
 
-        self.assertEqual(connection, self.mock_lazyMongoConnectionPool.return_value)
         self.assertIs(connection, db.MONGO_CONNECTION)
 
     def test_get_collection(self):
@@ -33,12 +31,10 @@ class DbInitTestCase(MockDBTestCase):
     @defer.inlineCallbacks
     def test_disconnect(self):
 
-        self.assertIsNone(db.MONGO_CONNECTION)
-
         disconnected = yield db.disconnect()
         self.assertIsNone(disconnected)
 
-        connection = db.get_mongo_connection()
+        connection = yield db.get_mongo_connection()
         self.assertIsNotNone(connection)
         self.assertIsNotNone(db.MONGO_CONNECTION)
 

@@ -1,8 +1,9 @@
-from twisted.trial import unittest
 from adselect.iface.utils import validate_keywords
+from tests import db_test_case
+from copy import deepcopy
 
 
-class ValidateKeywordsTestCase(unittest.TestCase):
+class ValidateKeywordsTestCase(db_test_case):
 
     def test_validate_keywords(self):
 
@@ -20,3 +21,14 @@ class ValidateKeywordsTestCase(unittest.TestCase):
                     u'platform_name': u'macosx', u'context_generate': 1, u'screen_height': 1080}
 
         self.assertFalse(validate_keywords(filters_dict, keywords))
+
+        for campaign in self.campaigns:
+            filters = deepcopy(campaign['filters'])
+
+            self.assertFalse(validate_keywords(filters, filters['require'][0]))
+            filters['require'] = []
+
+            self.assertTrue(validate_keywords(filters, filters['exclude'][0]))
+
+            self.assertFalse(validate_keywords(filters,
+                                              {filters['exclude'][0]['keyword']: filters['exclude'][0]['filter']['args']}))
