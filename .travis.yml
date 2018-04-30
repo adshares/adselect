@@ -22,6 +22,7 @@ addons:
 # Install python dependencies
 install:
   - pip install -r requirements.txt
+  - pip install mock mongomock
 
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
