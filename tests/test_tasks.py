@@ -1,23 +1,21 @@
+from collections import defaultdict
+from copy import deepcopy
+import time
 from twisted.internet import defer
 import twisted
-from collections import defaultdict
 
-from tests import db_test_case
 from adselect.stats import cache as stats_cache
 from adselect.stats import utils as stats_utils
 from adselect.db import utils as db_utils
 from adselect.stats import tasks as stats_tasks
-from copy import deepcopy
-import time
+
+from tests import db_test_case
 
 
 class TasksTestCase(db_test_case):
 
     @defer.inlineCallbacks
     def test_save_keyword_payments(self):
-
-        stats_cache.IMPRESSIONS_COUNT = defaultdict(lambda: defaultdict(lambda: int(0)))
-        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: float(0.0))))
 
         for campaign in self.campaigns:
             db_utils.update_campaign(campaign)
@@ -46,6 +44,9 @@ class TasksTestCase(db_test_case):
         for imp in self.impressions:
             payments = yield db_utils.get_banner_payment(imp['banner_id'])
             self.assertIsNotNone(payments)
+            yield stats_utils.process_impression(**imp)
+
+        yield stats_tasks.save_keyword_payments()
 
     @defer.inlineCallbacks
     def test_save_new_banner_scores(self):
