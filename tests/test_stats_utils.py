@@ -181,9 +181,6 @@ class StatsUtilsTestCase(db_test_case):
     @defer.inlineCallbacks
     def test_process_impression(self):
 
-        stats_cache.IMPRESSIONS_COUNT = defaultdict(lambda: defaultdict(lambda: int(0)))
-        stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: float(0.0))))
-
         for campaign in self.campaigns:
             db_utils.update_campaign(campaign)
 
@@ -326,38 +323,49 @@ class StatsUtilsTestCase(db_test_case):
         stats_tasks.save_keyword_payments()
         stats_tasks.save_new_banner_scores()
         stats_tasks.save_banner_scores()
+
         stats_utils.load_scores()
 
-        pub_id = self.impressions[0]['publisher_id']
+        stats_utils.load_banners()
 
-        selected = yield stats_utils.select_best_banners(pub_id,
-                                                         '1x1',
-                                                         {})
-        self.assertFalse(selected)
+        stats_tasks.save_impression_count()
+        stats_tasks.save_keyword_payments()
+        stats_tasks.save_new_banner_scores()
+        stats_tasks.save_banner_scores()
 
-        for size in banner_sizes:
+        stats_utils.load_scores()
+
+        for pub_id in [self.impressions[i]['publisher_id'] for i in xrange(len(self.impressions))]:
+
             selected = yield stats_utils.select_best_banners(pub_id,
-                                                             size,
+                                                             '1x1',
                                                              {})
+            self.assertFalse(selected)
 
-            self.assertTrue(selected)
-
-        for size in banner_sizes:
-
-            if stats_cache.BEST_KEYWORDS[pub_id][size]:
-                impression_keywords = {}
-                for keyword in stats_cache.BEST_KEYWORDS[pub_id][size]:
-                    key, value = keyword.split('_')
-                    impression_keywords[key] = value
-
+            for size in banner_sizes:
                 selected = yield stats_utils.select_best_banners(pub_id,
                                                                  size,
-                                                                 impression_keywords,
-                                                                 )
+                                                                 {})
+
                 self.assertTrue(selected)
 
-                selected = yield stats_utils.select_best_banners(pub_id,
-                                                                 size,
-                                                                 impression_keywords,
-                                                                 1)
-                self.assertTrue(selected)
+            for size in banner_sizes:
+
+                if stats_cache.BEST_KEYWORDS[pub_id][size]:
+
+                    impression_keywords = {}
+                    for keyword in stats_cache.BEST_KEYWORDS[pub_id][size]:
+                        key, value = keyword.split('_')
+                        impression_keywords[key] = value
+
+                    selected = yield stats_utils.select_best_banners(pub_id,
+                                                                     size,
+                                                                     impression_keywords,
+                                                                     )
+                    self.assertTrue(selected)
+
+                    selected = yield stats_utils.select_best_banners(pub_id,
+                                                                     size,
+                                                                     impression_keywords,
+                                                                     1)
+                    self.assertTrue(selected)

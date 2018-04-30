@@ -1,5 +1,4 @@
 from twisted.internet import defer
-from twisted.internet.task import Clock
 import twisted
 from collections import defaultdict
 
@@ -9,7 +8,6 @@ from adselect.stats import utils as stats_utils
 from adselect.db import utils as db_utils
 from adselect.stats import tasks as stats_tasks
 from copy import deepcopy
-from mock import Mock
 import time
 
 

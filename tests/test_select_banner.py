@@ -25,6 +25,7 @@ class TestSelect_banner(db_test_case):
         stats_tasks.save_keyword_payments()
         stats_tasks.save_new_banner_scores()
         stats_tasks.save_banner_scores()
+
         stats_utils.load_scores()
 
         for camp in self.campaigns:
@@ -55,3 +56,5 @@ class TestSelect_banner(db_test_case):
 
                 stats_utils.select_best_banners = mocked_func
                 iface_utils.validate_banner_with_banner_request = mocked_func2
+
+
