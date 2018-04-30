@@ -45,32 +45,21 @@ def is_campaign_active(campaign_doc):
 
 
 @defer.inlineCallbacks
-def is_banner_live(banner_id):
-
-    banner_doc = yield db_utils.get_banner(banner_id)
-    if not banner_doc:
-        defer.returnValue(False)
-
-    campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
-    if not campaign_doc:
-        defer.returnValue(False)
-
-    if not is_campaign_active(campaign_doc):
-        defer.returnValue(False)
-
-    defer.returnValue(True)
-
-
-@defer.inlineCallbacks
-def is_banner_active(banner_doc):
+def is_banner_active(banner):
     """
-    Check if banner's campaign is still active.
+    Check if banner is in the database, together with the campaign and if the campaign is active.
 
-    :param banner_doc: Banner document
-    :return: True for active, False for inactive.
+    :param banner: Banner id or banner document.
+    :return: True or False
     """
 
-    campaign_doc = yield db_utils.get_campaign(banner_doc['campaign_id'])
+    if not hasattr(banner, 'get'):
+        banner = yield db_utils.get_banner(banner)
+        if not banner:
+            defer.returnValue(False)
+
+    campaign_doc = yield db_utils.get_campaign(banner['campaign_id'])
+
     if campaign_doc and is_campaign_active(campaign_doc):
         defer.returnValue(True)
 
@@ -79,12 +68,15 @@ def is_banner_active(banner_doc):
 
 @defer.inlineCallbacks
 def iterate_deferred(deferred, func):
-    data, dfr = yield deferred
+    if deferred:
+        data, dfr = yield deferred
+        while data:
 
-    while data:
-        for data_element in data:
-            yield func(data_element)
-        data, dfr = yield dfr
+            for data_element in data:
+                yield func(data_element)
+
+            data, dfr = yield dfr
+    defer.returnValue(None)
 
 
 @defer.inlineCallbacks
@@ -109,11 +101,11 @@ def load_impression_counts():
     Load impressions/events counts to cache.
     """
 
-    docs, dfr = yield db_utils.get_collection_iter('banner')
+    docs, dfr = yield db_utils.get_collection_iter('impressions_stats')
     while docs:
         for stats_doc in docs:
-            banner_id, stats = stats_doc['banner_id'], stats_doc['stats']
-            for publisher_id, value in stats.iteritems():
+            banner_id = stats_doc['banner_id']
+            for publisher_id, value in stats_doc['stats'].items():
                 stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] = value
         docs, dfr = yield dfr
 
@@ -133,21 +125,17 @@ def load_scores(scores_db_stats=None):
     if scores_db_stats is None:
         scores_db_stats = {}
 
-        @defer.inlineCallbacks
-        def func(stats_docs):
-            for stats_doc in stats_docs:
-                bannerid, stats = stats_doc['banner_id'], stats_doc['stats']
-                scores_db_stats[bannerid] = stats
+        def func(stats_doc):
+            bannerid, stats = stats_doc['banner_id'], stats_doc['stats']
+            scores_db_stats[bannerid] = stats
 
-        yield iterate_deferred(db_utils.get_collection_iter('banner_scores'), func)
+        yield iterate_deferred(db_utils.get_collection_iter('scores_stats'), func)
 
     best_keywords = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
     for banner_id in scores_db_stats:
         banner = yield db_utils.get_banner(banner_id)
-
         if not banner:
-            print("Warning! Banner %s not in database" % banner_id)
             continue
 
         banner_size = banner['banner_size']
@@ -211,7 +199,10 @@ def select_new_banners(publisher_id,
     """
     all_banners = stats_cache.BANNERS[banner_size]
     random_banner_number = proposition_nb * filtering_population_factor
-    random_banners = random.sample(all_banners, random_banner_number)
+    if random_banner_number < len(all_banners):
+        random_banners = random.sample(all_banners, random_banner_number)
+    else:
+        random_banners = all_banners
 
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
@@ -251,15 +242,18 @@ def select_best_banners(publisher_id,
     :param mixed_new_banners_percent: Approximate percentage of new banners in proposed banners list.
     :return: List of banners.
     """
+
     # selected best paid impression keywords
     publisher_best_keys = stats_cache.BEST_KEYWORDS[publisher_id][banner_size][:best_keywords_cutoff]
-    impression_keys_set = set([genkey(key, value) for key, value in impression_keywords_dict.items()])
+    impression_keys_set = set([genkey(k, v) for k, v in impression_keywords_dict.items()])
+
     # selected best paid impression keywords
     sbest_pi_keys = impression_keys_set.intersection(set(publisher_best_keys))
 
     # Select best paid banners with appropriate size
 
-    publisher_banners = stats_cache.KEYWORDS_BANNERS['publisher_id']['banner_size']
+    publisher_banners = stats_cache.KEYWORDS_BANNERS[publisher_id][banner_size]
+
     banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
 
     selected_banners = []
@@ -301,4 +295,4 @@ def process_impression(banner_id, publisher_id, impression_keywords, paid_amount
 
         for key, val in impression_keywords.items():
             stat_key = genkey(key, val)
-            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += 1
+            stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key] += paid_amount
