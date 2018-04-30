@@ -267,18 +267,21 @@ class StatsUtilsTestCase(db_test_case):
 
         selected = yield stats_utils.select_new_banners('pub1',
                                                         '1x1',
-                                                        0)
+                                                        0,
+                                                        100)
         self.assertFalse(selected)
 
         selected = yield stats_utils.select_new_banners('pub1',
                                                         '1x1',
-                                                        1)
+                                                        1,
+                                                        100)
         self.assertFalse(selected)
 
         for size in banner_sizes:
             selected = yield stats_utils.select_new_banners('pub1',
                                                             size,
                                                             2,
+                                                            100,
                                                             filtering_population_factor=1)
 
             self.assertTrue(selected)
@@ -286,9 +289,14 @@ class StatsUtilsTestCase(db_test_case):
             selected = yield stats_utils.select_new_banners('pub1',
                                                             size,
                                                             1,
+                                                            100,
                                                             filtering_population_factor=1)
 
             self.assertTrue(selected)
+
+    def test_select_best_keywords(self):
+        keywords = stats_utils.select_best_keywords('pid', 'size', {})
+        self.assertFalse(keywords)
 
     @defer.inlineCallbacks
     def test_select_best_banners(self):
@@ -343,29 +351,22 @@ class StatsUtilsTestCase(db_test_case):
             self.assertFalse(selected)
 
             for size in banner_sizes:
+                sbest_pi_keys = yield stats_utils.select_best_keywords(pub_id, size, {})
                 selected = yield stats_utils.select_best_banners(pub_id,
                                                                  size,
-                                                                 {})
+                                                                 sbest_pi_keys)
 
                 self.assertTrue(selected)
 
             for size in banner_sizes:
 
-                if stats_cache.BEST_KEYWORDS[pub_id][size]:
+                selected = yield stats_utils.select_best_banners(pub_id,
+                                                                 size,
+                                                                 sbest_pi_keys)
+                self.assertTrue(selected)
 
-                    impression_keywords = {}
-                    for keyword in stats_cache.BEST_KEYWORDS[pub_id][size]:
-                        key, value = keyword.split('_')
-                        impression_keywords[key] = value
-
-                    selected = yield stats_utils.select_best_banners(pub_id,
-                                                                     size,
-                                                                     impression_keywords,
-                                                                     )
-                    self.assertTrue(selected)
-
-                    selected = yield stats_utils.select_best_banners(pub_id,
-                                                                     size,
-                                                                     impression_keywords,
-                                                                     1)
-                    self.assertTrue(selected)
+                selected = yield stats_utils.select_best_banners(pub_id,
+                                                                 size,
+                                                                 sbest_pi_keys,
+                                                                 1)
+                self.assertFalse(selected)
