@@ -193,7 +193,8 @@ def select_new_banners(publisher_id,
 
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
-    :param proposition_nb: The amount of returned banners.
+    :param mixed_new_banners_percent: How much new banners should be mixed in.
+    :param propositions_nb: The amount of returned banners.
     :param notpaid_display_cutoff:
     :param filtering_population_factor: Random population sample.
     :return: List of banners.
@@ -264,7 +265,6 @@ def select_best_banners(publisher_id,
     :param banner_size: Banner size (width x height) in string format.
     :param sbest_pi_keys: Best Keywords for this impression and publisher
     :param propositions_nb: The amount of returned banners.
-    :param banners_per_keyword_cutoff: Cutoff of the banners number in every selected keywords.
     :param mixed_new_banners_percent: Approximate percentage of new banners in proposed banners list.
     :return: List of banners.
     """

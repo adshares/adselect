@@ -173,7 +173,7 @@ class TasksTestCase(db_test_case):
 
         ret[0].cancel()
 
-    def test_configure_tasks(self):
+    def test_recalculate_stats(self):
 
         stats_tasks.recalculate_stats()
         ret = twisted.internet.reactor.getDelayedCalls()

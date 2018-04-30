@@ -358,13 +358,6 @@ class StatsUtilsTestCase(db_test_case):
 
                 self.assertTrue(selected)
 
-            for size in banner_sizes:
-
-                selected = yield stats_utils.select_best_banners(pub_id,
-                                                                 size,
-                                                                 sbest_pi_keys)
-                self.assertTrue(selected)
-
                 selected = yield stats_utils.select_best_banners(pub_id,
                                                                  size,
                                                                  sbest_pi_keys,

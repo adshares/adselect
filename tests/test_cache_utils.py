@@ -16,7 +16,6 @@ class CacheUtilsCampaignTestCase(db_test_case):
     KEYWORDS_BANNERS = deepcopy(stats_cache.KEYWORDS_BANNERS)
     IMPRESSION_COUNT = deepcopy(stats_cache.IMPRESSIONS_COUNT)
 
-
     @defer.inlineCallbacks
     def test_load_impression_counts(self):
 

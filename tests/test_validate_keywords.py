@@ -31,4 +31,4 @@ class ValidateKeywordsTestCase(db_test_case):
             self.assertTrue(validate_keywords(filters, filters['exclude'][0]))
 
             self.assertFalse(validate_keywords(filters,
-                                              {filters['exclude'][0]['keyword']: filters['exclude'][0]['filter']['args']}))
+                                               {filters['exclude'][0]['keyword']: filters['exclude'][0]['filter']['args']}))
