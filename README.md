@@ -1,5 +1,6 @@
 # adselect
 [![Build Status](https://travis-ci.org/adshares/adselect.svg?branch=master)](https://travis-ci.org/adshares/adselect)
+[![Build Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adselect&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adselect)
 ## Build
 adselect is fully implemented in python.
 
