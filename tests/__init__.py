@@ -218,6 +218,9 @@ class WebTestCase(DBTestCase):
         self.port = iface_server.configure_iface()
         self.client = Agent(reactor)
 
+        host = socket.gethostbyname(socket.gethostname())
+        self.url = 'http://{0}:{1}'.format(host, iface_consts.SERVER_PORT)
+
     @defer.inlineCallbacks
     def tearDown(self):
         yield super(WebTestCase, self).tearDown()
@@ -233,10 +236,8 @@ class WebTestCase(DBTestCase):
             "params": params
         }))
 
-        host = socket.gethostbyname(socket.gethostname())
-
         response = yield self.client.request('POST',
-                                             'http://{0}:{1}'.format(host, iface_consts.SERVER_PORT),
+                                             self.url,
                                              Headers({'content-type': ['text/plain']}),
                                              post_data)
 
