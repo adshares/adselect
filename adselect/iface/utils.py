@@ -112,13 +112,12 @@ def select_banner(banners_requests):
 
     responses_dict = {}
     for banner_request in banners_requests:
-        responses_dict[banner_request.request_id] = None
 
-    for banner_request in banners_requests:
         proposed_banners = stats_utils.select_best_banners(banner_request.publisher_id,
                                                            banner_request.banner_size,
                                                            banner_request.keywords)
 
+        responses_dict[banner_request.request_id] = None
         # Validate banners
         for banner_id in proposed_banners:
 
