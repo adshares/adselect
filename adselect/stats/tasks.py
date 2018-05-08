@@ -68,18 +68,13 @@ def save_banner_scores():
 
         banner_id, banner_stats = score_doc['banner_id'], score_doc['stats']
 
-        banner_impression_count = yield db_utils.get_banner_impression_count(banner_id)
-        if not banner_impression_count:
-            banner_impression_count = defaultdict(lambda: int(0))
-
         banner_scores = defaultdict(dict)
 
         for publisher_id in banner_stats:
-            publisher_db_impression_count = banner_impression_count[publisher_id]
 
             for keyword, score_value in banner_stats.get(publisher_id, {}).iteritems():
 
-                last_round_score = calculate_last_round_score(publisher_id, banner_id, keyword, publisher_db_impression_count)
+                last_round_score = calculate_last_round_score(publisher_id, banner_id, keyword)
 
                 banner_scores[publisher_id][keyword] = 0.5 * score_value + 0.5 * last_round_score
 
@@ -91,24 +86,31 @@ def save_banner_scores():
     yield save_new_banner_scores(db_banners)
 
 
-def calculate_last_round_score(publisher_id, banner_id, keyword, publisher_db_impression_count):
+@defer.inlineCallbacks
+def calculate_last_round_score(publisher_id, banner_id, keyword):
     """
 
     :param publisher_id:
     :param banner_id:
     :param keyword:
-    :param publisher_db_impression_count:
     :return:
     """
+
+    banner_impression_count = yield db_utils.get_banner_impression_count(banner_id)
+    if not banner_impression_count:
+        banner_impression_count = defaultdict(lambda: int(0))
+
+    publisher_db_impression_count = banner_impression_count[publisher_id]
+
     last_round_keyword_payment = stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][keyword]
 
     impression_count = stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id]
     last_round_impression_count = max([0, impression_count - publisher_db_impression_count])
 
     if last_round_impression_count > 0:
-        return 1.0 * last_round_keyword_payment / last_round_impression_count
+        defer.returnValue(1.0 * last_round_keyword_payment / last_round_impression_count)
 
-    return 0.0
+    defer.returnValue(0.0)
 
 
 @defer.inlineCallbacks
