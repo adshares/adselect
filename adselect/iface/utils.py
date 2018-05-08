@@ -1,3 +1,4 @@
+from collections import defaultdict
 from twisted.internet import defer
 
 from adselect.contrib import filters

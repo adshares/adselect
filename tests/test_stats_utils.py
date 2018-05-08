@@ -36,8 +36,7 @@ class StatsUtilsTestCase(db_test_case):
 
         for key, val in impression_keywords.items():
             stat_key = stats_utils.genkey(key, val)
-
-        self.assertEqual(stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key], 1)
+            self.assertEqual(stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key], 1)
 
         stats_utils.process_impression(banner_id, publisher_id, impression_keywords,
                                        paid_amount=0.0)

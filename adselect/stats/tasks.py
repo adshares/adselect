@@ -74,7 +74,7 @@ def save_banner_scores():
 
             for keyword, score_value in banner_stats.get(publisher_id, {}).iteritems():
 
-                last_round_score = calculate_last_round_score(publisher_id, banner_id, keyword)
+                last_round_score = yield calculate_last_round_score(publisher_id, banner_id, keyword)
 
                 banner_scores[publisher_id][keyword] = 0.5 * score_value + 0.5 * last_round_score
 
