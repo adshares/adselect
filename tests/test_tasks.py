@@ -10,6 +10,7 @@ from adselect.db import utils as db_utils
 from adselect.stats import tasks as stats_tasks
 
 from tests import db_test_case
+from mock import MagicMock
 
 
 class TasksTestCase(db_test_case):
@@ -146,21 +147,25 @@ class TasksTestCase(db_test_case):
         stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT['banner_id'] = banner_stats
         stats_cache.IMPRESSIONS_COUNT['banner_id']['pub_Page'] = 2
 
-        for publisher_id in banner_stats:
-            publisher_db_impression_count = 1
+        magic_dict = MagicMock()
+        magic_dict.__getitem__.return_value = 1
 
+        db_utils.get_banner_impression_count = MagicMock()
+        db_utils.get_banner_impression_count.return_value = magic_dict
+
+        for publisher_id in banner_stats:
             for keyword, score_value in banner_stats.get(publisher_id, {}).iteritems():
 
-                last_round_score = stats_tasks.calculate_last_round_score(publisher_id, 'banner_id', keyword, publisher_db_impression_count)
+                last_round_score = yield stats_tasks.calculate_last_round_score(publisher_id, 'banner_id', keyword)
                 yield self.assertGreaterEqual(last_round_score, score_value)
+
+        magic_dict.__getitem__.return_value = 0
 
         stats_cache.IMPRESSIONS_COUNT['banner_id']['pub_Page'] = 0
         for publisher_id in banner_stats:
-            publisher_db_impression_count = 0
-
             for keyword, score_value in banner_stats.get(publisher_id, {}).iteritems():
 
-                last_round_score = stats_tasks.calculate_last_round_score(publisher_id, 'banner_id', keyword, publisher_db_impression_count)
+                last_round_score = yield stats_tasks.calculate_last_round_score(publisher_id, 'banner_id', keyword)
                 yield self.assertEqual(last_round_score, 0)
 
     def test_configure_tasks(self):

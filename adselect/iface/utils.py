@@ -137,7 +137,6 @@ def validate_keywords(filters_dict, keywords):
     :param keywords: Keywords being tested.
     :return: True or False
     """
-
     for filter_json in filters_dict.get('require'):
         keyword = filter_json['keyword']
         if keyword not in keywords:
