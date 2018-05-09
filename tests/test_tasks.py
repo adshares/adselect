@@ -159,7 +159,7 @@ class TasksTestCase(db_test_case):
                 last_round_score = yield stats_tasks.calculate_last_round_score(publisher_id, 'banner_id', keyword)
                 yield self.assertGreaterEqual(last_round_score, score_value)
 
-        magic_dict.__getitem__.return_value = 0
+        db_utils.get_banner_impression_count.return_value = None
 
         stats_cache.IMPRESSIONS_COUNT['banner_id']['pub_Page'] = 0
         for publisher_id in banner_stats:
