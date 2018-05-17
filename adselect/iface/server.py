@@ -1,4 +1,5 @@
-from twisted.internet import reactor
+import logging
+from twisted.internet import reactor, defer
 from twisted.web.server import Site
 
 from fastjsonrpc.server import JSONRPCServer
@@ -12,7 +13,12 @@ class AdSelectIfaceServer(JSONRPCServer):
     """
     JSON-RPC endpoint.
     """
+    def __init__(self):
+        JSONRPCServer.__init__(self)
+        self.logger = logging.getLogger(__name__)
+
     # campaign interface
+    @defer.inlineCallbacks
     def jsonrpc_campaign_update(self, *campaign_data_list):
         """
         JSON-RPC campaign_update method handler.
@@ -20,10 +26,15 @@ class AdSelectIfaceServer(JSONRPCServer):
         :param campaign_data_list: List of campaign data.
         :return: True
         """
-        for campaign_data in campaign_data_list:
-            iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
-        return True
+        if not campaign_data_list:
+            yield self.logger.warning("No campaign data to update.")
+        else:
+            for campaign_data in campaign_data_list:
+                yield self.logger.debug("Campaign update: {0}".format(campaign_data))
+                iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
+        defer.returnValue(True)
 
+    @defer.inlineCallbacks
     def jsonrpc_campaign_delete(self, *campaign_id_list):
         """
         JSON-RPC campaign_delete method handler.
@@ -33,8 +44,9 @@ class AdSelectIfaceServer(JSONRPCServer):
         """
         for campaign_id in campaign_id_list:
             iface_utils.delete_campaign(campaign_id)
-        return True
+        defer.returnValue(True)
 
+    @defer.inlineCallbacks
     # impressions interface
     def jsonrpc_impression_add(self, *impressions_data_list):
         """
@@ -45,8 +57,9 @@ class AdSelectIfaceServer(JSONRPCServer):
         """
         for imobj in impressions_data_list:
             iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
-        return True
+        defer.returnValue(True)
 
+    @defer.inlineCallbacks
     # select banner interface
     def jsonrpc_banner_select(self, *impression_param_list):
         """
@@ -67,7 +80,7 @@ class AdSelectIfaceServer(JSONRPCServer):
 
         selected_banners = iface_utils.select_banner(banner_requests)
         selected_banners.addCallback(send_respone)
-        return selected_banners
+        defer.returnValue(selected_banners)
 
 
 def configure_iface(port=iface_const.SERVER_PORT):
