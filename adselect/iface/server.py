@@ -31,7 +31,7 @@ class AdSelectIfaceServer(JSONRPCServer):
         else:
             for campaign_data in campaign_data_list:
                 yield self.logger.debug("Campaign update: {0}".format(campaign_data))
-                iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
+                yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -42,8 +42,12 @@ class AdSelectIfaceServer(JSONRPCServer):
         :param campaign_id_list: List of campaign identifiers.
         :return: True
         """
-        for campaign_id in campaign_id_list:
-            iface_utils.delete_campaign(campaign_id)
+        if not campaign_id_list:
+            yield self.logger.warning("No campaign id to remove.")
+        else:
+            for campaign_id in campaign_id_list:
+                yield self.logger.info("Campaign removal: {0}".format(campaign_id))
+                yield iface_utils.delete_campaign(campaign_id)
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -55,8 +59,12 @@ class AdSelectIfaceServer(JSONRPCServer):
         :param impressions_data_list: List of impression data.
         :return: True
         """
-        for imobj in impressions_data_list:
-            iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
+        if not impressions_data_list:
+            yield self.logger.warning("No event data to add.")
+        else:
+            for imobj in impressions_data_list:
+                yield self.logger.debug("Adding event data: {0}".format(imobj))
+                yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -75,12 +83,18 @@ class AdSelectIfaceServer(JSONRPCServer):
 
             return [response.to_json() for response in responses]
 
-        banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
-                           impression_param_list]
+        if not impression_param_list:
+            yield self.logger.warning("No event parameters.")
+            defer.returnValue(False)
+        else:
+            yield self.logger.info("Select banners request received.")
+            banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
+                               impression_param_list]
 
-        selected_banners = iface_utils.select_banner(banner_requests)
-        selected_banners.addCallback(send_respone)
-        defer.returnValue(selected_banners)
+            selected_banners = iface_utils.select_banner(banner_requests)
+            selected_banners.addCallback(send_respone)
+            yield self.logger.debug(selected_banners)
+            defer.returnValue(selected_banners)
 
 
 def configure_iface(port=iface_const.SERVER_PORT):
@@ -90,5 +104,7 @@ def configure_iface(port=iface_const.SERVER_PORT):
     :param port: Listening port.
     :return: Listening reactor.
     """
+    logger = logging.getLogger(__name__)
+    logger.info("Initializing interface server.")
     site = Site(AdSelectIfaceServer())
     return reactor.listenTCP(port, site)
