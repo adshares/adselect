@@ -13,28 +13,31 @@ class TestAdSelectIfaceServer(db_test_case):
         self.campaigns = deepcopy(self._campaigns)
         self.impressions = deepcopy(self._impressions)
 
+    @defer.inlineCallbacks
     def test_jsonrpc_campaign_update(self):
-        ret = self.server.jsonrpc_campaign_update()
+        ret = yield self.server.jsonrpc_campaign_update()
         self.assertTrue(ret)
 
-        ret = self.server.jsonrpc_campaign_update(*self.campaigns)
+        ret = yield self.server.jsonrpc_campaign_update(*self.campaigns)
         self.assertTrue(ret)
 
+    @defer.inlineCallbacks
     def test_jsonrpc_campaign_delete(self):
-        ret = self.server.jsonrpc_campaign_delete()
+        ret = yield self.server.jsonrpc_campaign_delete()
         self.assertTrue(ret)
 
-        ret = self.server.jsonrpc_campaign_update(*self.campaigns)
+        ret = yield self.server.jsonrpc_campaign_update(*self.campaigns)
         self.assertTrue(ret)
 
-        ret = self.server.jsonrpc_campaign_delete(*[cid['campaign_id'] for cid in self.campaigns])
+        ret = yield self.server.jsonrpc_campaign_delete(*[cid['campaign_id'] for cid in self.campaigns])
         self.assertTrue(ret)
 
+    @defer.inlineCallbacks
     def test_jsonrpc_impression_add(self):
-        ret = self.server.jsonrpc_impression_add()
+        ret = yield self.server.jsonrpc_impression_add()
         self.assertTrue(ret)
 
-        ret = self.server.jsonrpc_impression_add(*self.impressions)
+        ret = yield self.server.jsonrpc_impression_add(*self.impressions)
         self.assertTrue(ret)
 
     @defer.inlineCallbacks
@@ -42,7 +45,8 @@ class TestAdSelectIfaceServer(db_test_case):
         ret = yield self.server.jsonrpc_banner_select()
         self.assertEqual(len(ret), 0)
 
-
+        yield self.server.jsonrpc_campaign_update(*self.campaigns)
+        yield self.server.jsonrpc_impression_add(*self.impressions)
 
 
 class TestConfigureIfaceServer(TestCase):

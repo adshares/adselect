@@ -28,6 +28,7 @@ class AdSelectIfaceServer(JSONRPCServer):
         """
         if not campaign_data_list:
             yield self.logger.warning("No campaign data to update.")
+            defer.returnValue(True)
         else:
             for campaign_data in campaign_data_list:
                 yield self.logger.debug("Campaign update: {0}".format(campaign_data))
@@ -44,6 +45,7 @@ class AdSelectIfaceServer(JSONRPCServer):
         """
         if not campaign_id_list:
             yield self.logger.warning("No campaign id to remove.")
+            defer.returnValue(True)
         else:
             for campaign_id in campaign_id_list:
                 yield self.logger.info("Campaign removal: {0}".format(campaign_id))
@@ -61,6 +63,7 @@ class AdSelectIfaceServer(JSONRPCServer):
         """
         if not impressions_data_list:
             yield self.logger.warning("No event data to add.")
+            defer.returnValue(True)
         else:
             for imobj in impressions_data_list:
                 yield self.logger.debug("Adding event data: {0}".format(imobj))
@@ -85,12 +88,13 @@ class AdSelectIfaceServer(JSONRPCServer):
 
         if not impression_param_list:
             yield self.logger.warning("No event parameters.")
-            defer.returnValue(False)
+            defer.returnValue([])
         else:
             yield self.logger.info("Select banners request received.")
             banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
                                impression_param_list]
-
+            print banner_requests
+            yield self.logger.debug(banner_requests)
             selected_banners = iface_utils.select_banner(banner_requests)
             selected_banners.addCallback(send_respone)
             yield self.logger.debug(selected_banners)
