@@ -33,7 +33,7 @@ $ mkdir -p ~/adselect/db/mongo
 
 Create folders for supervisor.
 ```
-$ mkdir -p ~/adselect/log/supervisor ~/adselect/log/adselect ~/adselect/log/mongo
+$ mkdir -p ~/adselect/log
 $ mkdir -p ~/adselect/run/supervisor ~/adselect/run/adselect ~/adselect/run/mongo
 ```
 
@@ -63,7 +63,7 @@ export VIRTUALENV_ROOT=$HOME/adselect
 export PYTHONPATH=$HOME/adselect:$PYTHONPATH
 source ./adselect/bin/activate
 mkdir -p ./adselect/db/mongo
-mkdir -p ./adselect/log/supervisor ./adselect/log/adselect ./adselect/log/mongo
+mkdir -p ./adselect/log
 mkdir -p ./adselect/run/supervisor ./adselect/run/adselect ./adselect/run/mongo
 git clone https://github.com/adshares/adselect.git ./adselect/adselect
 pip install -r ./adselect/adselect/requirements.txt
