@@ -1,0 +1,7 @@
+@startuml
+AdServer -> AdSelect_Interface: [list] Remove campaign information (incl. banners, filters)
+AdSelect_Interface -> AdSelect_Database: Remove campaign information (incl. filters)
+AdSelect_Interface -> AdSelect_Database: Remove campaign banners
+AdServer <-- AdSelect_Interface: OK
+@enduml
+

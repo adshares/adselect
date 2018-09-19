@@ -1,0 +1,7 @@
+@startuml
+AdServer -> AdSelect_Interface: [list] Add impression
+AdSelect_Interface -> AdSelect_Cache: Increment impression count (per: banner-publisher)
+AdSelect_Interface -> AdSelect_Cache: Increment payment amount (per: banner-publisher-keyword)
+AdServer <-- AdSelect_Interface: OK
+@enduml
+

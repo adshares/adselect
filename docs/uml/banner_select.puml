@@ -1,0 +1,12 @@
+@startuml
+AdServer -> AdSelect_Interface: [list] Impression requests
+AdSelect_Interface -> AdSelect: Select best banners
+AdSelect -> AdSelect: Get banners matching keywords
+AdSelect -> AdSelect: Sort banners by keyword value
+AdSelect -> AdSelect: Limit number of banners (preset value)
+AdSelect -> AdSelect: Add new banners (no impressions)
+AdSelect -> AdSelect: Randomize order
+AdSelect_Interface <-- AdSelect: Validate banners with policies
+AdServer <-- AdSelect_Interface: Return impression responses
+@enduml
+

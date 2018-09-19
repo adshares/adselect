@@ -1,0 +1,12 @@
+@startuml
+AdSelect -> AdSelect_ScoreCalculator: Save scores
+AdSelect_ScoreCalculator -> AdSelect_ScoreCalculator: Recalculate scores
+AdSelect_ScoreCalculator -> AdSelect_Database: Save scores
+AdSelect -> AdSelect_Database: Save impression count
+AdSelect -> AdSelect_Database: Save keyword payments
+AdSelect -> AdSelect_Cache: Clear keyword payments cache
+AdSelect -> AdSelect_Cache: Load banners
+AdSelect -> AdSelect_Cache: Load scores
+AdSelect -> AdSelect_Database: Clean database (remove old banner and campaign data)
+@enduml
+
