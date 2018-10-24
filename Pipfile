@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+txmongo = "==18.1.0"
+supervisor = "==3.3.4"
+jsonobject = "==0.8.0"
+fastjsonrpc = "==0.3.0"
+pygelf = "==0.3.3"
+Twisted = "==18.4.0"
+
+[requires]
+python_version = "2.7"
