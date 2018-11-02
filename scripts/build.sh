@@ -10,15 +10,15 @@ if [ ! -v TRAVIS ]; then
   # Checkout repo and change directory
 
   # Install git
-  git --version || apt-get install -y git
+  git --version || apt-get -qq -y install git
 
   git clone \
     --depth=1 \
-    https://github.com/adshares/adpanel.git \
-    --branch ${ADSELECT_INSTALLATION_BRANCH} \
-    ${ADSELECT_BUILD_PATH}/build
+    https://github.com/adshares/adselect.git \
+    --branch ${ADSELECT_BRANCH} \
+    ${BUILD_PATH}/build
 
-  cd ${ADSELECT_BUILD_PATH}/build
+  cd ${BUILD_PATH}/build
 fi
 
 envsubst < .env.dist | tee .env
