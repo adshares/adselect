@@ -7,3 +7,5 @@ omit =
     # omit Travis-CI virtualenv directory
     */virtualenv/python*
     */lib/python*/site-packages/*
+    # omit pipenv
+    .venv/*
