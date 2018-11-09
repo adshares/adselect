@@ -93,7 +93,7 @@ class AdSelectIfaceServer(JSONRPCServer):
             yield self.logger.info("Select banners request received.")
             banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
                                impression_param_list]
-            print banner_requests
+
             yield self.logger.debug(banner_requests)
             selected_banners = iface_utils.select_banner(banner_requests)
             selected_banners.addCallback(send_respone)
