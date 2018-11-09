@@ -1,49 +1,77 @@
-# Project language
-language: python
+sudo: required
 
-# Python version
-python:
-  - 2.7
+language: jvm
 
-# Allows use container-based infrastructure
-sudo: false
+jdk: openjdk9
 
-# Cache pip dependencies
-cache: pip
+services:
+  - docker
 
-addons:
-  sonarcloud:
-    organization: "adshares-github"
-    token:
-      secure: "Y9DOaaaGq7185QSRWIWSu1+R+5FnTyxWp68IPkUm31NxE7YXi3bzyKVBJ8xvaJqIxaZxt8J1EI6/vas0qygfraeYUngTzFjPQD0FrCpy64+eb2eZ9l+C/g0J/3isJkdAoqMqPFB98vQYOImozz7IAX4UhdgXSvsAhuPMXq1vQPom1MnYL5Hjbl886gbYIzDFwuACqjiTKNA8QaQNpNwn3RTGQBFGIUKvfZtKcwH9JhTG/WMPdMNHN3oUMIznv/dvJOJ20zR/tAgg1jRQb06eLPURtYiZLV+ewtLG0aDSFk1rkgXjagImKofV+3DAhBqw+e4v3lgsiFhDMsenIQD8gkz8qMntKXRlSj9dYASWbD1H7SKh+Fv9QSz2kyWKUIxlGYpLdTqq7Sp2amA6OxkminHR4znY3zIwfZdXAcqqqba4NI5i3Uw/uyGCHXxpr1pFmbV/P+r2o1vhxD4DoUu2NjBbULE4lzif+tXH9eR0K/VgjQOCthACs/IPMyGjXjadwKldS5rRlCH4v123JXai3+z2GgDInGgoFPgOLFdTgU1cnBwHnlzp9RGgiD2NS+U17J/xYgoZVRPxyIs8CQ7gktq5N/WgFH2XPjFLFfY+SFTZfQh/M6/9NRFfGQ7s9tVm9zPtbGnwIvAV7kUyfEsYkacgkNKWPhnC/t0P1giBow0="
-    github_token:
-      secure: "KVEz+mR1roJkpNHTqbVgRcZhpEN6G9AEeKJDycMEyE3+YbLSJO+INMy5szylHPvImP9S9BSYlRuVWkVuS0gC1G15J4RpMx5+8i7bgKsU/48rjLttcBSXvguhfrzSRnTOff+5C0Xq1duJ3v1YOhkO7qhKMYFNbAMBGyhDV67OTnRCVPeZ5W0yVz/dLzPyystYqkPCYQFEtwicjbBGt3PGOPb4+6mNoRKnsxaf79sN3LR8qFLdKHgE7V7ONem+6fwqa8BBOJ1b6GO/gInSeFDG9FeWoo2ufkA7RVYJ2LQPFkGq88YhddZ/28Trjy/gP0MglZHHoSSWJH24XsJD/k4HC5Lv2SBLIimDmQXTR744JxoF6RDvF7HY3GB635B6rjfgPyRs7IbQfL1xLv54addJ2RsPTqdIIGGOpq4A48QInWtqzbaaAoaxtBqaBn20prpQF4a5V4DNk6kPV5cRAS8V+KzCNPXkk2fRwXpFZR+uF+oGclRoO/xzcFKjf8El2V5LuakO90SAwe2tcXo13yUOOjkjNo1JCMh7d/kgtzGvyVcd6d4XZP35AE0u45PhzSyNFIONPft7fOWfZ4lzWasE3X0+i4ujHKV9t/vvVZGaG0odiwBP/AATkpF738FgVueX7qOlxwA6b8sSmBgiulC+Xhjcoos/D0FOXuVz9IV4CjI="
-    
-# Install python dependencies
-install:
-  - pip install -r requirements.txt
-  - pip install mock mongomock
+env:
+  global:
+    - DOCKER_IMAGE=awlodarkiewicz/devops:build-latest
+    - HOST_PATH=/home/travis/build/adshares/adselect
+    - BUILD_PATH=/build/adselect
+    - BUILD_NAME=adselect_build
+    - PYTHONPATH=$PYTHONPATH:$BUILD_PATH
+    - ADSELECT_LOG_CONFIG_FILE=config/log_config.json
+    - ADSELECT_MONGO_DB_PORT=27017
+    - ADSELECT_MONGO_DB_NAME=adselect
+    - ADSELECT_SERVER_PORT=8090
+    - ADSELECT_RECALCULATE_TASK_SECONDS_INTERVAL=5
+    - ADSELECT_NEW_BANNERS_IMPRESSION_CUTOFF=100
+  matrix:
+    - ADSELECT_APP_ENV=dev
+
+stages:
+  - Test build, test code, test quality
 
 before_script:
-  - export PYTHONPATH=$PYTHONPATH:$(pwd)
-  
-stages:
-  - test
-  - quality
+  # Enable aliases for non-interactive shells
+  - shopt -s expand_aliases
+  # Set alias - please note the missing quote you need to append.
+  - alias in_docker='docker exec $BUILD_NAME /bin/bash -c "cd $BUILD_PATH && '
+  # Set aliast for cleanup
+  - alias cleanup_docker='docker stop $BUILD_NAME && docker rm $BUILD_NAME'
 
 jobs:
   include:
-    # Python unit tests
-    - stage: test
-      script: trial tests
     # Coverage generation and Sonar Qube
     - stage: quality
       script:
-       - pip install coverage
-       - coverage run `which trial` tests
-       - coverage xml -i
-       - sonar-scanner
+        ## Setup test environment
+        # Run docker container
+        - docker pull $DOCKER_IMAGE
+        - env | grep ADSELECT > adselect.env
+        - >
+          docker run -d
+          --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
+          -e TRAVIS=true
+          -e PYTHONPATH=$BUILD_PATH
+          -e PIPENV_VENV_IN_PROJECT=1
+          --env-file adselect.env
+          --name $BUILD_NAME
+          $DOCKER_IMAGE
+          sleep infinity
 
+        # Run pre-build script
+        - in_docker ./scripts/pre-build.sh"
+
+        # Run build script
+        - in_docker ./scripts/build.sh"
+
+        - in_docker /bin/bash scripts/pre-install.sh"
+
+        - in_docker pipenv run tests"
+
+        - in_docker pipenv run quality"
+
+        - in_docker pipenv run coverage report -m"
+
+        - sonar-scanner
+
+        # Cleanup
+        - cleanup_docker
 
 # After a build, send email notification with the build results
 notifications:
@@ -53,3 +81,11 @@ notifications:
       secure: "fuNJCrimqsz1w3KP77SyxgDQaqAQPtiEClUn4Ne1zAjFXvHRW/xgYshPCCp53EemkF0Zq2bSyw1/OAu+kCbqTeaHWJAzkQIfQIcQgbdffXfYTa3K6249K6EkxmxNKjDgIyoL8WhwSw3ttXqWS/jOmUzRHp/bpk+gf5xp3UdhCPsqvfWfyPcGg512vJuqg0805Y4KwCTHAmA/ZSlWJjf1/zpZMsbog4lRtRmNw/G3Wd+nNP72eHlrKKT91dP+t/cQMed2wcrfuMo0gdmZpL3LNafnh9iA8Du3UULgv1QVZSmQAaGGBOexRY+HQsSyOrR+0ieScI0FRERenuID4+k248c8zAuH6y6IZeytNQIxYkPgOb4HnX1bLk+wggzIiV1yngzfxznuUAJ8Opr13jyfrHIvhQuLUq8mvtXz2KXCF3DPJ8SRpRbmeQeYTrQVoJ3Q6900J+h+wxMYfOepfNRVoZeSLX3VqJXzrthW2c/YoeA9onwuQK4UjKk8pDLt+FvdwJ5+ucZk7Oh+H9dg8HKWS6zg9cqMgwbNH8Dso2U0pporl7e9avlyN4J0Kc1yRlBRXpNXMBcgToruw+hZAsZcR2+9fLwoz1b/g0jm4RoN/yz/krm4RNesVP2rAyEKUSugsPn2z07eCWJHEeuEUFJ4Ue1YLoKV+EIksYQT2GtW91I="
     on_success: change
     on_failure: always
+
+addons:
+  sonarcloud:
+    organization: "adshares-github"
+    token:
+      secure: "Y9DOaaaGq7185QSRWIWSu1+R+5FnTyxWp68IPkUm31NxE7YXi3bzyKVBJ8xvaJqIxaZxt8J1EI6/vas0qygfraeYUngTzFjPQD0FrCpy64+eb2eZ9l+C/g0J/3isJkdAoqMqPFB98vQYOImozz7IAX4UhdgXSvsAhuPMXq1vQPom1MnYL5Hjbl886gbYIzDFwuACqjiTKNA8QaQNpNwn3RTGQBFGIUKvfZtKcwH9JhTG/WMPdMNHN3oUMIznv/dvJOJ20zR/tAgg1jRQb06eLPURtYiZLV+ewtLG0aDSFk1rkgXjagImKofV+3DAhBqw+e4v3lgsiFhDMsenIQD8gkz8qMntKXRlSj9dYASWbD1H7SKh+Fv9QSz2kyWKUIxlGYpLdTqq7Sp2amA6OxkminHR4znY3zIwfZdXAcqqqba4NI5i3Uw/uyGCHXxpr1pFmbV/P+r2o1vhxD4DoUu2NjBbULE4lzif+tXH9eR0K/VgjQOCthACs/IPMyGjXjadwKldS5rRlCH4v123JXai3+z2GgDInGgoFPgOLFdTgU1cnBwHnlzp9RGgiD2NS+U17J/xYgoZVRPxyIs8CQ7gktq5N/WgFH2XPjFLFfY+SFTZfQh/M6/9NRFfGQ7s9tVm9zPtbGnwIvAV7kUyfEsYkacgkNKWPhnC/t0P1giBow0="
+    github_token:
+      secure: "KVEz+mR1roJkpNHTqbVgRcZhpEN6G9AEeKJDycMEyE3+YbLSJO+INMy5szylHPvImP9S9BSYlRuVWkVuS0gC1G15J4RpMx5+8i7bgKsU/48rjLttcBSXvguhfrzSRnTOff+5C0Xq1duJ3v1YOhkO7qhKMYFNbAMBGyhDV67OTnRCVPeZ5W0yVz/dLzPyystYqkPCYQFEtwicjbBGt3PGOPb4+6mNoRKnsxaf79sN3LR8qFLdKHgE7V7ONem+6fwqa8BBOJ1b6GO/gInSeFDG9FeWoo2ufkA7RVYJ2LQPFkGq88YhddZ/28Trjy/gP0MglZHHoSSWJH24XsJD/k4HC5Lv2SBLIimDmQXTR744JxoF6RDvF7HY3GB635B6rjfgPyRs7IbQfL1xLv54addJ2RsPTqdIIGGOpq4A48QInWtqzbaaAoaxtBqaBn20prpQF4a5V4DNk6kPV5cRAS8V+KzCNPXkk2fRwXpFZR+uF+oGclRoO/xzcFKjf8El2V5LuakO90SAwe2tcXo13yUOOjkjNo1JCMh7d/kgtzGvyVcd6d4XZP35AE0u45PhzSyNFIONPft7fOWfZ4lzWasE3X0+i4ujHKV9t/vvVZGaG0odiwBP/AATkpF738FgVueX7qOlxwA6b8sSmBgiulC+Xhjcoos/D0FOXuVz9IV4CjI="

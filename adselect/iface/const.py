@@ -1,2 +1,4 @@
+import os
+
 #: Twisted TCP port number
-SERVER_PORT = 8080
+SERVER_PORT = int(os.getenv('ADSELECT_SERVER_PORT'))

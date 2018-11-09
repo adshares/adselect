@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     logging.basicConfig()
 
-    logfile_path = os.path.join(os.environ["ADSELECT_ROOT"], "adselect", "config", "log_config.json")
+    logfile_path = os.path.join(os.getenv('ADSELECT_LOG_CONFIG_FILE'))
 
     with open(logfile_path, "r") as fd:
         logging.config.dictConfig(json.load(fd))
