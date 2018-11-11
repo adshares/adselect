@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 from adselect.contrib import utils as contrib_utils
 
 #: Keep info about best paid keywords for the specific banner size. Keywords in the list are ordered from the best paid

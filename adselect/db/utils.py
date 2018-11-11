@@ -1,5 +1,6 @@
-from adselect import db
 from twisted.internet import defer
+
+from adselect import db
 
 
 # ALL #

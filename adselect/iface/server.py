@@ -1,12 +1,10 @@
 import logging
-from twisted.internet import reactor, defer
-from twisted.web.server import Site
 
 from fastjsonrpc.server import JSONRPCServer
+from twisted.internet import defer, reactor
+from twisted.web.server import Site
 
-from adselect.iface import const as iface_const
-from adselect.iface import utils as iface_utils
-from adselect.iface import protocol as iface_proto
+from adselect.iface import const as iface_const, protocol as iface_proto, utils as iface_utils
 
 
 class AdSelectIfaceServer(JSONRPCServer):

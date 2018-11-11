@@ -1,13 +1,11 @@
+import logging
 from collections import defaultdict
 
 from twisted.internet import defer, reactor
-from twisted.logger import Logger
 
-from adselect.stats import const as stats_consts
-from adselect.stats import cache as stats_cache
-from adselect.stats import utils as stats_utils
 from adselect.db import utils as db_utils
-import logging
+from adselect.stats import cache as stats_cache, const as stats_consts, utils as stats_utils
+
 logging.basicConfig(level=logging.INFO)
 
 

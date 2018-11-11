@@ -1,13 +1,13 @@
 from __future__ import print_function
+
 import random
 from collections import defaultdict
 
 from twisted.internet import defer
 
 from adselect.contrib import utils as contrib_utils
-from adselect.stats import const as stats_consts
 from adselect.db import utils as db_utils
-from adselect.stats import cache as stats_cache
+from adselect.stats import cache as stats_cache, const as stats_consts
 
 
 def genkey(key, val, delimiter="_"):

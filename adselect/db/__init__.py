@@ -1,7 +1,8 @@
-from adselect.db import const as db_consts
+import txmongo
 from twisted.internet import defer
 from txmongo import filter
-import txmongo
+
+from adselect.db import const as db_consts
 
 
 @defer.inlineCallbacks
