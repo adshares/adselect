@@ -1,9 +1,13 @@
+import logging
+
 from twisted.internet import defer
 
 from unittest import TestCase
 from adselect.iface import server as iface_server
 from tests import db_test_case
 from copy import deepcopy
+
+logging.disable(logging.WARNING)
 
 
 class TestAdSelectIfaceServer(db_test_case):

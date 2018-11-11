@@ -1,6 +1,7 @@
 from twisted.internet import defer
 
 from adselect import db
+from adselect.db import const as db_const
 
 from tests import db_test_case
 
@@ -11,7 +12,7 @@ class DbInitTestCase(db_test_case):
 
         database = db.get_mongo_db()
         self.assertIsNotNone(database)
-        self.assertEqual(database.name, 'adselect')
+        self.assertEqual(database.name, db_const.MONGO_DB_NAME)
 
     def test_get_mongo_connection(self):
 

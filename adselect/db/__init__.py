@@ -36,7 +36,7 @@ def get_mongo_db():
     :return: MongoDB instance
     """
     conn = get_mongo_connection()
-    defer.returnValue(getattr(conn, db_consts.MONGO_DB_NAME))
+    return getattr(conn, db_consts.MONGO_DB_NAME)
 
 
 def get_collection(name):
