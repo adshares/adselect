@@ -60,7 +60,8 @@ def get_mongo_connection():
     """
     global MONGO_CONNECTION
     if MONGO_CONNECTION is None:
-        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool(port=db_consts.MONGO_DB_PORT)
+        MONGO_CONNECTION = txmongo.lazyMongoConnectionPool(port=db_consts.MONGO_DB_PORT,
+                                                           host=db_consts.MONGO_DB_HOST)
     return MONGO_CONNECTION
 
 
