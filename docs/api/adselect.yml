@@ -1,0 +1,248 @@
+configuration:
+  title: AdSelect
+  description: Api documentation for AdSelect
+  uri: https://adselect.example.com:8000
+versions:
+  v0.1:
+    status: current
+    major: 0
+    minor: 1
+    methods:
+      campaign_update:
+        label: campaign_update
+        method: POST
+        uri: /
+        description: Update AdSelect DB with campaign and banner information.
+        request_body:
+          type: object
+          properties:
+            jsonrpc:
+              type: const
+              description: Json-RPC version
+              const_type: string
+              value: "2.0"
+            method:
+              type: const
+              description: Json-RPC method name
+              const_type: string
+              value: "campaign_update"
+            id:
+              type: integer
+            params:
+              type: array
+              items:
+                  type: reference
+                  reference: CampaignObject
+        response_body:
+            type: object
+            properties:
+              jsonrpc:
+                type: const
+                description: Json-RPC version
+                const_type: string
+                value: "2.0"
+              id:
+                type: integer
+              result:
+                type: string
+      campaign_delete:
+        label: campaign_delete
+        method: POST
+        uri: /
+        description: Update AdSelect DB with campaign and banner information.
+        request_body:
+          type: object
+          properties:
+            jsonrpc:
+              type: const
+              description: Json-RPC version
+              const_type: string
+              value: "2.0"
+            method:
+              type: const
+              description: Json-RPC method name
+              const_type: string
+              value: "campaign_delete"
+            id:
+              type: integer
+            params:
+              type: array
+              items:
+                type: reference
+                reference: CampaignObject
+        response_body:
+            type: object
+            properties:
+              jsonrpc:
+                type: const
+                description: Json-RPC version
+                const_type: string
+                value: "2.0"
+              id:
+                type: integer
+              result:
+                type: string
+      impression_add:
+        label: impression_add
+        method: POST
+        uri: /
+        description: Update AdSelect DB with campaign and banner information.
+        request_body:
+          type: object
+          properties:
+            jsonrpc:
+              type: const
+              description: Json-RPC version
+              const_type: string
+              value: "2.0"
+            method:
+              type: const
+              description: Json-RPC method name
+              const_type: string
+              value: "impression_add"
+            id:
+              type: integer
+            params:
+              type: array
+              items:
+                type: reference
+                reference: ImpressionObject
+        response_body:
+          type: object
+          properties:
+            jsonrpc:
+              type: const
+              description: Json-RPC version
+              const_type: string
+              value: "2.0"
+            id:
+              type: integer
+            result:
+              type: string
+      banner_select:
+        label: banner_select
+        method: POST
+        uri: /
+        description: Update AdSelect DB with campaign and banner information.
+        request_body:
+          type: object
+          properties:
+            jsonrpc:
+              type: const
+              description: Json-RPC version
+              const_type: string
+              value: "2.0"
+            method:
+              type: const
+              description: Json-RPC method name
+              const_type: string
+              value: "banner_select"
+            id:
+              type: integer
+            params:
+              type: array
+              items:
+                type: reference
+                reference: SelectBannerRequest
+        response_body:
+          type: object
+          properties:
+            jsonrpc:
+              type: const
+              description: Json-RPC version
+              const_type: string
+              value: "2.0"
+            id:
+              type: integer
+            result:
+              type: array
+              items:
+                type: reference
+                reference: SelectBannerResponse
+    references:
+      BannerObject:
+        properties:
+          banner_id:
+            type: string
+          banner_size:
+            type: string
+          campaign_id:
+            type: string
+          keywords:
+            type: object
+        type: object
+      CampaignObject:
+        properties:
+          banners:
+            items:
+              reference: BannerObject
+              type: reference
+            type: array
+          campaign_id:
+            type: string
+          filters:
+            reference: RequireExcludeListObject
+            type: reference
+          keywords:
+            type: object
+          time_end:
+            type: integer
+          time_start:
+            type: integer
+        type: object
+      ImpressionObject:
+        properties:
+          banner_id:
+            type: string
+          keywords:
+            type: object
+          paid_amount:
+            type: number
+          publisher_id:
+            type: string
+          user_id:
+            type: string
+        type: object
+      KeywordFilterObject:
+        properties:
+          filter:
+            type: object
+          keyword:
+            type: string
+        type: object
+      RequireExcludeListObject:
+        properties:
+          exclude:
+            items:
+              reference: KeywordFilterObject
+              type: reference
+            type: array
+          require:
+            items:
+              reference: KeywordFilterObject
+              type: reference
+            type: array
+        type: object
+      SelectBannerRequest:
+        properties:
+          banner_filters:
+            reference: RequireExcludeListObject
+            type: reference
+          banner_size:
+            type: string
+          keywords:
+            type: object
+          publisher_id:
+            type: integer
+          request_id:
+            type: integer
+          user_id:
+            type: string
+        type: object
+      SelectBannerResponse:
+        properties:
+          banner_id:
+            type: string
+          request_id:
+            type: integer
+        type: object
