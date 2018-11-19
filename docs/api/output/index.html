@@ -148,12 +148,20 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"args"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com">Value of keyword</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1"><</span><span class="diff_version" data-version="v0.1">, <=</span><span class="diff_version" data-version="v0.1">, =</span><span class="diff_version" data-version="v0.1">, ></span><span class="diff_version" data-version="v0.1">, >=</span><span class="diff_version" data-version="v0.1">, and</span><span class="diff_version" data-version="v0.1">, or</span>)</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>            <span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>            <span class="str">"keyword"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+        <td class="com">Keyword key/name</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
@@ -176,12 +184,20 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"args"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com">Value of keyword</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1"><</span><span class="diff_version" data-version="v0.1">, <=</span><span class="diff_version" data-version="v0.1">, =</span><span class="diff_version" data-version="v0.1">, ></span><span class="diff_version" data-version="v0.1">, >=</span><span class="diff_version" data-version="v0.1">, and</span><span class="diff_version" data-version="v0.1">, or</span>)</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>            <span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>            <span class="str">"keyword"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+        <td class="com">Keyword key/name</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
@@ -304,78 +320,86 @@
 </span>        <span class="str">"exclude"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span><span class="pun">,
 </span>        <span class="str">"require"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
+</span>      <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"my_user_id"</span>
+</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="lit">231</span><span class="pun">,
+</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">290</span><span class="pun">,
+</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"fhs893"</span>
     <span class="pun">}</span><span class="pun">,
 </span>    <span class="pun">{
 </span>      <span class="str">"banner_filters"</span><span class="pun">: </span><span class="pun">{
 </span>        <span class="str">"exclude"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span><span class="pun">,
 </span>        <span class="str">"require"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
+</span>      <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"my_user_id"</span>
+</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="lit">231</span><span class="pun">,
+</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">290</span><span class="pun">,
+</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"fhs893"</span>
     <span class="pun">}</span>
   <span class="pun">]</span>
 <span class="pun">}</span></div>
@@ -388,12 +412,12 @@
 </span>  <span class="str">"jsonrpc"</span><span class="pun">: </span><span class="str">"2.0"</span><span class="pun">,
 </span>  <span class="str">"result"</span><span class="pun">: </span><span class="pun">[
 </span>    <span class="pun">{
-</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">42</span>
+</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"h7sfd0ag"</span><span class="pun">,
+</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">505</span>
     <span class="pun">}</span><span class="pun">,
 </span>    <span class="pun">{
-</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">42</span>
+</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"h7sfd0ag"</span><span class="pun">,
+</span>      <span class="str">"request_id"</span><span class="pun">: </span><span class="lit">505</span>
     <span class="pun">}</span>
   <span class="pun">]</span>
 <span class="pun">}</span></div></div></div>
@@ -469,6 +493,10 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>            <span class="typ">string</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
         <td></td>
     </tr>
@@ -501,12 +529,20 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"args"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com">Value of keyword</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1"><</span><span class="diff_version" data-version="v0.1">, <=</span><span class="diff_version" data-version="v0.1">, =</span><span class="diff_version" data-version="v0.1">, ></span><span class="diff_version" data-version="v0.1">, >=</span><span class="diff_version" data-version="v0.1">, and</span><span class="diff_version" data-version="v0.1">, or</span>)</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>            <span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>            <span class="str">"keyword"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+        <td class="com">Keyword key/name</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
@@ -529,12 +565,20 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"args"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com">Value of keyword</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1"><</span><span class="diff_version" data-version="v0.1">, <=</span><span class="diff_version" data-version="v0.1">, =</span><span class="diff_version" data-version="v0.1">, ></span><span class="diff_version" data-version="v0.1">, >=</span><span class="diff_version" data-version="v0.1">, and</span><span class="diff_version" data-version="v0.1">, or</span>)</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>            <span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>            <span class="str">"keyword"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+        <td class="com">Keyword key/name</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
@@ -603,7 +647,7 @@
         <td class="com">Json-RPC version</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"result"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"True"</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
@@ -612,6 +656,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -627,19 +696,19 @@
 </span>    <span class="pun">{
 </span>      <span class="str">"banners"</span><span class="pun">: </span><span class="pun">[
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span><span class="pun">,
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span>
       <span class="pun">]</span><span class="pun">,
@@ -648,54 +717,58 @@
 </span>        <span class="str">"exclude"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span><span class="pun">,
 </span>        <span class="str">"require"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span>
       <span class="pun">}</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">42</span>
+</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">231187302</span><span class="pun">,
+</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">131187302</span>
     <span class="pun">}</span><span class="pun">,
 </span>    <span class="pun">{
 </span>      <span class="str">"banners"</span><span class="pun">: </span><span class="pun">[
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span><span class="pun">,
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span>
       <span class="pun">]</span><span class="pun">,
@@ -704,37 +777,41 @@
 </span>        <span class="str">"exclude"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span><span class="pun">,
 </span>        <span class="str">"require"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span>
       <span class="pun">}</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">42</span>
+</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">231187302</span><span class="pun">,
+</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">131187302</span>
     <span class="pun">}</span>
   <span class="pun">]</span>
 <span class="pun">}</span></div>
@@ -745,7 +822,7 @@
 <span class="pun">{
 </span>  <span class="str">"id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
 </span>  <span class="str">"jsonrpc"</span><span class="pun">: </span><span class="str">"2.0"</span><span class="pun">,
-</span>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"my_result"</span>
+</span>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"True"</span>
 <span class="pun">}</span></div></div></div>
                 </div>
             </li>
@@ -819,6 +896,10 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>            <span class="typ">string</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td class="com"></td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
         <td></td>
     </tr>
@@ -851,12 +932,20 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"args"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com">Value of keyword</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1"><</span><span class="diff_version" data-version="v0.1">, <=</span><span class="diff_version" data-version="v0.1">, =</span><span class="diff_version" data-version="v0.1">, ></span><span class="diff_version" data-version="v0.1">, >=</span><span class="diff_version" data-version="v0.1">, and</span><span class="diff_version" data-version="v0.1">, or</span>)</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>            <span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>            <span class="str">"keyword"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+        <td class="com">Keyword key/name</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
@@ -879,12 +968,20 @@
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"args"</span><span class="pun">: </span><span class="typ">string</span><span class="pun">,</span></td>
+        <td class="com">Value of keyword</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
+        <td>              <span class="str">"type"</span><span class="pun">: </span><span class="typ">enum</span></td>
+        <td class="com"> (<span class="diff_version" data-version="v0.1"><</span><span class="diff_version" data-version="v0.1">, <=</span><span class="diff_version" data-version="v0.1">, =</span><span class="diff_version" data-version="v0.1">, ></span><span class="diff_version" data-version="v0.1">, >=</span><span class="diff_version" data-version="v0.1">, and</span><span class="diff_version" data-version="v0.1">, or</span>)</td>
+    </tr>
+    <tr class="diff_version" data-version="v0.1">
         <td>            <span class="pun">}</span><span class="pun">,</span></td>
         <td></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>            <span class="str">"keyword"</span><span class="pun">: </span><span class="typ">string</span></td>
-        <td class="com"></td>
+        <td class="com">Keyword key/name</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
         <td>          <span class="pun">}</span></td>
@@ -953,7 +1050,7 @@
         <td class="com">Json-RPC version</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"result"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"True"</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
@@ -962,6 +1059,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -977,19 +1099,19 @@
 </span>    <span class="pun">{
 </span>      <span class="str">"banners"</span><span class="pun">: </span><span class="pun">[
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span><span class="pun">,
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span>
       <span class="pun">]</span><span class="pun">,
@@ -998,54 +1120,58 @@
 </span>        <span class="str">"exclude"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span><span class="pun">,
 </span>        <span class="str">"require"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span>
       <span class="pun">}</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">42</span>
+</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">231187302</span><span class="pun">,
+</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">131187302</span>
     <span class="pun">}</span><span class="pun">,
 </span>    <span class="pun">{
 </span>      <span class="str">"banners"</span><span class="pun">: </span><span class="pun">[
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span><span class="pun">,
 </span>        <span class="pun">{
-</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
-</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"my_banner_size"</span><span class="pun">,
-</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"my_campaign_id"</span><span class="pun">,
+</span>          <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"mnqwe"</span><span class="pun">,
+</span>          <span class="str">"banner_size"</span><span class="pun">: </span><span class="str">"966x1410"</span><span class="pun">,
+</span>          <span class="str">"campaign_id"</span><span class="pun">: </span><span class="str">"casuh12"</span><span class="pun">,
 </span>          <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>            <span class="str">"additionalProperties"</span><span class="pun">: </span><span class="str">"my_additionalProperties"</span>
           <span class="pun">}</span>
         <span class="pun">}</span>
       <span class="pun">]</span><span class="pun">,
@@ -1054,37 +1180,41 @@
 </span>        <span class="str">"exclude"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span><span class="pun">,
 </span>        <span class="str">"require"</span><span class="pun">: </span><span class="pun">[
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span><span class="pun">,
 </span>          <span class="pun">{
 </span>            <span class="str">"filter"</span><span class="pun">: </span><span class="pun">{
-</span>
+</span>              <span class="str">"args"</span><span class="pun">: </span><span class="str">"18-30"</span><span class="pun">,
+</span>              <span class="str">"type"</span><span class="pun">: </span><span class="str">"="</span>
             <span class="pun">}</span><span class="pun">,
-</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"my_keyword"</span>
+</span>            <span class="str">"keyword"</span><span class="pun">: </span><span class="str">"age_bracket"</span>
           <span class="pun">}</span>
         <span class="pun">]</span>
       <span class="pun">}</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
-</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">42</span>
+</span>      <span class="str">"time_end"</span><span class="pun">: </span><span class="lit">231187302</span><span class="pun">,
+</span>      <span class="str">"time_start"</span><span class="pun">: </span><span class="lit">131187302</span>
     <span class="pun">}</span>
   <span class="pun">]</span>
 <span class="pun">}</span></div>
@@ -1095,7 +1225,7 @@
 <span class="pun">{
 </span>  <span class="str">"id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
 </span>  <span class="str">"jsonrpc"</span><span class="pun">: </span><span class="str">"2.0"</span><span class="pun">,
-</span>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"my_result"</span>
+</span>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"True"</span>
 <span class="pun">}</span></div></div></div>
                 </div>
             </li>
@@ -1207,7 +1337,7 @@
         <td class="com">Json-RPC version</td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
-        <td>  <span class="str">"result"</span><span class="pun">: </span><span class="typ">string</span></td>
+        <td>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"True"</span></td>
         <td class="com"></td>
     </tr>
     <tr class="diff_version" data-version="v0.1">
@@ -1216,6 +1346,31 @@
     </tr>
         </tbody>
     </table></div>
+    <h6>Codes: </h6><table class="table table-bordered table-hover table-condensed">
+        <colgroup>
+            <col width="50px"></col>
+            <col></col>
+            <col width="50%"></col>
+        </colgroup>
+        <thead>
+            <tr>
+            <th><span
+            >Code</span></th>
+            <th><span
+            >Message</span></th>
+            <th><span
+            >Description</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr class="diff_version " data-version="v0.1">
+            <td><span class="lit">200</span></td>
+            <td><span class="str">OK</span></td>
+            <td><span class="com">All OK.</span></td>
+        </tr>
+        </tbody>
+    </table>
 </div><div class="stack sample"><div data-version="v0.1">
 
 <h5><i class="i-sample"></i> Sample: </h5>
@@ -1229,22 +1384,22 @@
 </span>  <span class="str">"method"</span><span class="pun">: </span><span class="str">"impression_add"</span><span class="pun">,
 </span>  <span class="str">"params"</span><span class="pun">: </span><span class="pun">[
 </span>    <span class="pun">{
-</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
+</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"dsha73"</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"paid_amount"</span><span class="pun">: </span><span class="lit">13.37</span><span class="pun">,
-</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="str">"my_publisher_id"</span><span class="pun">,
-</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"my_user_id"</span>
+</span>      <span class="str">"paid_amount"</span><span class="pun">: </span><span class="lit">0.321312321</span><span class="pun">,
+</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="str">"dja8h3"</span><span class="pun">,
+</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"da3w9jv"</span>
     <span class="pun">}</span><span class="pun">,
 </span>    <span class="pun">{
-</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"my_banner_id"</span><span class="pun">,
+</span>      <span class="str">"banner_id"</span><span class="pun">: </span><span class="str">"dsha73"</span><span class="pun">,
 </span>      <span class="str">"keywords"</span><span class="pun">: </span><span class="pun">{
 </span>
       <span class="pun">}</span><span class="pun">,
-</span>      <span class="str">"paid_amount"</span><span class="pun">: </span><span class="lit">13.37</span><span class="pun">,
-</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="str">"my_publisher_id"</span><span class="pun">,
-</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"my_user_id"</span>
+</span>      <span class="str">"paid_amount"</span><span class="pun">: </span><span class="lit">0.321312321</span><span class="pun">,
+</span>      <span class="str">"publisher_id"</span><span class="pun">: </span><span class="str">"dja8h3"</span><span class="pun">,
+</span>      <span class="str">"user_id"</span><span class="pun">: </span><span class="str">"da3w9jv"</span>
     <span class="pun">}</span>
   <span class="pun">]</span>
 <span class="pun">}</span></div>
@@ -1255,7 +1410,7 @@
 <span class="pun">{
 </span>  <span class="str">"id"</span><span class="pun">: </span><span class="lit">42</span><span class="pun">,
 </span>  <span class="str">"jsonrpc"</span><span class="pun">: </span><span class="str">"2.0"</span><span class="pun">,
-</span>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"my_result"</span>
+</span>  <span class="str">"result"</span><span class="pun">: </span><span class="str">"True"</span>
 <span class="pun">}</span></div></div></div>
                 </div>
             </li>

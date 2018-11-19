@@ -44,7 +44,12 @@ versions:
               id:
                 type: integer
               result:
-                type: string
+                type: const
+                const_type: string
+                value: "True"
+        response_codes:
+          - code: 200
+            description: All OK.
       campaign_delete:
         label: campaign_delete
         method: POST
@@ -81,7 +86,12 @@ versions:
               id:
                 type: integer
               result:
-                type: string
+                type: const
+                const_type: string
+                value: "True"
+        response_codes:
+          - code: 200
+            description: All OK.
       impression_add:
         label: impression_add
         method: POST
@@ -108,17 +118,22 @@ versions:
                 type: reference
                 reference: ImpressionObject
         response_body:
-          type: object
-          properties:
-            jsonrpc:
-              type: const
-              description: Json-RPC version
-              const_type: string
-              value: "2.0"
-            id:
-              type: integer
-            result:
-              type: string
+            type: object
+            properties:
+              jsonrpc:
+                type: const
+                description: Json-RPC version
+                const_type: string
+                value: "2.0"
+              id:
+                type: integer
+              result:
+                type: const
+                const_type: string
+                value: "True"
+        response_codes:
+          - code: 200
+            description: All OK.
       banner_select:
         label: banner_select
         method: POST
@@ -164,12 +179,17 @@ versions:
         properties:
           banner_id:
             type: string
+            sample: mnqwe
           banner_size:
             type: string
+            sample: 966x1410
           campaign_id:
             type: string
+            sample: casuh12
           keywords:
             type: object
+            additionalProperties:
+              type: string
         type: object
       CampaignObject:
         properties:
@@ -187,29 +207,53 @@ versions:
             type: object
           time_end:
             type: integer
+            sample: 231187302
           time_start:
             type: integer
+            sample: 131187302
         type: object
       ImpressionObject:
         properties:
           banner_id:
             type: string
+            sample: dsha73
           keywords:
             type: object
           paid_amount:
             type: number
+            sample: 0.321312321
           publisher_id:
             type: string
+            sample: dja8h3
           user_id:
             type: string
+            sample: da3w9jv
         type: object
       KeywordFilterObject:
+        type: object
         properties:
           filter:
             type: object
+            properties:
+              args:
+                type: string
+                sample: 18-30
+                description: Value of keyword
+              type:
+                type: enum
+                values:
+                  - "="
+                  - "and"
+                  - "or"
+                  - ">="
+                  - "<="
+                  - ">"
+                  - "<"
+                sample: "="
           keyword:
             type: string
-        type: object
+            description: Keyword key/name
+            sample: age_bracket
       RequireExcludeListObject:
         properties:
           exclude:
@@ -230,19 +274,25 @@ versions:
             type: reference
           banner_size:
             type: string
+            sample: 966x1410
           keywords:
             type: object
           publisher_id:
             type: integer
+            sample: 231
           request_id:
             type: integer
+            sample: 290
           user_id:
             type: string
+            sample: fhs893
         type: object
       SelectBannerResponse:
         properties:
           banner_id:
             type: string
+            sample: h7sfd0ag
           request_id:
             type: integer
+            sample: 505
         type: object
