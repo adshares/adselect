@@ -2,7 +2,14 @@ import jsonobject
 
 
 class KeywordFilterObject(jsonobject.JsonObject):
+    """
+    .. json:object:: KeywordFilterObject
+       :showexample:
 
+       :property string keyword: Keyword (String)
+       :property JSONObject filter: Filter object
+
+    """
     keyword = jsonobject.StringProperty()
     """Keyword (String)"""
 
@@ -11,6 +18,14 @@ class KeywordFilterObject(jsonobject.JsonObject):
 
 
 class RequireExcludeListObject(jsonobject.JsonObject):
+    """
+    .. json:object:: RequireExcludeListObject
+       :showexample:
+
+       :property [KeywordFilterObject] require: List of required keywords (`KeywordFilterObject`)
+       :property [KeywordFilterObject] exclude: List of excluded keywords (`KeywordFilterObject`)
+
+    """
 
     require = jsonobject.ListProperty(KeywordFilterObject)
     """List of required keywords (`KeywordFilterObject`)"""
@@ -20,7 +35,17 @@ class RequireExcludeListObject(jsonobject.JsonObject):
 
 
 class BannerObject(jsonobject.JsonObject):
+    """
+    .. json:object:: BannerObject
+       :showexample:
 
+       :property string banner_id: Unique banner identifier
+       :property string campaign_id: Unique campaign identifier
+       :property JSONObject keywords: Key-value map of keywords
+       :property string banner_size: Banner size, eg. 100x400
+       :propexample banner_size: 100x400
+
+    """
     banner_id = jsonobject.StringProperty()
     """Main banner identifier (String)."""
 
@@ -35,7 +60,18 @@ class BannerObject(jsonobject.JsonObject):
 
 
 class CampaignObject(jsonobject.JsonObject):
+    """
+    .. json:object:: CampaignObject
+       :showexample:
 
+       :property string campaign_id: Unique campaign identifier
+       :property integer time_start: Campaign start time (epoch time, in seconds)
+       :property integer time_end: Campaign end time (epoch time, in seconds)
+       :property JSONObject keywords: Key-value map of keywords
+       :property JSONObject filters: RequireExcludeListObject
+       :property [BannerObject] banners: List of banner objects
+
+    """
     campaign_id = jsonobject.StringProperty()
     """Main campaign identifier (String)."""
 
@@ -56,7 +92,17 @@ class CampaignObject(jsonobject.JsonObject):
 
 
 class ImpressionObject(jsonobject.JsonObject):
+    """
+    .. json:object:: ImpressionObject
+       :showexample:
 
+       :property string banner_id: Main banner identifier (String)
+       :property string publisher_id: Publisher identifier (String)
+       :property string user_id: User identifier (String)
+       :property float paid_amount: Payment for the impression (Float)
+       :property JSONObject keywords: Keywords associated with the impression
+
+    """
     banner_id = jsonobject.StringProperty()
     """Main banner identifier (String)"""
 
@@ -74,7 +120,19 @@ class ImpressionObject(jsonobject.JsonObject):
 
 
 class SelectBannerRequest(jsonobject.JsonObject):
+    """
+    .. json:object:: SelectBannerRequest
+       :showexample:
 
+       :property integer request_id: jsonobject.IntegerProperty()
+       :property integer publisher_id: jsonobject.IntegerProperty()
+       :property string user_id: User identifier (String)
+       :property string banner_size: Banner size, eg. 100x400
+       :propexample banner_size: 100x400
+       :property JSONObject keywords: Keywords associated with the impression
+       :property [RequireExcludeListObject] banner_filters: List of banner filters
+
+    """
     request_id = jsonobject.IntegerProperty()
     """Request identifier (Integer)"""
 
@@ -95,7 +153,13 @@ class SelectBannerRequest(jsonobject.JsonObject):
 
 
 class SelectBannerResponse(jsonobject.JsonObject):
+    """
+    .. json:object:: SelectBannerResponse
+       :showexample:
 
+       :property string banner_id: Unique banner identifier
+       :property integer request_id: Request identifier
+    """
     request_id = jsonobject.IntegerProperty()
     """Request identifier (Integer)"""
 
