@@ -1,9 +1,6 @@
 adselect.contrib package
 ========================
 
-Submodules
-----------
-
 adselect.contrib.filters module
 -------------------------------
 
@@ -20,11 +17,3 @@ adselect.contrib.utils module
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-
-Module contents
----------------
-
-.. automodule:: adselect.contrib
-    :members:
-    :undoc-members:
-    :show-inheritance:
