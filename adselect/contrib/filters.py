@@ -110,6 +110,11 @@ class EqualFilter(Filter):
     NAME = '='
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return self.filter_arg == value
 
 
@@ -126,6 +131,11 @@ class GreaterEqualFilter(Filter):
     NAME = ">="
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value >= self.filter_arg
 
 
@@ -142,6 +152,11 @@ class LessEqualFilter(Filter):
     NAME = "<="
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value <= self.filter_arg
 
 
@@ -158,6 +173,11 @@ class LessFilter(Filter):
     NAME = '<'
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value < self.filter_arg
 
 
@@ -174,6 +194,11 @@ class GreaterFilter(Filter):
     NAME = '>'
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value > self.filter_arg
 
 
