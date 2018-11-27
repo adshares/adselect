@@ -21,16 +21,22 @@ class AndFilter(Filter):
          "type": "and",
          "args": [
                   {
-                      "type": "=",
-                      "args": "music",
-                      "keywords": "interest"
+                    "filter":
+                     {
+                       "type": "=",
+                       "args": "music",
+                     },
+                   "keyword": "interest"
                   },
                   {
+                    "filter":
+                     {
                       "type": "<",
                       "args": 18,
-                      "keywords": "age"
-                  }
-                 ]
+                     },
+                    "keyword": "interest"
+                 }
+                ]
         }
 
     """
@@ -57,16 +63,22 @@ class OrFilter(Filter):
          "type": "or",
          "args": [
                   {
-                      "type": "=",
-                      "args": "music",
-                      "keywords": "interest"
+                    "filter":
+                     {
+                       "type": "=",
+                       "args": "music",
+                     },
+                   "keyword": "interest"
                   },
                   {
-                      "type": "=",
-                      "args": "art",
-                      "keywords": "interest"
-                  }
-                 ]
+                    "filter":
+                     {
+                      "type": "<",
+                      "args": 18,
+                     },
+                    "keyword": "interest"
+                 }
+                ]
         }
 
     """
@@ -92,7 +104,6 @@ class EqualFilter(Filter):
         {
           "type": "=",
           "args": "music",
-          "keywords": "interest"
         }
 
     """
@@ -109,7 +120,6 @@ class GreaterEqualFilter(Filter):
         {
           "type": ">=",
           "args": 18,
-          "keywords": "age"
         }
 
     """
@@ -126,7 +136,6 @@ class LessEqualFilter(Filter):
         {
           "type": "<=",
           "args": 17,
-          "keywords": "age"
         }
 
     """
@@ -143,7 +152,6 @@ class LessFilter(Filter):
         {
           "type": "<",
           "args": 18,
-          "keywords": "age"
         }
 
     """
@@ -160,7 +168,6 @@ class GreaterFilter(Filter):
         {
           "type": ">",
           "args": 17,
-          "keywords": "age"
         }
 
     """
