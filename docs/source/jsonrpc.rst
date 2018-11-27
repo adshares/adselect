@@ -1,5 +1,5 @@
-Short introduction to JSONRPC
-=============================
+JSONRPC basics
+==============
 
 All calls to AdSelect follow the JSON-RPC protocol. The `params` field of request objects must use the objects defined in `protocol`.
 

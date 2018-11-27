@@ -1,5 +1,5 @@
-adselect.contrib.filters module
--------------------------------
+Filter objects
+--------------
 
 .. automodule:: adselect.contrib.filters
     :members:
