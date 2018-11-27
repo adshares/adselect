@@ -12,10 +12,7 @@ adselect.iface.const module
 adselect.iface.protocol module
 ------------------------------
 
-.. automodule:: adselect.iface.protocol
-    :members:
-    :undoc-members:
-    :show-inheritance:
+adselect.iface.protocol
 
 adselect.iface.server module
 ----------------------------

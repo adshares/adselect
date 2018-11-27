@@ -4,10 +4,7 @@ adselect.contrib package
 adselect.contrib.filters module
 -------------------------------
 
-.. automodule:: adselect.contrib.filters
-    :members:
-    :undoc-members:
-    :show-inheritance:
+adselect.contrib.filters
 
 adselect.contrib.utils module
 -----------------------------
