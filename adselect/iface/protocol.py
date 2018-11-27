@@ -124,8 +124,8 @@ class SelectBannerRequest(jsonobject.JsonObject):
     .. json:object:: SelectBannerRequest
        :showexample:
 
-       :property integer request_id: jsonobject.IntegerProperty()
-       :property integer publisher_id: jsonobject.IntegerProperty()
+       :property integer request_id: Request id
+       :property string publisher_id: Publisher id
        :property string user_id: User identifier (String)
        :property string banner_size: Banner size, eg. 100x400
        :propexample banner_size: 100x400
@@ -136,8 +136,8 @@ class SelectBannerRequest(jsonobject.JsonObject):
     request_id = jsonobject.IntegerProperty()
     """Request identifier (Integer)"""
 
-    publisher_id = jsonobject.IntegerProperty()
-    """Publisher identifier (Integer)"""
+    publisher_id = jsonobject.StringProperty()
+    """Publisher identifier (String)"""
 
     user_id = jsonobject.StringProperty()
     """User identifier (String)"""
