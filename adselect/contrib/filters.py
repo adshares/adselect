@@ -210,7 +210,7 @@ REGISTERED_FILTERS = [
     LessEqualFilter,
     LessFilter,
     GreaterFilter
-]
+    ]
 FILTERS_NAMES_DICT = dict([(cls.NAME, cls) for cls in REGISTERED_FILTERS])
 
 
