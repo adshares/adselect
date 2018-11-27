@@ -69,7 +69,6 @@ def validate_banner_with_banner_request(banner_request, proposed_banner_id):
     2. Does the campaign for this banner exist?
     3. Is the campaign active?
     4. Are banner keywords ok for this campaign?
-    4. Are banner keywords ok for this campaign?
 
     :param banner_request:
     :param proposed_banner_id:
