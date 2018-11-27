@@ -24,7 +24,7 @@ class AndFilter(Filter):
                     "filter":
                      {
                        "type": "=",
-                       "args": "music",
+                       "args": "music"
                      },
                    "keyword": "interest"
                   },
@@ -32,7 +32,7 @@ class AndFilter(Filter):
                     "filter":
                      {
                       "type": "<",
-                      "args": 18,
+                      "args": 18
                      },
                     "keyword": "interest"
                  }
@@ -66,7 +66,7 @@ class OrFilter(Filter):
                     "filter":
                      {
                        "type": "=",
-                       "args": "music",
+                       "args": "music"
                      },
                    "keyword": "interest"
                   },
@@ -74,7 +74,7 @@ class OrFilter(Filter):
                     "filter":
                      {
                       "type": "<",
-                      "args": 18,
+                      "args": 18
                      },
                     "keyword": "interest"
                  }
@@ -103,7 +103,7 @@ class EqualFilter(Filter):
 
         {
           "type": "=",
-          "args": "music",
+          "args": "music"
         }
 
     """
@@ -124,7 +124,7 @@ class GreaterEqualFilter(Filter):
 
         {
           "type": ">=",
-          "args": 18,
+          "args": 18
         }
 
     """
@@ -145,7 +145,7 @@ class LessEqualFilter(Filter):
 
         {
           "type": "<=",
-          "args": 17,
+          "args": 17
         }
 
     """
@@ -166,7 +166,7 @@ class LessFilter(Filter):
 
         {
           "type": "<",
-          "args": 18,
+          "args": 18
         }
 
     """
@@ -187,7 +187,7 @@ class GreaterFilter(Filter):
 
         {
           "type": ">",
-          "args": 17,
+          "args": 17
         }
 
     """
