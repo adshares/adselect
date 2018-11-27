@@ -94,8 +94,9 @@ class AdSelectIfaceServer(JSONRPCServer):
 
             selected_banners = iface_utils.select_banner(banner_requests)
             selected_banners.addCallback(send_respone)
+            ret_sb = yield selected_banners
 
-            defer.returnValue(selected_banners)
+            defer.returnValue(ret_sb)
 
 
 def configure_iface(port=iface_const.SERVER_PORT):
