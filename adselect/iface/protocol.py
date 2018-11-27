@@ -41,6 +41,7 @@ class BannerObject(jsonobject.JsonObject):
 
        :property string banner_id: Unique banner identifier
        :property string campaign_id: Unique campaign identifier
+       :propexample campaign_id: BXfmBKBdsQdDOdNbCtxd
        :property JSONObject keywords: Key-value map of keywords
        :property string banner_size: Banner size, eg. 100x400
        :propexample banner_size: 100x400
@@ -65,8 +66,11 @@ class CampaignObject(jsonobject.JsonObject):
        :showexample:
 
        :property string campaign_id: Unique campaign identifier
+       :propexample campaign_id: BXfmBKBdsQdDOdNbCtxd
        :property integer time_start: Campaign start time (epoch time, in seconds)
+       :propexample time_start: 1543326642
        :property integer time_end: Campaign end time (epoch time, in seconds)
+       :propexample time_end: 1643326642
        :property JSONObject keywords: Key-value map of keywords
        :property JSONObject filters: RequireExcludeListObject
        :property [BannerObject] banners: List of banner objects
