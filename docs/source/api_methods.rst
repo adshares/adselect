@@ -21,8 +21,8 @@ campaign_update
                "id": 2,
                "params": [
                     {
-                    "time_start": 1928,
-                    "time_end": 9829,
+                    "time_start": 1543326642,
+                    "time_end": 1643326642,
                     "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
                     "filters": "{JSONObject object}",
                     "keywords": "{JSONObject object}",
@@ -30,13 +30,13 @@ campaign_update
                         {
                             "keywords": "{JSONObject object}",
                             "banner_id": "ZBOGqlCqaqjDICNWHRnT",
-                            "campaign_id": "KaBNhxfXYMNJsvYqekuy",
+                            "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
                             "banner_size": "100x400"
                         },
                         {
                             "keywords": "{JSONObject object}",
                             "banner_id": "FcNMkMibdAZMSdqugKvb",
-                            "campaign_id": "LmsarGATbsnkCsPixPdh",
+                            "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
                             "banner_size": "100x400"
                         }
                     ]

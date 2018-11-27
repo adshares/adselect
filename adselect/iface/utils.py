@@ -31,6 +31,7 @@ def create_or_update_campaign(cmpobj):
         banner_doc = banner.to_json()
         banner_doc['campaign_id'] = cmpobj.campaign_id
         yield db_utils.update_banner(banner_doc)
+        # stats_cache.BANNERS[banner.banner_size].append(banner.banner_id)
 
 
 @defer.inlineCallbacks
