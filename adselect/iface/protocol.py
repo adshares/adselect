@@ -130,7 +130,7 @@ class SelectBannerRequest(jsonobject.JsonObject):
        :property string banner_size: Banner size, eg. 100x400
        :propexample banner_size: 100x400
        :property JSONObject keywords: Keywords associated with the impression
-       :property [RequireExcludeListObject] banner_filters: List of banner filters
+       :property RequireExcludeListObject banner_filters: `RequireExcludeListObject`
 
     """
     request_id = jsonobject.IntegerProperty()
