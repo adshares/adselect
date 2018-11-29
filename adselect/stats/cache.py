@@ -7,6 +7,7 @@ from adselect.contrib import utils as contrib_utils
 #: BEST_KEYWORDS: { 'publisher_id1':
 #:    { 'size1':[keyword1, keyword2, ...], 'size2':[keyword1, keyword2, ...] }
 #:    }
+
 BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 
 #: KEYWORDS_BANNERS keeps sorted list of banners for given size and keyword
@@ -26,6 +27,7 @@ BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 #:   },
 #:   'publisher_id2': { ... }
 #: }
+
 KEYWORDS_BANNERS = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
 
@@ -52,6 +54,7 @@ def reset_keyword_banners():
 #:                 'campaignid2_bannerid2'],
 #:     'size2': ['campaignid2_bannerid2']
 #: }
+
 BANNERS = defaultdict(list)
 
 #: Keep info about last round impression payments > 0
@@ -67,6 +70,7 @@ BANNERS = defaultdict(list)
 #:       }
 #:   }
 #:  }
+
 KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: float(0.0))))
 
 
@@ -79,6 +83,7 @@ KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: default
 #:    },
 #:  'campaignid2_bannerid2': { ... }
 #: }
+
 IMPRESSIONS_COUNT = defaultdict(lambda: defaultdict(lambda: int(0)))
 
 

@@ -31,6 +31,7 @@ def create_or_update_campaign(cmpobj):
         banner_doc = banner.to_json()
         banner_doc['campaign_id'] = cmpobj.campaign_id
         yield db_utils.update_banner(banner_doc)
+        # stats_cache.BANNERS[banner.banner_size].append(banner.banner_id)
 
 
 @defer.inlineCallbacks
@@ -68,7 +69,6 @@ def validate_banner_with_banner_request(banner_request, proposed_banner_id):
     1. Does the banner exist?
     2. Does the campaign for this banner exist?
     3. Is the campaign active?
-    4. Are banner keywords ok for this campaign?
     4. Are banner keywords ok for this campaign?
 
     :param banner_request:

@@ -1,18 +1,6 @@
 adselect.stats package
 ======================
 
-
-Subpackages
------------
-
-.. toctree::
-
-    adselect.stats.tests
-
-
-Submodules
-----------
-
 adselect.stats.const module
 ---------------------------
 
@@ -43,15 +31,6 @@ adselect.stats.utils module
 ---------------------------
 
 .. automodule:: adselect.stats.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: adselect.stats
     :members:
     :undoc-members:
     :show-inheritance:

@@ -9,14 +9,46 @@ class Filter(object):
         self.filter_arg = filter_arg
 
     def is_valid(self, value):
+        """Validate filter (not implemented)"""
         raise NotImplementedError()
 
 
 class AndFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+         "type": "and",
+         "args": [
+                  {
+                    "filter":
+                     {
+                       "type": "=",
+                       "args": "music"
+                     },
+                   "keyword": "interest"
+                  },
+                  {
+                    "filter":
+                     {
+                      "type": "<",
+                      "args": 18
+                     },
+                    "keyword": "interest"
+                 }
+                ]
+        }
+
+    """
     NAME = 'and'
     NESTED_FILTERS = True
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         for filter_obj in self.filter_arg:
             if not filter_obj.is_valid(value):
                 return False
@@ -24,10 +56,41 @@ class AndFilter(Filter):
 
 
 class OrFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+         "type": "or",
+         "args": [
+                  {
+                    "filter":
+                     {
+                       "type": "=",
+                       "args": "music"
+                     },
+                   "keyword": "interest"
+                  },
+                  {
+                    "filter":
+                     {
+                      "type": "<",
+                      "args": 18
+                     },
+                    "keyword": "interest"
+                 }
+                ]
+        }
+
+    """
     NAME = "or"
     NESTED_FILTERS = True
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         for filter_obj in self.filter_arg:
             if filter_obj.is_valid(value):
                 return True
@@ -35,37 +98,107 @@ class OrFilter(Filter):
 
 
 class EqualFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+          "type": "=",
+          "args": "music"
+        }
+
+    """
     NAME = '='
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return self.filter_arg == value
 
 
 class GreaterEqualFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+          "type": ">=",
+          "args": 18
+        }
+
+    """
     NAME = ">="
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value >= self.filter_arg
 
 
 class LessEqualFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+          "type": "<=",
+          "args": 17
+        }
+
+    """
     NAME = "<="
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value <= self.filter_arg
 
 
 class LessFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+          "type": "<",
+          "args": 18
+        }
+
+    """
     NAME = '<'
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value < self.filter_arg
 
 
 class GreaterFilter(Filter):
+    """
+    .. code-block:: json
+
+        {
+          "type": ">",
+          "args": 17
+        }
+
+    """
     NAME = '>'
 
     def is_valid(self, value):
+        """
+        Validate filter
+
+        :return: True, if filter conditions are true.
+        """
         return value > self.filter_arg
 
 
@@ -77,18 +210,15 @@ REGISTERED_FILTERS = [
     LessEqualFilter,
     LessFilter,
     GreaterFilter
-]
+    ]
 FILTERS_NAMES_DICT = dict([(cls.NAME, cls) for cls in REGISTERED_FILTERS])
 
 
 def json2filter(json_data):
     """
-    Convert nested json type filter to object filter e.g.
+    Convert nested json type filter to object filter. See filter docstrings for json examples.
 
-    {type: and,
-     args: [ {type: type1, args: ''}, ... ]}
-
-    :param json_data: JSON data containing filter *'type'*
+    :param json_data: JSON data containing nested filter.
     :return: Filter object
     """
     filter_type = json_data.get('type')

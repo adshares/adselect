@@ -1,16 +1,6 @@
 adselect.iface package
 ======================
 
-Subpackages
------------
-
-.. toctree::
-
-    adselect.iface.tests
-
-Submodules
-----------
-
 adselect.iface.const module
 ---------------------------
 
@@ -22,11 +12,7 @@ adselect.iface.const module
 adselect.iface.protocol module
 ------------------------------
 
-.. automodule:: adselect.iface.protocol
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+adselect.iface.protocol
 
 adselect.iface.server module
 ----------------------------
@@ -40,15 +26,6 @@ adselect.iface.utils module
 ---------------------------
 
 .. automodule:: adselect.iface.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: adselect.iface
     :members:
     :undoc-members:
     :show-inheritance:

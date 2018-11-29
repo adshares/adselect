@@ -1,20 +1,18 @@
-import logging.config
 import json
+import logging.config
 import os
 
 from twisted.internet import reactor
 
-from adselect.iface import server as iface_server
-from adselect.stats import tasks as stats_tasks
-from adselect.stats import utils as stats_utils
 from adselect import db
-
+from adselect.iface import server as iface_server
+from adselect.stats import tasks as stats_tasks, utils as stats_utils
 
 if __name__ == "__main__":
 
     logging.basicConfig()
 
-    logfile_path = os.path.join(os.getenv('ADSELECT_LOG_CONFIG_FILE'))
+    logfile_path = os.path.join(os.getenv('ADSELECT_LOG_CONFIG_FILE', 'config/log_config.json'))
 
     with open(logfile_path, "r") as fd:
         logging.config.dictConfig(json.load(fd))
