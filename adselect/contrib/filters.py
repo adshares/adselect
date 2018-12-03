@@ -232,6 +232,6 @@ def json2filter(json_data):
 
     filter_class = FILTERS_NAMES_DICT[filter_type]
     if filter_class.NESTED_FILTERS:
-        args = [json2filter(arg.get('filter')) for arg in args]
+        args = [json2filter(arg) for arg in args]
 
     return filter_class(args)
