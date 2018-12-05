@@ -1,21 +1,21 @@
 import jsonobject
 
 
-class RequireExcludeListObject(jsonobject.JsonObject):
+class RequireExcludeObject(jsonobject.JsonObject):
     """
     .. json:object:: RequireExcludeListObject
        :showexample:
 
-       :property [KeywordFilterObject] require: List of required keywords (`KeywordFilterObject`)
-       :property [KeywordFilterObject] exclude: List of excluded keywords (`KeywordFilterObject`)
+       :property DictProperty require: Dicitonary of required keywords
+       :property DictProperty exclude: Dictionary  of excluded keywords
 
     """
 
-    require = jsonobject.ListProperty(str)
-    """List of required keywords (string)"""
+    require = jsonobject.DictProperty(required=True)
+    """Dictionary of required keywords"""
 
-    exclude = jsonobject.ListProperty(str)
-    """List of excluded keywords (`KeywordFilterObject`)"""
+    exclude = jsonobject.DictProperty(required=True)
+    """Dictionary of excluded keywords"""
 
 
 class BannerObject(jsonobject.JsonObject):
@@ -31,16 +31,16 @@ class BannerObject(jsonobject.JsonObject):
        :propexample banner_size: 100x400
 
     """
-    banner_id = jsonobject.StringProperty()
+    banner_id = jsonobject.StringProperty(required=True)
     """Main banner identifier (String)."""
 
-    banner_size = jsonobject.StringProperty()
+    banner_size = jsonobject.StringProperty(required=True)
     """Banner size, in pixels, width x height (String)."""
 
     keywords = jsonobject.DictProperty()
     """Keywords (Dictionary of Strings)."""
 
-    campaign_id = jsonobject.StringProperty()
+    campaign_id = jsonobject.StringProperty(required=True)
     """Campaign identifier (String)."""
 
 
@@ -60,22 +60,22 @@ class CampaignObject(jsonobject.JsonObject):
        :property [BannerObject] banners: List of banner objects
 
     """
-    campaign_id = jsonobject.StringProperty()
+    campaign_id = jsonobject.StringProperty(required=True)
     """Main campaign identifier (String)."""
 
-    time_start = jsonobject.IntegerProperty()
+    time_start = jsonobject.IntegerProperty(required=True)
     """Start epoch time (Integer)."""
 
-    time_end = jsonobject.IntegerProperty()
+    time_end = jsonobject.IntegerProperty(required=True)
     """End epoch time (Integer)."""
 
-    filters = jsonobject.ObjectProperty(RequireExcludeListObject)
-    """Required and Excluded keywords (`RequireExcludeListObject`)"""
+    filters = jsonobject.ObjectProperty(RequireExcludeObject, required=True)
+    """Required and Excluded keywords (`RequireExcludeObject`)"""
 
     keywords = jsonobject.DictProperty()
     """Keywords (Dictionary of Strings)."""
 
-    banners = jsonobject.ListProperty(BannerObject)
+    banners = jsonobject.ListProperty(BannerObject, required=True)
     """List of banners (List of `BannerObject`)"""
 
 
@@ -91,19 +91,19 @@ class ImpressionObject(jsonobject.JsonObject):
        :property JSONObject keywords: Keywords associated with the impression
 
     """
-    banner_id = jsonobject.StringProperty()
+    banner_id = jsonobject.StringProperty(required=True)
     """Main banner identifier (String)"""
 
     keywords = jsonobject.DictProperty()
     """Keywords (Dictionary of Strings)"""
 
-    publisher_id = jsonobject.StringProperty()
+    publisher_id = jsonobject.StringProperty(required=True)
     """Publisher identifier (String)"""
 
-    user_id = jsonobject.StringProperty()
+    user_id = jsonobject.StringProperty(required=True)
     """User identifier (String)"""
 
-    paid_amount = jsonobject.FloatProperty()
+    paid_amount = jsonobject.FloatProperty(required=True)
     """Payment for the impression (Float)"""
 
 
@@ -121,22 +121,22 @@ class SelectBannerRequest(jsonobject.JsonObject):
        :property RequireExcludeListObject banner_filters: `RequireExcludeListObject`
 
     """
-    request_id = jsonobject.IntegerProperty()
+    request_id = jsonobject.IntegerProperty(required=True)
     """Request identifier (Integer)"""
 
-    publisher_id = jsonobject.StringProperty()
+    publisher_id = jsonobject.StringProperty(required=True)
     """Publisher identifier (String)"""
 
-    user_id = jsonobject.StringProperty()
+    user_id = jsonobject.StringProperty(required=True)
     """User identifier (String)"""
 
-    banner_size = jsonobject.StringProperty()
+    banner_size = jsonobject.StringProperty(required=True)
     """Banner size, in pixels, width x height (String)."""
 
     keywords = jsonobject.DictProperty()
     """Keywords (Dictionary of Strings)"""
 
-    banner_filters = jsonobject.ObjectProperty(RequireExcludeListObject)
+    banner_filters = jsonobject.ObjectProperty(RequireExcludeObject, required=True)
     """Banner filters (`RequireExcludeListObject`)"""
 
 
@@ -148,8 +148,8 @@ class SelectBannerResponse(jsonobject.JsonObject):
        :property string banner_id: Unique banner identifier
        :property integer request_id: Request identifier
     """
-    request_id = jsonobject.IntegerProperty()
+    request_id = jsonobject.IntegerProperty(required=True)
     """Request identifier (Integer)"""
 
-    banner_id = jsonobject.StringProperty()
+    banner_id = jsonobject.StringProperty(required=True)
     """Main banner identifier (String)"""
