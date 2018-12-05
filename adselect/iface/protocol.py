@@ -11,10 +11,10 @@ class RequireExcludeObject(jsonobject.JsonObject):
 
     """
 
-    require = jsonobject.DictProperty(required=True)
+    require = jsonobject.DictProperty()
     """Dictionary of required keywords"""
 
-    exclude = jsonobject.DictProperty(required=True)
+    exclude = jsonobject.DictProperty()
     """Dictionary of excluded keywords"""
 
 

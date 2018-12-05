@@ -30,7 +30,13 @@ class AdSelectIfaceServer(JSONRPCServer):
         else:
             for campaign_data in campaign_data_list:
                 yield self.logger.debug("Campaign update: {0}".format(campaign_data))
-                yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(campaign_data))
+
+                campaign_data['filters'] = iface_proto.RequireExcludeObject(**campaign_data['filters'])
+
+                campaign_data['banners'] = [iface_proto.BannerObject(campaign_id=campaign_data['campaign_id'], **b) for b in
+                                            campaign_data['banners']]
+
+                yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign_data))
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -79,7 +85,8 @@ class AdSelectIfaceServer(JSONRPCServer):
         """
         def send_respone(responses_dict):
 
-            responses = [iface_proto.SelectBannerResponse(request_id=request_id, banner_id=responses_dict[request_id])
+            responses = [iface_proto.SelectBannerResponse(request_id=request_id,
+                                                          banner_id=responses_dict[request_id])
                          for request_id in responses_dict]
 
             return [response.to_json() for response in responses]
