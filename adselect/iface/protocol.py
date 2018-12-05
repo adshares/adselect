@@ -1,22 +1,6 @@
 import jsonobject
 
 
-class KeywordFilterObject(jsonobject.JsonObject):
-    """
-    .. json:object:: KeywordFilterObject
-       :showexample:
-
-       :property string keyword: Keyword (String)
-       :property JSONObject filter: Filter object
-
-    """
-    keyword = jsonobject.StringProperty()
-    """Keyword (String)"""
-
-    filter = jsonobject.DictProperty()
-    """Filter (Dictionary)"""
-
-
 class RequireExcludeListObject(jsonobject.JsonObject):
     """
     .. json:object:: RequireExcludeListObject
@@ -27,10 +11,10 @@ class RequireExcludeListObject(jsonobject.JsonObject):
 
     """
 
-    require = jsonobject.ListProperty(KeywordFilterObject)
-    """List of required keywords (`KeywordFilterObject`)"""
+    require = jsonobject.ListProperty(str)
+    """List of required keywords (string)"""
 
-    exclude = jsonobject.ListProperty(KeywordFilterObject)
+    exclude = jsonobject.ListProperty(str)
     """List of excluded keywords (`KeywordFilterObject`)"""
 
 

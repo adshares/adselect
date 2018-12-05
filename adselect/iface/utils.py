@@ -2,9 +2,10 @@ from collections import defaultdict
 
 from twisted.internet import defer
 
-from adselect.contrib import filters
 from adselect.db import utils as db_utils
 from adselect.stats import utils as stats_utils
+
+FILTER_SEPARATOR = '--'
 
 
 @defer.inlineCallbacks
@@ -138,22 +139,52 @@ def validate_keywords(filters_dict, keywords):
     :param keywords: Keywords being tested.
     :return: True or False
     """
-    for filter_json in filters_dict.get('require'):
-        keyword = filter_json['keyword']
-        if keyword not in keywords:
+    return validate_require_keywords(filters_dict, keywords) and validate_exclude_keywords(filters_dict, keywords)
+
+
+def validate_require_keywords(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
+    for category_keyword in filters_dict.get('require'):
+        if category_keyword not in keywords:
             return False
 
-        filter_obj = filters.json2filter(filter_json['filter'])
-        if not filter_obj.is_valid(keywords.get(keyword)):
+        for category_keyword_value in category_keyword:
+            keyword_value = keywords.get(category_keyword)
+
+            bounds = category_keyword_value.split(FILTER_SEPARATOR)
+            if (len(bounds) == 2 and bounds[0] < keyword_value < bounds[1]) \
+               or (bounds[0] == keyword_value):
+                    break
+        else:
             return False
 
-    for filter_json in filters_dict.get('exclude'):
-        keyword = filter_json['keyword']
-        if keyword not in keywords:
+    return True
+
+
+def validate_exclude_keywords(filters_dict, keywords):
+    """
+    Validate required and excluded keywords.
+
+    :param filters_dict: Required and excluded keywords
+    :param keywords: Keywords being tested.
+    :return: True or False
+    """
+    for category_keyword in filters_dict.get('exclude'):
+        if category_keyword not in keywords:
             continue
 
-        filter_obj = filters.json2filter(filter_json['filter'])
-        if filter_obj.is_valid(keywords.get(keyword)):
-            return False
+        for category_keyword_value in category_keyword:
+            keyword_value = keywords.get(category_keyword)
+
+            bounds = category_keyword_value.split(FILTER_SEPARATOR)
+            if (len(bounds) == 2 and bounds[0] < keyword_value < bounds[1]) \
+               or (bounds[0] == keyword_value):
+                    return False
 
     return True
