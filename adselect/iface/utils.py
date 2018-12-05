@@ -150,17 +150,18 @@ def validate_require_keywords(filters_dict, keywords):
     :param keywords: Keywords being tested.
     :return: True or False
     """
-    for category_keyword in filters_dict.get('require'):
+    for category_keyword, ckvs in filters_dict.get('require').items():
         if category_keyword not in keywords:
             return False
 
-        for category_keyword_value in category_keyword:
-            keyword_value = keywords.get(category_keyword)
+        keyword_value = keywords.get(category_keyword)
+
+        for category_keyword_value in ckvs:
 
             bounds = category_keyword_value.split(FILTER_SEPARATOR)
             if (len(bounds) == 2 and bounds[0] < keyword_value < bounds[1]) \
-               or (bounds[0] == keyword_value):
-                    break
+                    or (bounds[0] == keyword_value):
+                break
         else:
             return False
 
@@ -175,12 +176,13 @@ def validate_exclude_keywords(filters_dict, keywords):
     :param keywords: Keywords being tested.
     :return: True or False
     """
-    for category_keyword in filters_dict.get('exclude'):
+    for category_keyword, ckvs in filters_dict.get('exclude').items():
         if category_keyword not in keywords:
             continue
 
-        for category_keyword_value in category_keyword:
-            keyword_value = keywords.get(category_keyword)
+        keyword_value = keywords.get(category_keyword)
+
+        for category_keyword_value in ckvs:
 
             bounds = category_keyword_value.split(FILTER_SEPARATOR)
             if (len(bounds) == 2 and bounds[0] < keyword_value < bounds[1]) \
