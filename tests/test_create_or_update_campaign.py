@@ -1,10 +1,10 @@
-from twisted.internet import defer
 from copy import deepcopy
 
-from tests import db_test_case
-from adselect.iface import protocol as iface_proto
-from adselect.iface import utils as iface_utils
+from twisted.internet import defer
+
 from adselect.db import utils as db_utils
+from adselect.iface import protocol as iface_proto, utils as iface_utils
+from tests import db_test_case
 
 
 class TestCreate_or_update_campaign(db_test_case):
@@ -16,13 +16,10 @@ class TestCreate_or_update_campaign(db_test_case):
 
             orig_campaign = deepcopy(campaign)
 
-            required = [iface_proto.KeywordFilterObject(**f) for f in campaign['filters']['require']]
-            excluded = [iface_proto.KeywordFilterObject(**f) for f in campaign['filters']['exclude']]
+            campaign['filters'] = iface_proto.RequireExcludeObject(require=campaign['filters']['require'],
+                                                                   exclude=campaign['filters']['exclude'])
 
-            campaign['filters'] = iface_proto.RequireExcludeListObject(require=required,
-                                                                       exclude=excluded)
-
-            campaign['banners'] = [iface_proto.BannerObject(**b) for b in campaign['banners']]
+            campaign['banners'] = [iface_proto.BannerObject(campaign_id=campaign['campaign_id'], **b) for b in campaign['banners']]
 
             yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign))
 
@@ -44,13 +41,10 @@ class TestCreate_or_update_campaign(db_test_case):
 
         for campaign in self.campaigns:
 
-            required = [iface_proto.KeywordFilterObject(**f) for f in campaign['filters']['require']]
-            excluded = [iface_proto.KeywordFilterObject(**f) for f in campaign['filters']['exclude']]
+            campaign['filters'] = iface_proto.RequireExcludeObject(require=campaign['filters']['require'],
+                                                                   exclude=campaign['filters']['exclude'])
 
-            campaign['filters'] = iface_proto.RequireExcludeListObject(require=required,
-                                                                       exclude=excluded)
-
-            campaign['banners'] = [iface_proto.BannerObject(**b) for b in campaign['banners']]
+            campaign['banners'] = [iface_proto.BannerObject(campaign_id=campaign['campaign_id'], **b) for b in campaign['banners']]
 
             yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign))
             db_campaign = yield db_utils.get_campaign(campaign_id=campaign['campaign_id'])

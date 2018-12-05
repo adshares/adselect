@@ -1,16 +1,14 @@
+import time
 from collections import defaultdict
 from copy import deepcopy
-import time
-from twisted.internet import defer
+
 import twisted
-
-from adselect.stats import cache as stats_cache
-from adselect.stats import utils as stats_utils
-from adselect.db import utils as db_utils
-from adselect.stats import tasks as stats_tasks
-
-from tests import db_test_case
 from mock import MagicMock
+from twisted.internet import defer
+
+from adselect.db import utils as db_utils
+from adselect.stats import cache as stats_cache, tasks as stats_tasks, utils as stats_utils
+from tests import db_test_case
 
 
 class TasksTestCase(db_test_case):
