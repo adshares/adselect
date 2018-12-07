@@ -4,8 +4,6 @@ adselect.contrib package
 adselect.contrib.filters module
 -------------------------------
 
-adselect.contrib.filters
-
 adselect.contrib.utils module
 -----------------------------
 
