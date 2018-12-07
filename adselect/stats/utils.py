@@ -68,6 +68,13 @@ def is_banner_active(banner):
 
 @defer.inlineCallbacks
 def iterate_deferred(deferred, func):
+    """
+    Auxiliary function to iterate a function over a deferred resource.
+
+    :param deferred: Deferred we iteravet over
+    :param func: Function executed for each item
+    :return: None
+    """
     if deferred:
         data, dfr = yield deferred
         while data:
@@ -240,7 +247,15 @@ def select_best_keywords(publisher_id, banner_size, impression_keywords_dict, be
 
 
 def get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys, banners_per_keyword_cutoff=10):
+    """
+    Get publisher banners and get only best ones for keywords, with included cutoff.
 
+    :param publisher_id: Id of the publisher
+    :param banner_size: Banner size
+    :param sbest_pi_keys:  Best paid keywords
+    :param banners_per_keyword_cutoff: Number of banners returned
+    :return:
+    """
     publisher_banners = stats_cache.KEYWORDS_BANNERS[publisher_id][banner_size]
     banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
     return banners_for_sbpik
@@ -286,8 +301,14 @@ def select_best_banners(publisher_id,
 
 
 def mixin_new_banners(selected_banners, propositions_nb, new_banners):
+    """
+    Add new banners without payment statistic
 
-    # Add new banners without payment statistic
+    :param selected_banners: Pre-selected banners
+    :param propositions_nb: Amount of banners returned
+    :param new_banners: Banners with amount of payments below threshold
+    :return:
+    """
 
     selected_banners += new_banners
     random.shuffle(selected_banners)
