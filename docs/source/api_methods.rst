@@ -8,6 +8,11 @@ campaign_update
 
         Updates (creates, if don't exist) campaign data, including banners.
 
+        Please note:
+
+        * the params attribute contains a list of :ref:`CampaignObject`.
+        * `time_end` needs to be larger than the time of select request (:ref:`banner-select`) method. Otherwise it will not be returned (the campaign has expired).
+
         **Example request**:
 
         .. sourcecode:: http
@@ -24,19 +29,20 @@ campaign_update
                     "time_start": 1543326642,
                     "time_end": 1643326642,
                     "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
-                    "filters": "{JSONObject object}",
-                    "keywords": "{JSONObject object}",
+                    "filters": {
+                                "require": {"age": ['18-30']},
+                                "exclude": {}
+                                },
+                    "keywords": {JSONObject object},
                     "banners": [
                         {
-                            "keywords": "{JSONObject object}",
+                            "keywords": {JSONObject object},
                             "banner_id": "ZBOGqlCqaqjDICNWHRnT",
-                            "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
-                            "banner_size": "100x400"
+                            "banner_size": "200x80"
                         },
                         {
-                            "keywords": "{JSONObject object}",
+                            "keywords": {JSONObject object},
                             "banner_id": "FcNMkMibdAZMSdqugKvb",
-                            "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
                             "banner_size": "100x400"
                         }
                     ]
@@ -172,30 +178,13 @@ banner_select
                           {
                             "user_id": "CpneRnqUXGrvbferpudC",
                             "banner_size": "100x400",
-                            "banner_filters": [
+                            "banner_filters":
                                 {
-                                    "exclude": [
-                                        "{KeywordFilterObject object}",
-                                        "{KeywordFilterObject object}"
-                                    ],
-                                    "require": [
-                                        "{KeywordFilterObject object}",
-                                        "{KeywordFilterObject object}"
-                                    ]
+                                    "exclude": {},
+                                    "require": {}
                                 },
-                                                                {
-                                    "exclude": [
-                                        "{KeywordFilterObject object}",
-                                        "{KeywordFilterObject object}"
-                                    ],
-                                    "require": [
-                                        "{KeywordFilterObject object}",
-                                        "{KeywordFilterObject object}"
-                                    ]
-                                }
-                            ],
                             "request_id": 3397,
-                            "keywords": "{JSONObject object}",
+                            "keywords": {JSONObject object},
                             "publisher_id": 4141
                         }
                         ]
@@ -214,7 +203,8 @@ banner_select
                             {
                             "banner_id": "EMtkCfWfcaVwmreyLSyL",
                             "request_id": 965
-                            }],
+                            }
+                           ],
                 "id": 2
             }
 

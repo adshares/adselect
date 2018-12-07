@@ -9,6 +9,5 @@ adselect.contrib.utils module
 
 .. automodule:: adselect.contrib.utils
     :members:
-    :undoc-members:
     :show-inheritance:
     :inherited-members:
