@@ -30,18 +30,22 @@ campaign_update
                     "time_end": 1643326642,
                     "campaign_id": "BXfmBKBdsQdDOdNbCtxd",
                     "filters": {
-                                "require": {"age": ['18-30']},
-                                "exclude": {}
+                                "require": {
+                                            "age": ["18--30"],
+                                            "interest": ["cars"],
+                                            "movies": ["action", "horror", "thriller"]
+                                            },
+                                "exclude": {"country": ["DE"]}
                                 },
-                    "keywords": {JSONObject object},
+                    "keywords": {},
                     "banners": [
                         {
-                            "keywords": {JSONObject object},
+                            "keywords": {"movies": "horror"},
                             "banner_id": "ZBOGqlCqaqjDICNWHRnT",
-                            "banner_size": "200x80"
+                            "banner_size": "100x400"
                         },
                         {
-                            "keywords": {JSONObject object},
+                            "keywords": {"movies": "action"},
                             "banner_id": "FcNMkMibdAZMSdqugKvb",
                             "banner_size": "100x400"
                         }
@@ -129,7 +133,7 @@ impression_add
                "id": 2,
                "params": [
                           {
-                            "keywords": "{JSONObject object}",
+                            "keywords": {"movies": "horror"},
                             "publisher_id": "SnalpVeRjxGSUWsGPRQl",
                             "banner_id": "vsbbPLCnckRzPUZtMXXU",
                             "user_id": "tLCCzlEJUgtJyMyqqJFn",
@@ -181,10 +185,10 @@ banner_select
                             "banner_filters":
                                 {
                                     "exclude": {},
-                                    "require": {}
+                                    "require": {"movies": ["horror"]}
                                 },
                             "request_id": 3397,
-                            "keywords": {JSONObject object},
+                            "keywords": {},
                             "publisher_id": 4141
                         }
                         ]

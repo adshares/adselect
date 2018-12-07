@@ -5,6 +5,7 @@ from twisted.internet import defer
 from adselect.db import utils as db_utils
 from adselect.stats import utils as stats_utils
 
+#: Filter separator, used in range filters (see protocol or api documentation).
 FILTER_SEPARATOR = '--'
 
 

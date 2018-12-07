@@ -6,8 +6,16 @@ class RequireExcludeObject(jsonobject.JsonObject):
     .. json:object:: RequireExcludeListObject
        :showexample:
 
+       Require and exclude attributes are dictionary/JSON Object, where each key is a list/JSON Array of values. The values are all strings, but they can define a range, by adding a special delimiter (default: '--').
+
+       Examples of valid key-value pairs:
+
+       * "age": ["18--30"]
+       * "interest": ["cars"]
+       * "movies": ["action", "horror", "thriller"]
+
        :property DictProperty require: Dicitonary of required keywords
-       :property DictProperty exclude: Dictionary  of excluded keywords
+       :property DictProperty exclude: Dictionary of excluded keywords
 
     """
 
