@@ -64,7 +64,7 @@ class CampaignObject(jsonobject.JsonObject):
        :property integer time_end: Campaign end time (epoch time, in seconds)
        :propexample time_end: 1643326642
        :property JSONObject keywords: Key-value map of keywords
-       :property JSONObject filters: RequireExcludeListObject
+       :property RequireExcludeObject filters: Filters for campaign
        :property [BannerObject] banners: List of banner objects
 
     """
