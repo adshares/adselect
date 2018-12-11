@@ -1,27 +1,23 @@
-import socket
 import json
-from mock import MagicMock
-from copy import deepcopy
+import socket
 from collections import defaultdict
+from copy import deepcopy
+
 import txmongo
-
-from twisted.trial import unittest
+from mock import MagicMock
 from twisted.internet import defer, reactor
-from twisted.internet.protocol import Protocol
-from twisted.web.client import Agent
 from twisted.internet.defer import succeed
-from twisted.web.iweb import IBodyProducer
+from twisted.internet.protocol import Protocol
+from twisted.trial import unittest
+from twisted.web.client import Agent
 from twisted.web.http_headers import Headers
-
+from twisted.web.iweb import IBodyProducer
 from zope.interface import implements
 
-from adselect.iface import server as iface_server
-from adselect.iface import const as iface_consts
-from adselect.iface import protocol as iface_proto
-from adselect.iface import utils as iface_utils
+from adselect import db as adselect_db
+from adselect.db import utils as db_utils
+from adselect.iface import const as iface_consts, protocol as iface_proto, server as iface_server, utils as iface_utils
 from adselect.stats import cache as stats_cache
-
-from adselect import db
 
 
 class StringProducer(object):
@@ -56,48 +52,48 @@ class ReceiverProtocol(Protocol):
 
 class DataTestCase(unittest.TestCase):
     _campaigns = [{'time_start': 1024765751, 'campaign_id': 'c_Marci', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Jong', 'type': '='}, 'keyword': 'Julianto'}],
-                               'require': [{'filter': {'args': 'Jerry', 'type': '='}, 'keyword': 'Lea'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Rusty': 'Max', 'Malaclypse': 'Jin', 'Wendi': 'Kimberly', 'Sidney': 'Jane',
                                 'Blair': 'Hans', 'Ravindran': 'Sekar'},
                    'banners': [{'keywords': {'Carolyn': 'Lyndon'}, 'banner_id': 'b_Juri', 'banner_size': '10x10'},
                                {'keywords': {'Sidney': 'Jane'}, 'banner_id': 'b_Shirley', 'banner_size': '25x25'},
                                {'keywords': {'Santa': 'Malaclypse'}, 'banner_id': 'b_Jan', 'banner_size': '50x50'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Ti', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Niels', 'type': '='}, 'keyword': 'Tricia'}],
-                               'require': [{'filter': {'args': 'Dale', 'type': '='}, 'keyword': 'Wolf'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Rusty': 'Max', 'Santa': 'Malaclypse', 'Sidney': 'Jane', 'Malaclypse': 'Jin',
                                 'Jeffrey': 'Victoria', 'Saiid': 'Liber'},
                    'banners': [{'keywords': {'Ravindran': 'Sekar'}, 'banner_id': 'b_Sabrina', 'banner_size': '96x96'},
                                {'keywords': {'Ravindran': 'Sekar'}, 'banner_id': 'b_Jeffrey', 'banner_size': '16x16'},
                                {'keywords': {'Wendi': 'Kimberly'}, 'banner_id': 'b_Laurent', 'banner_size': '93x93'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Dieter', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Jinny', 'type': '='}, 'keyword': 'Claire'}],
-                               'require': [{'filter': {'args': 'Jiri', 'type': '='}, 'keyword': 'Hector'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Sidney': 'Jane', 'Rusty': 'Max', 'Santa': 'Malaclypse', 'Wendi': 'Kimberly',
                                 'Ravindran': 'Sekar', 'Saiid': 'Liber'},
                    'banners': [{'keywords': {'Malaclypse': 'Jin'}, 'banner_id': 'b_Melinda', 'banner_size': '16x16'},
                                {'keywords': {'Blair': 'Hans'}, 'banner_id': 'b_Vincenzo', 'banner_size': '20x20'},
                                {'keywords': {'Sidney': 'Jane'}, 'banner_id': 'b_Roxanne', 'banner_size': '48x48'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Johann', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Simon', 'type': '='}, 'keyword': 'Pierre'}],
-                               'require': [{'filter': {'args': 'Stagger', 'type': '='}, 'keyword': 'Noemi'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Rusty': 'Max', 'Sidney': 'Jane', 'Santa': 'Malaclypse', 'Malaclypse': 'Jin',
                                 'Jeffrey': 'Victoria', 'Saiid': 'Liber'},
                    'banners': [{'keywords': {'Sidney': 'Jane'}, 'banner_id': 'b_Nicolette', 'banner_size': '54x54'},
                                {'keywords': {'Sidney': 'Jane'}, 'banner_id': 'b_Claudia', 'banner_size': '32x32'},
                                {'keywords': {'Santa': 'Malaclypse'}, 'banner_id': 'b_Barrio', 'banner_size': '66x66'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Annard', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Kate', 'type': '='}, 'keyword': 'Raja'}],
-                               'require': [{'filter': {'args': 'Kikki', 'type': '='}, 'keyword': 'Nichael'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Sidney': 'Jane', 'Wendi': 'Kimberly', 'Saiid': 'Liber', 'Blair': 'Hans',
                                 'Ravindran': 'Sekar', 'Carolyn': 'Lyndon'},
                    'banners': [{'keywords': {'Carolyn': 'Lyndon'}, 'banner_id': 'b_Matthias', 'banner_size': '21x21'},
                                {'keywords': {'Malaclypse': 'Jin'}, 'banner_id': 'b_Boyce', 'banner_size': '51x51'},
                                {'keywords': {'Carolyn': 'Lyndon'}, 'banner_id': 'b_Pradeep', 'banner_size': '56x56'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Malloy', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Jesus', 'type': '='}, 'keyword': 'Cory'}],
-                               'require': [{'filter': {'args': 'Tom', 'type': '='}, 'keyword': 'Shari'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Carolyn': 'Lyndon', 'Sidney': 'Jane', 'Santa': 'Malaclypse', 'Malaclypse': 'Jin',
                                 'Wendi': 'Kimberly', 'Saiid': 'Liber'},
                    'banners': [{'keywords': {'Ravindran': 'Sekar'}, 'banner_id': 'b_Jacob', 'banner_size': '36x36'},
@@ -105,32 +101,32 @@ class DataTestCase(unittest.TestCase):
                                 'banner_size': '60x60'},
                                {'keywords': {'Ravindran': 'Sekar'}, 'banner_id': 'b_Connie', 'banner_size': '22x22'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Holly', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Jacobson', 'type': '='}, 'keyword': 'Nelken'}],
-                               'require': [{'filter': {'args': 'Suyog', 'type': '='}, 'keyword': 'Jesse'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Jeffrey': 'Victoria', 'Carolyn': 'Lyndon', 'Sidney': 'Jane', 'Malaclypse': 'Jin',
                                 'Ravindran': 'Sekar', 'Saiid': 'Liber'},
                    'banners': [{'keywords': {'Malaclypse': 'Jin'}, 'banner_id': 'b_Harv', 'banner_size': '91x91'},
                                {'keywords': {'Blair': 'Hans'}, 'banner_id': 'b_Shean', 'banner_size': '46x46'},
                                {'keywords': {'Wendi': 'Kimberly'}, 'banner_id': 'b_Anderson', 'banner_size': '63x63'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Martha', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Lukas', 'type': '='}, 'keyword': 'Cris'}],
-                               'require': [{'filter': {'args': 'Patrice', 'type': '='}, 'keyword': 'Brenda'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Sidney': 'Jane', 'Jeffrey': 'Victoria', 'Wendi': 'Kimberly', 'Santa': 'Malaclypse',
                                 'Malaclypse': 'Jin', 'Saiid': 'Liber'},
                    'banners': [{'keywords': {'Blair': 'Hans'}, 'banner_id': 'b_Rand', 'banner_size': '52x52'},
                                {'keywords': {'Ravindran': 'Sekar'}, 'banner_id': 'b_Loukas', 'banner_size': '61x61'},
                                {'keywords': {'Saiid': 'Liber'}, 'banner_id': 'b_Catherine', 'banner_size': '73x73'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Mara', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Vance', 'type': '='}, 'keyword': 'Sandip'}],
-                               'require': [{'filter': {'args': 'Gregor', 'type': '='}, 'keyword': 'Srikanth'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Rusty': 'Max', 'Carolyn': 'Lyndon', 'Sidney': 'Jane', 'Malaclypse': 'Jin',
                                 'Ravindran': 'Sekar', 'Jeffrey': 'Victoria'},
                    'banners': [{'keywords': {'Ravindran': 'Sekar'}, 'banner_id': 'b_Ernie', 'banner_size': '64x64'},
                                {'keywords': {'Santa': 'Malaclypse'}, 'banner_id': 'b_Ahmed', 'banner_size': '97x97'},
                                {'keywords': {'Wendi': 'Kimberly'}, 'banner_id': 'b_Greg', 'banner_size': '21x21'}]},
                   {'time_start': 1024765751, 'campaign_id': 'c_Emmett', 'time_end': 2024765751,
-                   'filters': {'exclude': [{'filter': {'args': 'Cary', 'type': '='}, 'keyword': 'Anderson'}],
-                               'require': [{'filter': {'args': 'Doug', 'type': '='}, 'keyword': 'Kory'}]},
+                   'filters': {'exclude': {},
+                               'require': {}},
                    'keywords': {'Rusty': 'Max', 'Sidney': 'Jane', 'Santa': 'Malaclypse', 'Malaclypse': 'Jin',
                                 'Wendi': 'Kimberly', 'Carolyn': 'Lyndon'},
                    'banners': [{'keywords': {'Rusty': 'Max'}, 'banner_id': 'b_Anatoly', 'banner_size': '84x84'},
@@ -169,23 +165,21 @@ class DataTestCase(unittest.TestCase):
 
     def load_campaigns(self):
         for campaign in self.campaigns:
-            db.utils.update_campaign(campaign)
+            db_utils.update_campaign(campaign)
 
             for banner in campaign['banners']:
                 banner['campaign_id'] = campaign['campaign_id']
-                yield db.utils.update_banner(banner)
+                yield db_utils.update_banner(banner)
 
     @defer.inlineCallbacks
     def load_campaign_objects(self):
 
         for campaign in self.campaigns:
-            required = [iface_proto.KeywordFilterObject(**f) for f in campaign['filters']['require']]
-            excluded = [iface_proto.KeywordFilterObject(**f) for f in campaign['filters']['exclude']]
 
-            campaign['filters'] = iface_proto.RequireExcludeListObject(require=required,
-                                                                       exclude=excluded)
+            campaign['filters'] = iface_proto.RequireExcludeObject(require=campaign['filters']['require'],
+                                                                   exclude=campaign['filters']['exclude'])
 
-            campaign['banners'] = [iface_proto.BannerObject(**b) for b in campaign['banners']]
+            campaign['banners'] = [iface_proto.BannerObject(campaign_id=campaign['campaign_id'], **b) for b in campaign['banners']]
 
             yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign))
 
@@ -196,17 +190,17 @@ class DBTestCase(DataTestCase):
         self.campaigns = deepcopy(self._campaigns)
         self.impressions = deepcopy(self._impressions)
 
-        self.conn = yield db.get_mongo_connection()
-        self.db = yield db.get_mongo_db()
+        self.conn = yield adselect_db.get_mongo_connection()
+        self.db = yield adselect_db.get_mongo_db()
 
-        yield db.configure_db()
+        yield adselect_db.configure_db()
         self.timeout = 5
 
     @defer.inlineCallbacks
     def tearDown(self):
-        if db.MONGO_CONNECTION:
+        if adselect_db.MONGO_CONNECTION:
             yield self.conn.drop_database(self.db)
-        yield db.disconnect()
+        yield adselect_db.disconnect()
 
 
 class WebTestCase(DBTestCase):
@@ -238,7 +232,7 @@ class WebTestCase(DBTestCase):
 
         response = yield self.client.request('POST',
                                              self.url,
-                                             Headers({'content-type': ['text/plain']}),
+                                             Headers({'content-type': ['application/json']}),
                                              post_data)
 
         finished = defer.Deferred()
@@ -263,7 +257,7 @@ try:
             self.campaigns = deepcopy(self._campaigns)
             self.impressions = deepcopy(self._impressions)
 
-            db.MONGO_CONNECTION = None
+            adselect_db.MONGO_CONNECTION = None
 
             self.connection = mongomock.MongoClient()
             self.connection.disconnect = MagicMock()

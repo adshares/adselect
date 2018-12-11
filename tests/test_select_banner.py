@@ -1,11 +1,11 @@
-from tests import db_test_case
-from adselect.iface import utils as iface_utils
-from twisted.internet import defer
-from adselect.iface import protocol as iface_proto
 from copy import deepcopy
-from adselect.stats import utils as stats_utils
-from adselect.stats import tasks as stats_tasks
+
 from mock import MagicMock
+from twisted.internet import defer
+
+from adselect.iface import protocol as iface_proto, utils as iface_utils
+from adselect.stats import tasks as stats_tasks, utils as stats_utils
+from tests import db_test_case
 
 
 class TestSelect_banner(db_test_case):
@@ -33,6 +33,9 @@ class TestSelect_banner(db_test_case):
 
                 request = deepcopy(banner)
                 request['request_id'] = 1
+                request['user_id'] = 'user_id'
+                request['publisher_id'] = 'publisher_id'
+
                 response = yield iface_utils.select_banner([iface_proto.SelectBannerRequest(request)])
                 self.assertIsNotNone(response)
 

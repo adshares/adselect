@@ -7,6 +7,7 @@ from adselect.contrib import utils as contrib_utils
 #: BEST_KEYWORDS: { 'publisher_id1':
 #:    { 'size1':[keyword1, keyword2, ...], 'size2':[keyword1, keyword2, ...] }
 #:    }
+
 BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 
 #: KEYWORDS_BANNERS keeps sorted list of banners for given size and keyword
@@ -26,11 +27,22 @@ BEST_KEYWORDS = defaultdict(lambda: defaultdict(list))
 #:   },
 #:   'publisher_id2': { ... }
 #: }
+
 KEYWORDS_BANNERS = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
 
 def add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id, limit=100):
+    """
+    Add keywords to cache per banner per publisher
 
+    :param publisher_id:
+    :param banner_size:
+    :param keyword:
+    :param keyword_score:
+    :param banner_id:
+    :param limit:
+    :return:
+    """
     contrib_utils.reverse_insort(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], (keyword_score, banner_id))
     KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = KEYWORDS_BANNERS[publisher_id][banner_size][keyword][:limit]
 
@@ -52,6 +64,7 @@ def reset_keyword_banners():
 #:                 'campaignid2_bannerid2'],
 #:     'size2': ['campaignid2_bannerid2']
 #: }
+
 BANNERS = defaultdict(list)
 
 #: Keep info about last round impression payments > 0
@@ -67,6 +80,7 @@ BANNERS = defaultdict(list)
 #:       }
 #:   }
 #:  }
+
 KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: float(0.0))))
 
 
@@ -79,6 +93,7 @@ KEYWORD_IMPRESSION_PAID_AMOUNT = defaultdict(lambda: defaultdict(lambda: default
 #:    },
 #:  'campaignid2_bannerid2': { ... }
 #: }
+
 IMPRESSIONS_COUNT = defaultdict(lambda: defaultdict(lambda: int(0)))
 
 

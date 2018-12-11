@@ -13,6 +13,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 from __future__ import print_function
+
 import os
 import sys
 
@@ -21,11 +22,13 @@ sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(0, os.path.abspath('../../../'))
 sys.path.insert(0, os.path.abspath('../../../../'))
+sys.path.insert(0, os.path.abspath('../../../../../'))
 
 # Sphinx / readthedocs output
-print("sys.paths:")
-for sp in sys.path:
-    print(sp)
+if os.getenv('DOC_DEBUG', False):
+    print("sys.paths:")
+    for sp in sys.path:
+        print(sp)
 
 # -- Project information -----------------------------------------------------
 
@@ -54,8 +57,10 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.intersphinx'
-]
+    'sphinx.ext.intersphinx',
+    'sphinxjsondomain',
+    'sphinxcontrib.httpdomain'
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -138,7 +143,7 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-}
+    }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
@@ -146,7 +151,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'AdSelect.tex', u'AdSelect Documentation',
      u'AdShares.net', 'manual'),
-]
+    ]
 
 
 # -- Options for manual page output ------------------------------------------
@@ -156,7 +161,7 @@ latex_documents = [
 man_pages = [
     (master_doc, 'adselect', u'AdSelect Documentation',
      [author], 1)
-]
+    ]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -168,6 +173,8 @@ texinfo_documents = [
     (master_doc, 'AdSelect', u'AdSelect Documentation',
      author, 'AdSelect', 'One line description of project.',
      'Miscellaneous'),
-]
+    ]
 
 # -- Extension configuration -------------------------------------------------
+intersphinx_mapping = {'python': ('https://docs.python.org/2.7', None),
+                       'twisted': ('https://twisted.readthedocs.io/en/twisted-18.9.0', None)}
