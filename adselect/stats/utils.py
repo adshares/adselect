@@ -68,6 +68,13 @@ def is_banner_active(banner):
 
 @defer.inlineCallbacks
 def iterate_deferred(deferred, func):
+    """
+    Auxiliary function to iterate a function over a deferred resource.
+
+    :param deferred: Deferred we iteravet over
+    :param func: Function executed for each item
+    :return: None
+    """
     if deferred:
         data, dfr = yield deferred
         while data:
@@ -177,8 +184,7 @@ def initialize_stats():
 
 def select_new_banners(publisher_id,
                        banner_size,
-                       mixed_new_banners_percent,
-                       propositions_nb,
+                       new_banners_proposition_nb,
                        notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF,
                        filtering_population_factor=4):
     """
@@ -193,14 +199,11 @@ def select_new_banners(publisher_id,
 
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
-    :param mixed_new_banners_percent: How much new banners should be mixed in.
-    :param propositions_nb: The amount of returned banners.
+    :param new_banners_proposition_nb: The max amount of new banners.
     :param notpaid_display_cutoff:
     :param filtering_population_factor: Random population sample.
     :return: List of banners.
     """
-
-    new_banners_proposition_nb = int(mixed_new_banners_percent * propositions_nb / 100.0)
 
     all_banners = stats_cache.BANNERS[banner_size]
     random_banner_number = new_banners_proposition_nb * filtering_population_factor
@@ -240,7 +243,15 @@ def select_best_keywords(publisher_id, banner_size, impression_keywords_dict, be
 
 
 def get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys, banners_per_keyword_cutoff=10):
+    """
+    Get publisher banners and get only best ones for keywords, with included cutoff.
 
+    :param publisher_id: Id of the publisher
+    :param banner_size: Banner size
+    :param sbest_pi_keys:  Best paid keywords
+    :param banners_per_keyword_cutoff: Number of banners returned
+    :return:
+    """
     publisher_banners = stats_cache.KEYWORDS_BANNERS[publisher_id][banner_size]
     banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
     return banners_for_sbpik
@@ -268,26 +279,34 @@ def select_best_banners(publisher_id,
     :param mixed_new_banners_percent: Approximate percentage of new banners in proposed banners list.
     :return: List of banners.
     """
-
     # Select best paid banners with appropriate size
     banners_for_sbpik = get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys)
 
     selected_banners = [banner_id for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik)]
-
     selected_banners = selected_banners[:propositions_nb]
 
-    new_banners_proposition_nb = int(mixed_new_banners_percent * propositions_nb / 100.0)
+    selected_banners_amount = len(selected_banners)
+    if selected_banners_amount < propositions_nb:
+        new_banners_proposition_nb = propositions_nb - selected_banners_amount
+    else:
+        new_banners_proposition_nb = selected_banners_amount * int(mixed_new_banners_percent / 100.0)
 
-    new_banners = select_new_banners(publisher_id, banner_size, mixed_new_banners_percent, propositions_nb)
-    selected_banners = mixin_new_banners(selected_banners, new_banners_proposition_nb, new_banners)
+    new_banners = select_new_banners(publisher_id, banner_size, new_banners_proposition_nb)
+    selected_banners = mixin_new_banners(selected_banners, propositions_nb, new_banners)
 
     # Shuffle items in the list
     return selected_banners[:propositions_nb]
 
 
 def mixin_new_banners(selected_banners, propositions_nb, new_banners):
+    """
+    Add new banners without payment statistic
 
-    # Add new banners without payment statistic
+    :param selected_banners: Pre-selected banners
+    :param propositions_nb: Amount of banners returned
+    :param new_banners: Banners with amount of payments below threshold
+    :return:
+    """
 
     selected_banners += new_banners
     random.shuffle(selected_banners)

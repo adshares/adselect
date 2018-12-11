@@ -32,7 +32,17 @@ KEYWORDS_BANNERS = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
 
 def add_keyword_banner(publisher_id, banner_size, keyword, keyword_score, banner_id, limit=100):
+    """
+    Add keywords to cache per banner per publisher
 
+    :param publisher_id:
+    :param banner_size:
+    :param keyword:
+    :param keyword_score:
+    :param banner_id:
+    :param limit:
+    :return:
+    """
     contrib_utils.reverse_insort(KEYWORDS_BANNERS[publisher_id][banner_size][keyword], (keyword_score, banner_id))
     KEYWORDS_BANNERS[publisher_id][banner_size][keyword] = KEYWORDS_BANNERS[publisher_id][banner_size][keyword][:limit]
 

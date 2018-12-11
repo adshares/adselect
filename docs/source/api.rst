@@ -7,4 +7,3 @@ API description
    jsonrpc
    api_methods
    adselect.iface.proto.rst
-   adselect.contrib.filters.rst
