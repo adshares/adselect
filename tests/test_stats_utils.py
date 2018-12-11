@@ -1,17 +1,12 @@
 import re
+import time
 from collections import defaultdict
 
-from mock import patch, Mock, MagicMock
-
+from mock import MagicMock, Mock, patch
 from twisted.internet import defer
 
-from adselect.stats import cache as stats_cache
-from adselect.stats import utils as stats_utils
-from adselect.stats import tasks as stats_tasks
-
 from adselect.db import utils as db_utils
-
-import time
+from adselect.stats import cache as stats_cache, tasks as stats_tasks, utils as stats_utils
 from tests import db_test_case
 
 
@@ -361,4 +356,4 @@ class StatsUtilsTestCase(db_test_case):
                                                                  size,
                                                                  sbest_pi_keys,
                                                                  1)
-                self.assertFalse(selected)
+                self.assertTrue(selected)
