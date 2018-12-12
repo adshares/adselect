@@ -116,15 +116,13 @@ def select_banner(banners_requests):
 
     responses_dict = defaultdict()
     for banner_request in banners_requests:
-
         proposed_banners = stats_utils.select_best_banners(banner_request.publisher_id,
                                                            banner_request.banner_size,
                                                            banner_request.keywords)
-
         # Validate banners
         for banner_id in proposed_banners:
-
             banner_ok = yield validate_banner_with_banner_request(banner_request, banner_id)
+
             if banner_ok:
                 responses_dict[banner_request.request_id] = banner_id
                 break
@@ -143,6 +141,14 @@ def validate_keywords(filters_dict, keywords):
     return validate_require_keywords(filters_dict, keywords) and validate_exclude_keywords(filters_dict, keywords)
 
 
+def validate_bounds(bounds, keyword_values):
+    for kv in keyword_values:
+        if (len(bounds) == 2 and bounds[0] < kv < bounds[1]) \
+                or (bounds[0] == kv):
+            return True
+    return False
+
+
 def validate_require_keywords(filters_dict, keywords):
     """
     Validate required and excluded keywords.
@@ -155,13 +161,9 @@ def validate_require_keywords(filters_dict, keywords):
         if category_keyword not in keywords:
             return False
 
-        keyword_value = keywords.get(category_keyword)
-
         for category_keyword_value in ckvs:
-
             bounds = category_keyword_value.split(FILTER_SEPARATOR)
-            if (len(bounds) == 2 and bounds[0] < keyword_value < bounds[1]) \
-                    or (bounds[0] == keyword_value):
+            if validate_bounds(bounds, keywords.get(category_keyword)):
                 break
         else:
             return False
@@ -181,13 +183,9 @@ def validate_exclude_keywords(filters_dict, keywords):
         if category_keyword not in keywords:
             continue
 
-        keyword_value = keywords.get(category_keyword)
-
         for category_keyword_value in ckvs:
-
             bounds = category_keyword_value.split(FILTER_SEPARATOR)
-            if (len(bounds) == 2 and bounds[0] < keyword_value < bounds[1]) \
-               or (bounds[0] == keyword_value):
-                    return False
+            if validate_bounds(bounds, keywords.get(category_keyword)):
+                return False
 
     return True
