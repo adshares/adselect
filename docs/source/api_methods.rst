@@ -133,6 +133,53 @@ impression_add
                "id": 2,
                "params": [
                           {
+                            "event_id": "nalpVedsadJUgt"
+                            "keywords": {"movies": "horror"},
+                            "publisher_id": "SnalpVeRjxGSUWsGPRQl",
+                            "banner_id": "vsbbPLCnckRzPUZtMXXU",
+                            "user_id": "tLCCzlEJUgtJyMyqqJFn"
+                        }
+                        ]
+               }
+
+        **Example success response**:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+
+            {
+                "jsonrpc": "2.0",
+                "result": "True",
+                "id": 2
+            }
+
+
+        :resheader Content-Type: application/json
+        :statuscode 200: Success or JSON-RPC error (see :ref:`json-rpc-errors`)
+
+impression_payment_add
+^^^^^^^^^^^^^^^^^^^^^^
+
+    .. http:post:: /
+
+        Add information about impressions to AdSelect.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+              POST / HTTP/1.1
+              Host: example.com
+
+              {
+               "jsonrpc": "2.0",
+               "method": "impression_payment_add",
+               "id": 2,
+               "params": [
+                          {
+                            "event_id": "nalpVedsadJUgt"
                             "keywords": {"movies": "horror"},
                             "publisher_id": "SnalpVeRjxGSUWsGPRQl",
                             "banner_id": "vsbbPLCnckRzPUZtMXXU",
