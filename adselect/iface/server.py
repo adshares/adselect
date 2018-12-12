@@ -71,7 +71,27 @@ class AdSelectIfaceServer(JSONRPCServer):
         else:
             for imobj in impressions_data_list:
                 yield self.logger.debug("Adding event data: {0}".format(imobj))
+                imobj['paid_amount'] = 0
                 yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
+        defer.returnValue(True)
+
+    @defer.inlineCallbacks
+    # impressions interface
+    def jsonrpc_impression_payment_add(self, *impressions_data_list):
+        """
+        JSON-RPC impression_add method handler.
+
+        :param impressions_data_list: List of impression data.
+        :return: True
+        """
+        if not impressions_data_list:
+            yield self.logger.warning("No event data to add.")
+            defer.returnValue(True)
+        else:
+            for imobj in impressions_data_list:
+                yield self.logger.debug("Adding event data: {0}".format(imobj))
+                yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj),
+                                                 increment=False)
         defer.returnValue(True)
 
     @defer.inlineCallbacks

@@ -99,6 +99,9 @@ class ImpressionObject(jsonobject.JsonObject):
        :property JSONObject keywords: Keywords associated with the impression
 
     """
+    event_id = jsonobject.StringProperty(required=True)
+    """Main event identifier (String)"""
+
     banner_id = jsonobject.StringProperty(required=True)
     """Main banner identifier (String)"""
 
@@ -111,7 +114,7 @@ class ImpressionObject(jsonobject.JsonObject):
     user_id = jsonobject.StringProperty(required=True)
     """User identifier (String)"""
 
-    paid_amount = jsonobject.FloatProperty(required=True)
+    paid_amount = jsonobject.FloatProperty()
     """Payment for the impression (Float)"""
 
 
