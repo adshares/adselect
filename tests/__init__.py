@@ -133,34 +133,47 @@ class DataTestCase(unittest.TestCase):
                                {'keywords': {'Carolyn': 'Lyndon'}, 'banner_id': 'b_Pratapwant', 'banner_size': '72x72'},
                                {'keywords': {'Wendi': 'Kimberly'}, 'banner_id': 'b_Donal', 'banner_size': '93x93'}]}]
     _impressions = [{'keywords': {'Rusty': 'Max', 'Jeffrey': 'Victoria', 'Blair': 'Hans', 'Ravindran': 'Sekar',
-                                  'Carolyn': 'Lyndon'}, 'user_id': 'user_Gregory', 'banner_id': 'b_Juri',
-                     'publisher_id': 'pub_Ellen', 'paid_amount': 0.17}, {
+                                  'Carolyn': 'Lyndon'},
+                     'user_id': 'user_Gregory',
+                     'banner_id': 'b_Juri',
+                     'event_id': 'f2801f1b9fd1',
+                     'publisher_id': 'pub_Ellen',
+                     'paid_amount': 0.17}, {
                         'keywords': {'Rusty': 'Max', 'Blair': 'Hans', 'Carolyn': 'Lyndon', 'Santa': 'Malaclypse',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Guy', 'banner_id': 'b_Shirley',
+                        'event_id': '3a216d1b676e',
                         'publisher_id': 'pub_Ellen', 'paid_amount': 0.55}, {
                         'keywords': {'Rusty': 'Max', 'Blair': 'Hans', 'Ravindran': 'Sekar', 'Santa': 'Malaclypse',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Gregory', 'banner_id': 'b_Jan',
+                        'event_id': '53ab88618666',
                         'publisher_id': 'pub_Ellen', 'paid_amount': 0.77}, {
                         'keywords': {'Rusty': 'Max', 'Sidney': 'Jane', 'Malaclypse': 'Jin', 'Wendi': 'Kimberly',
                                      'Santa': 'Malaclypse'}, 'user_id': 'user_Aimee', 'banner_id': 'b_Sabrina',
+                        'event_id': '10b4e37b9895',
                         'publisher_id': 'pub_Tovah', 'paid_amount': 0.21}, {
                         'keywords': {'Malaclypse': 'Jin', 'Ravindran': 'Sekar', 'Carolyn': 'Lyndon', 'Blair': 'Hans',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Earle', 'banner_id': 'b_Jeffrey',
+                        'event_id': '811af068fb48',
                         'publisher_id': 'pub_Lee', 'paid_amount': 0.47}, {
                         'keywords': {'Rusty': 'Max', 'Blair': 'Hans', 'Wendi': 'Kimberly', 'Santa': 'Malaclypse',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Earle', 'banner_id': 'b_Laurent',
+                        'event_id': '770f99705e55',
                         'publisher_id': 'pub_Jared', 'paid_amount': 0.0038}, {
                         'keywords': {'Rusty': 'Max', 'Malaclypse': 'Jin', 'Ravindran': 'Sekar', 'Sidney': 'Jane',
                                      'Santa': 'Malaclypse'}, 'user_id': 'user_Gregory', 'banner_id': 'b_Melinda',
+                        'event_id': '4d0d606d9b66',
                         'publisher_id': 'pub_Lee', 'paid_amount': 0.61}, {
                         'keywords': {'Rusty': 'Max', 'Carolyn': 'Lyndon', 'Sidney': 'Jane', 'Santa': 'Malaclypse',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Gregory', 'banner_id': 'b_Vincenzo',
+                        'event_id': '6a030c297651',
                         'publisher_id': 'pub_Ellen', 'paid_amount': 0.49}, {
                         'keywords': {'Jeffrey': 'Victoria', 'Rusty': 'Max', 'Wendi': 'Kimberly', 'Sidney': 'Jane',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Gregory', 'banner_id': 'b_Roxanne',
+                        'event_id': '1bbb6395356f',
                         'publisher_id': 'pub_Sanjib', 'paid_amount': 0.93}, {
                         'keywords': {'Blair': 'Hans', 'Ravindran': 'Sekar', 'Sidney': 'Jane', 'Wendi': 'Kimberly',
                                      'Saiid': 'Liber'}, 'user_id': 'user_Gregory', 'banner_id': 'b_Nicolette',
+                        'event_id': 'c232b08395ca',
                         'publisher_id': 'pub_Jared', 'paid_amount': 0.73}]
 
     def load_campaigns(self):

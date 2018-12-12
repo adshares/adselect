@@ -17,6 +17,7 @@ class TestSelect_banner(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
             stats_utils.process_impression(**imp)
 
         stats_utils.load_banners()
