@@ -160,6 +160,8 @@ class StatsUtilsTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
+
             stats_utils.process_impression(**imp)
             bid = imp['banner_id']
             pid = imp['publisher_id']
@@ -189,6 +191,7 @@ class StatsUtilsTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
 
             stats_utils.process_impression(**imp)
             bid = imp['banner_id']
@@ -224,6 +227,8 @@ class StatsUtilsTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
+
             stats_utils.process_impression(**imp)
 
         yield stats_tasks.save_banner_scores()
@@ -317,6 +322,8 @@ class StatsUtilsTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
+
             stats_utils.process_impression(**imp)
 
         stats_utils.load_banners()

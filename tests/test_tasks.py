@@ -28,6 +28,7 @@ class TasksTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
 
             yield stats_utils.process_impression(**imp)
             payments = yield db_utils.get_banner_payment(imp['banner_id'])
@@ -66,6 +67,7 @@ class TasksTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
 
             yield stats_utils.process_impression(**imp)
             score = yield db_utils.get_banner_scores(imp['banner_id'])
@@ -100,6 +102,7 @@ class TasksTestCase(db_test_case):
             imp['impression_keywords'] = imp['keywords']
             del imp['keywords']
             del imp['user_id']
+            del imp['event_id']
 
             yield stats_utils.process_impression(**imp)
             score = yield db_utils.get_banner_scores(imp['banner_id'])

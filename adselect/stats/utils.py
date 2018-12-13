@@ -313,7 +313,7 @@ def mixin_new_banners(selected_banners, propositions_nb, new_banners):
     return selected_banners[:propositions_nb]
 
 
-def process_impression(banner_id, publisher_id, impression_keywords, paid_amount):
+def process_impression(banner_id, publisher_id, impression_keywords, paid_amount, increment=True):
     """
     Update impression cache.
 
@@ -324,11 +324,13 @@ def process_impression(banner_id, publisher_id, impression_keywords, paid_amount
     :param publisher_id: Publisher identifier.
     :param impression_keywords: Dictionary of keywords (with values).
     :param paid_amount: Amount paid for the impression.
+    :param increment: Increment views
     :return:
     """
 
-    # Update BANNERS_IMPRESSIONS_COUNT
-    stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] += 1
+    if increment:
+        # Update BANNERS_IMPRESSIONS_COUNT
+        stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] += 1
 
     # Update KEYWORD_IMPRESSION_PAID_AMOUNT if paid_amount > 0
     if paid_amount > 0:

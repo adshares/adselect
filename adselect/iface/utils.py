@@ -49,7 +49,7 @@ def delete_campaign(campaign_id):
     yield db_utils.delete_campaign_banners(campaign_id)
 
 
-def add_impression(imobj):
+def add_impression(imobj, increment=True):
     """
     Record the impression, by passing it to the Statistics module.
 
@@ -60,7 +60,8 @@ def add_impression(imobj):
     stats_utils.process_impression(imobj.banner_id,
                                    imobj.publisher_id,
                                    imobj.keywords,
-                                   imobj.paid_amount)
+                                   imobj.paid_amount,
+                                   increment)
 
 
 @defer.inlineCallbacks
