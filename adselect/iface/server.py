@@ -72,6 +72,7 @@ class AdSelectIfaceServer(JSONRPCServer):
             for imobj in impressions_data_list:
                 yield self.logger.debug("Adding event data: {0}".format(imobj))
                 imobj['paid_amount'] = 0
+                yield self.logger.debug("Adding event data: {0}".format(imobj))
                 yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
         defer.returnValue(True)
 
