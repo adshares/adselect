@@ -83,7 +83,7 @@ class CampaignObject(jsonobject.JsonObject):
     keywords = jsonobject.DictProperty()
     """Keywords (Dictionary of Strings)."""
 
-    banners = jsonobject.ListProperty(BannerObject, required=True)
+    banners = jsonobject.ListProperty(BannerObject)
     """List of banners (List of `BannerObject`)"""
 
 
