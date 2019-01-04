@@ -117,6 +117,7 @@ class AdSelectIfaceServer(JSONRPCServer):
             defer.returnValue([])
         else:
             yield self.logger.info("Select banners request received.")
+            yield self.logger.debug(impression_param_list)
             banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
                                impression_param_list]
 
