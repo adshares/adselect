@@ -1,6 +1,8 @@
 import logging
 
+from fastjsonrpc.jsonrpc import JSONRPCError
 from fastjsonrpc.server import JSONRPCServer
+from jsonobject.exceptions import BadValueError
 from twisted.internet import defer, reactor
 from twisted.web.server import Site
 
@@ -30,13 +32,16 @@ class AdSelectIfaceServer(JSONRPCServer):
         else:
             for campaign_data in campaign_data_list:
                 yield self.logger.debug("Campaign update: {0}".format(campaign_data))
+                try:
+                    campaign_data['filters'] = iface_proto.RequireExcludeObject(**campaign_data['filters'])
 
-                campaign_data['filters'] = iface_proto.RequireExcludeObject(**campaign_data['filters'])
+                    campaign_data['banners'] = [iface_proto.BannerObject(campaign_id=campaign_data['campaign_id'], **b) for b in
+                                                campaign_data['banners']]
 
-                campaign_data['banners'] = [iface_proto.BannerObject(campaign_id=campaign_data['campaign_id'], **b) for b in
-                                            campaign_data['banners']]
+                    yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign_data))
+                except (KeyError, TypeError, BadValueError) as e:
+                    raise JSONRPCError(e, iface_const.INVALID_OBJECT)
 
-                yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign_data))
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -73,7 +78,11 @@ class AdSelectIfaceServer(JSONRPCServer):
                 yield self.logger.debug("Adding event data: {0}".format(imobj))
                 imobj['paid_amount'] = 0
                 yield self.logger.debug("Adding event data: {0}".format(imobj))
-                yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
+                try:
+                    yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj))
+                except BadValueError as e:
+                    raise JSONRPCError(e, iface_const.INVALID_OBJECT)
+
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -91,8 +100,11 @@ class AdSelectIfaceServer(JSONRPCServer):
         else:
             for imobj in impressions_data_list:
                 yield self.logger.debug("Adding event data: {0}".format(imobj))
-                yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj),
-                                                 increment=False)
+                try:
+                    yield iface_utils.add_impression(iface_proto.ImpressionObject(imobj),
+                                                     increment=False)
+                except BadValueError as e:
+                    raise JSONRPCError(e, iface_const.INVALID_OBJECT)
         defer.returnValue(True)
 
     @defer.inlineCallbacks
@@ -118,12 +130,15 @@ class AdSelectIfaceServer(JSONRPCServer):
         else:
             yield self.logger.info("Select banners request received.")
             yield self.logger.debug(impression_param_list)
-            banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
-                               impression_param_list]
+            try:
+                banner_requests = [iface_proto.SelectBannerRequest(impression_param) for impression_param in
+                                   impression_param_list]
 
-            selected_banners = iface_utils.select_banner(banner_requests)
-            selected_banners.addCallback(send_respone)
-            ret_sb = yield selected_banners
+                selected_banners = iface_utils.select_banner(banner_requests)
+                selected_banners.addCallback(send_respone)
+                ret_sb = yield selected_banners
+            except BadValueError as e:
+                raise JSONRPCError(e, iface_const.INVALID_OBJECT)
 
             defer.returnValue(ret_sb)
 
@@ -136,6 +151,6 @@ def configure_iface(port=iface_const.SERVER_PORT):
     :return: Listening reactor.
     """
     logger = logging.getLogger(__name__)
-    logger.info("Initializing interface server.")
+    logger.info("Initializing interface server on port: {0}".format(port))
     site = Site(AdSelectIfaceServer())
     return reactor.listenTCP(port, site)

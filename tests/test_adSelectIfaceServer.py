@@ -2,6 +2,7 @@ import logging
 from copy import deepcopy
 from unittest import TestCase
 
+from fastjsonrpc.jsonrpc import JSONRPCError
 from twisted.internet import defer
 
 from adselect.iface import server as iface_server
@@ -55,10 +56,35 @@ class TestAdSelectIfaceServer(db_test_case):
         ret = yield self.server.jsonrpc_banner_select()
         self.assertEqual(len(ret), 0)
 
+    @defer.inlineCallbacks
+    def test_invalid_campaign(self):
+
+        invalid_campaign = deepcopy(self._campaigns[0])
+        del invalid_campaign['campaign_id']
+
+        with self.assertRaises(JSONRPCError):
+            yield self.server.jsonrpc_campaign_update(invalid_campaign)
+
+    @defer.inlineCallbacks
+    def test_invalid_impression(self):
+
+        invalid_impression = deepcopy(self._impressions[0])
+        del invalid_impression['event_id']
+
+        with self.assertRaises(JSONRPCError):
+            yield self.server.jsonrpc_impression_add(invalid_impression)
+
+    @defer.inlineCallbacks
+    def test_invalid_banner_select_request(self):
+
+        with self.assertRaises(JSONRPCError):
+            yield self.server.jsonrpc_impression_add({'dummy_field': 0})
+
 
 class TestConfigureIfaceServer(TestCase):
 
     def test_configure_iface(self):
+
         self.reactor = iface_server.configure_iface(port=9090)
         self.assertIsNotNone(self.reactor)
         self.reactor.stopListening()
