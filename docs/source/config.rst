@@ -3,10 +3,10 @@ Configuration
 
 Configuration is controlled through environmental variables. Default values are provided below.
 
-Calculations (adselect.stats.consts)
-------------------------------------
+Calculations (adselect.stats.const)
+-----------------------------------
 
-.. automodule:: adselect.stats.consts
+.. automodule:: adselect.stats.const
     :members:
     :undoc-members:
     :show-inheritance:
@@ -14,23 +14,23 @@ Calculations (adselect.stats.consts)
 Database (adselect.db.const)
 ----------------------------
 
-.. automodule:: adselect.db.consts
+.. automodule:: adselect.db.const
     :members:
     :undoc-members:
     :show-inheritance:
 
-Interface (adselect.iface.consts)
----------------------------------
+Interface (adselect.iface.const)
+--------------------------------
 
-.. automodule:: adselect.iface.consts
+.. automodule:: adselect.iface.const
     :members:
     :undoc-members:
     :show-inheritance:
 
-Utilities (adselect.contrib.consts)
------------------------------------
+Utilities (adselect.contrib.const)
+----------------------------------
 
-.. automodule:: adselect.contrib.consts
+.. automodule:: adselect.contrib.const
     :members:
     :undoc-members:
     :show-inheritance:

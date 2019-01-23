@@ -1,12 +1,6 @@
 adselect.iface package
 ======================
 
-adselect.iface.const module
----------------------------
-
-.. automodule:: adselect.iface.const
-    :members:
-    :show-inheritance:
 
 adselect.iface.protocol module
 ------------------------------

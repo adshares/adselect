@@ -10,8 +10,8 @@ campaign_update
 
         Please note:
 
-        * the params attribute contains a list of :ref:`CampaignObject`.
-        * `time_end` needs to be larger than the time of select request (:ref:`banner-select`) method. Otherwise it will not be returned (the campaign has expired).
+        * the params attribute contains a list of `CampaignObject`.
+        * `time_end` needs to be larger than the time of select request (`banner-select`) method. Otherwise it will not be returned (the campaign has expired).
 
         **Example request**:
 

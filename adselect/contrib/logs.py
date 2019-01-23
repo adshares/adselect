@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from adselect.contrib import consts as utils_consts
+from adselect.contrib import const as utils_consts
 
 
 def setup():
