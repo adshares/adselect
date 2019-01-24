@@ -14,7 +14,7 @@ class RequireExcludeObject(jsonobject.JsonObject):
        * "interest": ["cars"]
        * "movies": ["action", "horror", "thriller"]
 
-       :property DictProperty require: Dicitonary of required keywords
+       :property DictProperty require: Dictionary of required keywords
        :property DictProperty exclude: Dictionary of excluded keywords
 
     """

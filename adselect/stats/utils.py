@@ -185,7 +185,6 @@ def initialize_stats():
 def select_new_banners(publisher_id,
                        banner_size,
                        new_banners_proposition_nb,
-                       notpaid_display_cutoff=stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF,
                        filtering_population_factor=4):
     """
     Return banners ids without payment statistic.
@@ -200,7 +199,6 @@ def select_new_banners(publisher_id,
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
     :param new_banners_proposition_nb: The max amount of new banners.
-    :param notpaid_display_cutoff:
     :param filtering_population_factor: Random population sample.
     :return: List of banners.
     """
@@ -215,7 +213,7 @@ def select_new_banners(publisher_id,
     # Filter selected banners out banners witch were displayed more times than notpaid_display_cutoff
     selected_banners = []
     for banner_id in random_banners:
-        if stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] < notpaid_display_cutoff:
+        if stats_cache.IMPRESSIONS_COUNT[banner_id][publisher_id] < stats_consts.NEW_BANNERS_IMPRESSION_CUTOFF:
             selected_banners.append(banner_id)
 
         if len(selected_banners) == new_banners_proposition_nb:
@@ -257,11 +255,7 @@ def get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys, banners_p
     return banners_for_sbpik
 
 
-def select_best_banners(publisher_id,
-                        banner_size,
-                        sbest_pi_keys,
-                        propositions_nb=100,
-                        mixed_new_banners_percent=5):
+def select_best_banners(publisher_id, banner_size, sbest_pi_keys):
     """
     Select banners with appropriate size for given keywords.
 
@@ -275,27 +269,24 @@ def select_best_banners(publisher_id,
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
     :param sbest_pi_keys: Best Keywords for this impression and publisher
-    :param propositions_nb: The amount of returned banners.
-    :param mixed_new_banners_percent: Approximate percentage of new banners in proposed banners list.
     :return: List of banners.
     """
     # Select best paid banners with appropriate size
     banners_for_sbpik = get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys)
 
     selected_banners = [banner_id for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik)]
-    selected_banners = selected_banners[:propositions_nb]
-
     selected_banners_amount = len(selected_banners)
-    if selected_banners_amount < propositions_nb:
-        new_banners_proposition_nb = propositions_nb - selected_banners_amount
+
+    if selected_banners_amount < stats_consts.SELECTED_BANNER_MAX_AMOUNT:
+        new_banners_proposition_nb = stats_consts.SELECTED_BANNER_MAX_AMOUNT - selected_banners_amount
     else:
-        new_banners_proposition_nb = selected_banners_amount * int(mixed_new_banners_percent / 100.0)
+        new_banners_proposition_nb = int(selected_banners_amount * stats_consts.NEW_BANNERS_MIX / 100.0)
 
     new_banners = select_new_banners(publisher_id, banner_size, new_banners_proposition_nb)
-    selected_banners = mixin_new_banners(selected_banners, propositions_nb, new_banners)
+    selected_banners = mixin_new_banners(selected_banners, stats_consts.SELECTED_BANNER_MAX_AMOUNT, new_banners)
 
     # Shuffle items in the list
-    return selected_banners[:propositions_nb]
+    return selected_banners[:stats_consts.SELECTED_BANNER_MAX_AMOUNT]
 
 
 def mixin_new_banners(selected_banners, propositions_nb, new_banners):
