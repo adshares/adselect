@@ -184,8 +184,7 @@ def initialize_stats():
 
 def select_new_banners(publisher_id,
                        banner_size,
-                       new_banners_proposition_nb,
-                       filtering_population_factor=4):
+                       new_banners_proposition_nb):
     """
     Return banners ids without payment statistic.
 
@@ -199,12 +198,11 @@ def select_new_banners(publisher_id,
     :param publisher_id: Publisher identifier.
     :param banner_size: Banner size (width x height) in string format.
     :param new_banners_proposition_nb: The max amount of new banners.
-    :param filtering_population_factor: Random population sample.
     :return: List of banners.
     """
 
     all_banners = stats_cache.BANNERS[banner_size]
-    random_banner_number = new_banners_proposition_nb * filtering_population_factor
+    random_banner_number = new_banners_proposition_nb * stats_consts.NEW_BANNERS_POOL_SIZE_FACTOR
     if random_banner_number < len(all_banners):
         random_banners = random.sample(all_banners, random_banner_number)
     else:

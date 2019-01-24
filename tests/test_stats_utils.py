@@ -277,15 +277,13 @@ class StatsUtilsTestCase(db_test_case):
         for size in banner_sizes:
             selected = yield stats_utils.select_new_banners('pub1',
                                                             size,
-                                                            2,
-                                                            filtering_population_factor=1)
+                                                            2)
 
             self.assertTrue(selected)
 
             selected = yield stats_utils.select_new_banners('pub1',
                                                             size,
-                                                            1,
-                                                            filtering_population_factor=1)
+                                                            1)
 
             self.assertTrue(selected)
 
