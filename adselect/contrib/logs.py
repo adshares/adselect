@@ -1,5 +1,5 @@
 import json
-import logging
+import logging.config
 import os
 
 from adselect.contrib import const as utils_consts

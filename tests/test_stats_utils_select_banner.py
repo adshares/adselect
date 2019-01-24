@@ -8,7 +8,7 @@ from adselect.stats import tasks as stats_tasks, utils as stats_utils
 from tests import db_test_case
 
 
-class TestSelect_banner(db_test_case):
+class TestSelectBanner(db_test_case):
 
     @defer.inlineCallbacks
     def test_select_banner(self):

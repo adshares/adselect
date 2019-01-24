@@ -45,6 +45,11 @@ class TestAdSelectIfaceServer(db_test_case):
         self.assertTrue(ret)
 
     @defer.inlineCallbacks
+    def test_jsonrpc_impression_payment_add(self):
+        ret = yield self.server.jsonrpc_impression_payment_add()
+        self.assertTrue(ret)
+
+    @defer.inlineCallbacks
     def test_jsonrpc_banner_select(self):
         ret = yield self.server.jsonrpc_banner_select()
         self.assertEqual(len(ret), 0)

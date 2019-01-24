@@ -7,7 +7,7 @@ from adselect.iface import protocol as iface_proto, utils as iface_utils
 from tests import db_test_case
 
 
-class TestCreate_or_update_campaign(db_test_case):
+class TestCampaign(db_test_case):
 
     @defer.inlineCallbacks
     def test_create_or_update_campaign(self):

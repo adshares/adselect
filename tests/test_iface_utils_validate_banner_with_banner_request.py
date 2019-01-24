@@ -1,12 +1,12 @@
-from tests import db_test_case
-from adselect.iface import utils as iface_utils
 from mock import MagicMock
-
 from twisted.internet import defer
+
 from adselect.db import utils as db_utils
+from adselect.iface import utils as iface_utils
+from tests import db_test_case
 
 
-class TestValidate_banner_with_banner_request(db_test_case):
+class TestValidateBannerRequest(db_test_case):
 
     @defer.inlineCallbacks
     def test_validate_banner_with_banner_request(self):
