@@ -7,5 +7,11 @@ class TestSetConst(TestCase):
 
     def test_const(self):
 
-        self.assertIsNot(stats_const.NEW_BANNERS_IMPRESSION_CUTOFF, None)
-        self.assertIsNot(stats_const.RECALCULATE_TASK_SECONDS_INTERVAL, None)
+        for const_name in ['RECALCULATE_TASK_SECONDS_INTERVAL',
+                           'NEW_BANNERS_IMPRESSION_CUTOFF',
+                           'SELECTED_BANNER_MAX_AMOUNT',
+                           'NEW_BANNERS_MIX',
+                           'NEW_BANNERS_POOL_SIZE_FACTOR']:
+            c = getattr(stats_const, const_name)
+            self.assertIsNot(c, None)
+            self.assertGreaterEqual(c, 0)

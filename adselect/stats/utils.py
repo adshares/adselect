@@ -250,7 +250,9 @@ def get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys, banners_p
     """
     publisher_banners = stats_cache.KEYWORDS_BANNERS[publisher_id][banner_size]
     banners_for_sbpik = [publisher_banners[keyword][:banners_per_keyword_cutoff] for keyword in sbest_pi_keys]
-    return banners_for_sbpik
+
+    selected_banners = [banner_id for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik)]
+    return selected_banners
 
 
 def select_best_banners(publisher_id, banner_size, sbest_pi_keys):
@@ -270,9 +272,7 @@ def select_best_banners(publisher_id, banner_size, sbest_pi_keys):
     :return: List of banners.
     """
     # Select best paid banners with appropriate size
-    banners_for_sbpik = get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys)
-
-    selected_banners = [banner_id for avg_price, banner_id in contrib_utils.merge(*banners_for_sbpik)]
+    selected_banners = get_banners_for_keywords(publisher_id, banner_size, sbest_pi_keys)
     selected_banners_amount = len(selected_banners)
 
     if selected_banners_amount < stats_consts.SELECTED_BANNER_MAX_AMOUNT:

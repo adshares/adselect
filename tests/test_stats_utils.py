@@ -353,10 +353,16 @@ class StatsUtilsTestCase(db_test_case):
 
             # Show only new banners
             limit = 1
-            with patch('adselect.stats.const.SELECTED_BANNER_MAX_AMOUNT', limit):
 
-                for size in banner_sizes:
-                    selected = yield stats_utils.select_best_banners(pub_id,
-                                                                     size,
-                                                                     sbest_pi_keys)
-                    self.assertEqual(limit, len(selected))
+            mock_chosen_banners = [e['banner_id'] for e in self.campaigns[0]['banners']]
+
+            self.assertGreaterEqual(len(mock_chosen_banners), limit)
+
+            with patch('adselect.stats.const.SELECTED_BANNER_MAX_AMOUNT', limit):
+                with patch('adselect.stats.utils.get_banners_for_keywords', MagicMock(return_value=mock_chosen_banners)):
+
+                    for size in banner_sizes:
+                        selected = yield stats_utils.select_best_banners(pub_id,
+                                                                         size,
+                                                                         sbest_pi_keys)
+                        self.assertEqual(limit, len(selected))
