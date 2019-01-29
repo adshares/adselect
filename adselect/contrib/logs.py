@@ -6,6 +6,10 @@ from adselect.contrib import const as utils_consts
 
 
 def setup():
+    """
+    Setup global logging configuration.
+    :return:
+    """
 
     loglevel = getattr(logging, utils_consts.LOG_LEVEL)
 
