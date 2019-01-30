@@ -39,7 +39,9 @@ class AdSelectIfaceServer(JSONRPCServer):
                                                 campaign_data['banners']]
 
                     yield iface_utils.create_or_update_campaign(iface_proto.CampaignObject(**campaign_data))
-                except (KeyError, TypeError, BadValueError) as e:
+                except KeyError as e:
+                    raise JSONRPCError('Key error in campaign data: {0}'.format(e), iface_const.INVALID_OBJECT)
+                except (TypeError, BadValueError) as e:
                     raise JSONRPCError(e, iface_const.INVALID_OBJECT)
 
         defer.returnValue(True)

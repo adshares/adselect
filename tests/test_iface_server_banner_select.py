@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from fastjsonrpc.jsonrpc import JSONRPCError
 from twisted.internet import defer
 
 from adselect.iface import server as iface_server
@@ -36,3 +37,8 @@ class TestAdSelectIfaceServer(db_test_case):
 
         ret = yield self.server.jsonrpc_banner_select(request)
         self.assertEqual(len(ret), 0)
+
+        with self.assertRaises(JSONRPCError):
+
+            request = {'wrong_key': 'wrong_value'}
+            yield self.server.jsonrpc_banner_select(request)

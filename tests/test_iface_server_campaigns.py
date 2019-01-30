@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from fastjsonrpc.jsonrpc import JSONRPCError
 from twisted.internet import defer
 
 from adselect.iface import server as iface_server
@@ -20,6 +21,17 @@ class TestAdSelectIfaceServer(db_test_case):
 
         ret = yield self.server.jsonrpc_campaign_update(*self.campaigns)
         self.assertTrue(ret)
+
+        with self.assertRaises(JSONRPCError):
+
+            request = {'filters': 'wrong_value'}
+            yield self.server.jsonrpc_campaign_update(request)
+
+        with self.assertRaises(JSONRPCError):
+
+            request = self.campaigns[0]
+            del request['filters']
+            yield self.server.jsonrpc_campaign_update(request)
 
     @defer.inlineCallbacks
     def test_jsonrpc_campaign_delete(self):

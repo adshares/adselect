@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from fastjsonrpc.jsonrpc import JSONRPCError
 from twisted.internet import defer
 
 from adselect.iface import server as iface_server
@@ -21,6 +22,11 @@ class TestAdSelectIfaceServer(db_test_case):
         ret = yield self.server.jsonrpc_impression_add(*self.impressions)
         self.assertTrue(ret)
 
+        with self.assertRaises(JSONRPCError):
+
+            request = {'wrong_key': 'wrong_value'}
+            yield self.server.jsonrpc_impression_add(request)
+
     @defer.inlineCallbacks
     def test_jsonrpc_impression_payment_add(self):
         ret = yield self.server.jsonrpc_impression_payment_add()
@@ -33,3 +39,8 @@ class TestAdSelectIfaceServer(db_test_case):
 
         ret = yield self.server.jsonrpc_impression_payment_add(impression_payment)
         self.assertTrue(ret)
+
+        with self.assertRaises(JSONRPCError):
+
+            request = {'wrong_key': 'wrong_value'}
+            yield self.server.jsonrpc_impression_payment_add(request)
