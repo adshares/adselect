@@ -1,14 +1,10 @@
-import logging
 from copy import deepcopy
 from unittest import TestCase
 
-from fastjsonrpc.jsonrpc import JSONRPCError
 from twisted.internet import defer
 
 from adselect.iface import server as iface_server
 from tests import db_test_case
-
-logging.disable(logging.WARNING)
 
 
 class TestAdSelectIfaceServer(db_test_case):
@@ -46,6 +42,19 @@ class TestAdSelectIfaceServer(db_test_case):
         self.assertTrue(ret)
 
     @defer.inlineCallbacks
+    def test_jsonrpc_impression_payment_add(self):
+        ret = yield self.server.jsonrpc_impression_payment_add()
+        self.assertTrue(ret)
+
+        impression_payment = {"banner_id": "banner_id",
+                              "user_id": "user_id",
+                              "event_id": "event_id",
+                              "publisher_id": "publisher_id"}
+
+        ret = yield self.server.jsonrpc_impression_payment_add(impression_payment)
+        self.assertTrue(ret)
+
+    @defer.inlineCallbacks
     def test_jsonrpc_banner_select(self):
         ret = yield self.server.jsonrpc_banner_select()
         self.assertEqual(len(ret), 0)
@@ -56,35 +65,23 @@ class TestAdSelectIfaceServer(db_test_case):
         ret = yield self.server.jsonrpc_banner_select()
         self.assertEqual(len(ret), 0)
 
-    @defer.inlineCallbacks
-    def test_invalid_campaign(self):
+        request = {
+                   'request_id': 0,
+                   'publisher_id': 'publisher_id',
+                   'user_id': 'user_id',
+                   'banner_size': '16x16',
+                   'keywords': {},
+                   'banner_filters': {'require': {},
+                                      'exclude': {}}
+                   }
 
-        invalid_campaign = deepcopy(self._campaigns[0])
-        del invalid_campaign['campaign_id']
-
-        with self.assertRaises(JSONRPCError):
-            yield self.server.jsonrpc_campaign_update(invalid_campaign)
-
-    @defer.inlineCallbacks
-    def test_invalid_impression(self):
-
-        invalid_impression = deepcopy(self._impressions[0])
-        del invalid_impression['event_id']
-
-        with self.assertRaises(JSONRPCError):
-            yield self.server.jsonrpc_impression_add(invalid_impression)
-
-    @defer.inlineCallbacks
-    def test_invalid_banner_select_request(self):
-
-        with self.assertRaises(JSONRPCError):
-            yield self.server.jsonrpc_impression_add({'dummy_field': 0})
+        ret = yield self.server.jsonrpc_banner_select(request)
+        self.assertEqual(len(ret), 0)
 
 
 class TestConfigureIfaceServer(TestCase):
 
     def test_configure_iface(self):
-
         self.reactor = iface_server.configure_iface(port=9090)
         self.assertIsNotNone(self.reactor)
         self.reactor.stopListening()

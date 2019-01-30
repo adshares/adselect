@@ -1,7 +1,7 @@
 from twisted.internet import defer
 
-from adselect.db import utils as db_utils
 import tests
+from adselect.db import utils as db_utils
 
 
 class DBUtilsTestCase(tests.db_test_case):
