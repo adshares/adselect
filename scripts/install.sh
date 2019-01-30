@@ -13,5 +13,4 @@ mv .venv ${INSTALLATION_PATH}/
 mv .env ${INSTALLATION_PATH}/
 
 mv adselect ${INSTALLATION_PATH}/
-mv config ${INSTALLATION_PATH}/
 mv daemon.py ${INSTALLATION_PATH}/
