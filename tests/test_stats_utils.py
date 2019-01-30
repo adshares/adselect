@@ -266,30 +266,24 @@ class StatsUtilsTestCase(db_test_case):
 
         selected = yield stats_utils.select_new_banners('pub1',
                                                         '1x1',
-                                                        0,
-                                                        100)
+                                                        0)
         self.assertFalse(selected)
 
         selected = yield stats_utils.select_new_banners('pub1',
                                                         '1x1',
-                                                        1,
-                                                        100)
+                                                        1)
         self.assertFalse(selected)
 
         for size in banner_sizes:
             selected = yield stats_utils.select_new_banners('pub1',
                                                             size,
-                                                            2,
-                                                            100,
-                                                            filtering_population_factor=1)
+                                                            2)
 
             self.assertTrue(selected)
 
             selected = yield stats_utils.select_new_banners('pub1',
                                                             size,
-                                                            1,
-                                                            100,
-                                                            filtering_population_factor=1)
+                                                            1)
 
             self.assertTrue(selected)
 
@@ -310,12 +304,7 @@ class StatsUtilsTestCase(db_test_case):
                 banner_sizes.update([banner['banner_size']])
                 yield db_utils.update_banner(banner)
 
-                banner['campaign_id'] += '_2'
                 banner['banner_id'] += '_2'
-                yield db_utils.update_banner(banner)
-
-                banner['campaign_id'] += '_3'
-                banner['banner_id'] += '_3'
                 yield db_utils.update_banner(banner)
 
         for imp in self.impressions:
@@ -323,7 +312,6 @@ class StatsUtilsTestCase(db_test_case):
             del imp['keywords']
             del imp['user_id']
             del imp['event_id']
-
             stats_utils.process_impression(**imp)
 
         stats_utils.load_banners()
@@ -345,22 +333,36 @@ class StatsUtilsTestCase(db_test_case):
         stats_utils.load_scores()
 
         for pub_id in [self.impressions[i]['publisher_id'] for i in xrange(len(self.impressions))]:
-
-            selected = yield stats_utils.select_best_banners(pub_id,
-                                                             '1x1',
-                                                             {})
+            # banners_for_sbpik
+            selected = yield stats_utils.select_best_banners(publisher_id=pub_id,
+                                                             banner_size='1x1',
+                                                             sbest_pi_keys={})
             self.assertFalse(selected)
 
             for size in banner_sizes:
-                sbest_pi_keys = yield stats_utils.select_best_keywords(pub_id, size, {})
+                sbest_pi_keys = yield stats_utils.select_best_keywords(pub_id, size, {'Rusty': 'Max'})
                 selected = yield stats_utils.select_best_banners(pub_id,
                                                                  size,
                                                                  sbest_pi_keys)
-
                 self.assertTrue(selected)
 
                 selected = yield stats_utils.select_best_banners(pub_id,
                                                                  size,
-                                                                 sbest_pi_keys,
-                                                                 1)
+                                                                 sbest_pi_keys)
                 self.assertTrue(selected)
+
+            # Show only new banners
+            limit = 1
+
+            mock_chosen_banners = [e['banner_id'] for e in self.campaigns[0]['banners']]
+
+            self.assertGreaterEqual(len(mock_chosen_banners), limit)
+
+            with patch('adselect.stats.const.SELECTED_BANNER_MAX_AMOUNT', limit):
+                with patch('adselect.stats.utils.get_banners_for_keywords', MagicMock(return_value=mock_chosen_banners)):
+
+                    for size in banner_sizes:
+                        selected = yield stats_utils.select_best_banners(pub_id,
+                                                                         size,
+                                                                         sbest_pi_keys)
+                        self.assertEqual(limit, len(selected))

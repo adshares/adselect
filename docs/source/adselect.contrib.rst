@@ -1,8 +1,13 @@
 adselect.contrib package
 ========================
 
-adselect.contrib.filters module
--------------------------------
+adselect.contrib.logs module
+----------------------------
+
+.. automodule:: adselect.contrib.logs
+    :members:
+    :show-inheritance:
+    :inherited-members:
 
 adselect.contrib.utils module
 -----------------------------

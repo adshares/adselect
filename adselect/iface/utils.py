@@ -54,6 +54,7 @@ def add_impression(imobj, increment=True):
     Record the impression, by passing it to the Statistics module.
 
     :param imobj: Impression document.
+    :param increment: Increment views (True or False).
     :return:
     """
     # Change counter only  in stats cache

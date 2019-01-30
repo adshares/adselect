@@ -1,10 +1,11 @@
 import random
+
 from twisted.trial import unittest
 
 from adselect.contrib import utils as contrib_utils
 
 
-class TestContribuUtils(unittest.TestCase):
+class TestContribUtils(unittest.TestCase):
 
     def test_get_timestamp(self):
         ts = contrib_utils.get_timestamp()

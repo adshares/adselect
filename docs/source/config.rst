@@ -1,36 +1,41 @@
 Configuration
 =============
 
-Configuration is spread among 5 files:
+Configuration is controlled through environmental variables. Default values are provided below.
 
-    * adselect.db.const
-    * adselect.iface.const
-    * adselect.stats.const
-    * config/log_config.json
-    * config/supervisord.conf
+Calculations (adselect.stats.const)
+-----------------------------------
 
+.. automodule:: adselect.stats.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-Banner selection
-^^^^^^^^^^^^^^^^
+Database (adselect.db.const)
+----------------------------
 
-*adselect.stats.const* is a python file containing configuration for the selection calculations.
+.. automodule:: adselect.db.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-Database
-^^^^^^^^
+Interface (adselect.iface.const)
+--------------------------------
 
-*adselect.db.const* is a python file containing configuration for the MongoDB.
+.. automodule:: adselect.iface.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-Interface
-^^^^^^^^^
+Utilities (adselect.contrib.const)
+----------------------------------
 
-*adselect.iface.const* is a python file containing configuration for the JSON-RPC interface.
+.. automodule:: adselect.contrib.const
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Logging
-^^^^^^^
+-------
 
-*config/log_config.json* contains Python logging configuration. You can learn more about it `here. <https://docs.python.org/2/library/logging.config.html>`_ The AdSelect daemon will look for this file in the ``$ADSELECT_ROOT/aduser/config`` directory, where ``$ADSELECT_ROOT`` is an environmental variable.
-
-Supervisor
-^^^^^^^^^^
-
-Config for supervisor daemon configuration (log and pid file paths) is in *config/supervisord.conf*.
+Log messages are by default sent to stdout/stderr.

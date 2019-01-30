@@ -2,7 +2,6 @@ from twisted.internet import defer
 
 from adselect import db
 from adselect.db import const as db_const
-
 from tests import db_test_case
 
 

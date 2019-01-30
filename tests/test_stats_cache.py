@@ -1,14 +1,12 @@
+from collections import defaultdict
 from copy import deepcopy
 
 from twisted.internet import defer
 
-from adselect.stats import utils as stats_utils
-from adselect.stats import cache as stats_cache
-from adselect.iface import utils as iface_utils
-from adselect.iface import protocol as iface_proto
 from adselect.db import utils as db_utils
+from adselect.iface import protocol as iface_proto, utils as iface_utils
+from adselect.stats import cache as stats_cache
 from tests import db_test_case
-from collections import defaultdict
 
 
 class CacheUtilsCampaignTestCase(db_test_case):
