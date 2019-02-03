@@ -40,8 +40,7 @@ class StatsUtilsTestCase(db_test_case):
 
         for key, val in impression_keywords.items():
             stat_key = stats_utils.genkey(key, val)
-
-        self.assertEqual(stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key], 1)
+            self.assertEqual(stats_cache.KEYWORD_IMPRESSION_PAID_AMOUNT[banner_id][publisher_id][stat_key], 1)
 
     def test_genkey(self):
         # Test for no '.'
@@ -362,6 +361,7 @@ class StatsUtilsTestCase(db_test_case):
                 with patch('adselect.stats.utils.get_banners_for_keywords', MagicMock(return_value=mock_chosen_banners)):
 
                     for size in banner_sizes:
+                        sbest_pi_keys = yield stats_utils.select_best_keywords(pub_id, size, {'Rusty': 'Max'})
                         selected = yield stats_utils.select_best_banners(pub_id,
                                                                          size,
                                                                          sbest_pi_keys)
