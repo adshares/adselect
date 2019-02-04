@@ -48,6 +48,7 @@ Packages
 .. toctree::
    :maxdepth: 6
 
+   how_it_works
    api
    reference
    testing
