@@ -3,7 +3,7 @@ from collections import defaultdict
 from twisted.internet import defer
 
 from adselect.db import utils as db_utils
-from adselect.stats import utils as stats_utils
+from adselect.stats import utils as stats_utils, cache as stats_cache
 
 #: Filter separator, used in range filters (see protocol or api documentation).
 FILTER_SEPARATOR = '--'
@@ -26,6 +26,10 @@ def create_or_update_campaign(cmpobj):
     del campaign_doc['banners']
     yield db_utils.update_campaign(campaign_doc)
 
+    old_banners = yield db_utils.get_campaign_banners(cmpobj.campaign_id)
+    for ob in old_banners:
+        stats_cache.BANNERS[ob["banner_size"]].remove(ob["banner_id"])
+
     # Delete previous banners
     yield db_utils.delete_campaign_banners(cmpobj.campaign_id)
 
@@ -33,7 +37,7 @@ def create_or_update_campaign(cmpobj):
         banner_doc = banner.to_json()
         banner_doc['campaign_id'] = cmpobj.campaign_id
         yield db_utils.update_banner(banner_doc)
-        # stats_cache.BANNERS[banner.banner_size].append(banner.banner_id)
+        stats_cache.BANNERS[banner.banner_size].append(banner.banner_id)
 
 
 @defer.inlineCallbacks
@@ -115,7 +119,6 @@ def select_banner(banners_requests):
     :param banners_requests: Iterable of banner documents.
     :return:
     """
-
     responses_dict = defaultdict()
     for banner_request in banners_requests:
         proposed_banners = stats_utils.select_best_banners(banner_request.publisher_id,
@@ -123,6 +126,7 @@ def select_banner(banners_requests):
                                                            banner_request.keywords)
         # Validate banners
         for banner_id in proposed_banners:
+
             banner_ok = yield validate_banner_with_banner_request(banner_request, banner_id)
 
             if banner_ok:
