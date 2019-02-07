@@ -21,10 +21,10 @@ fi
 
 if [[ ${ADSELECT_APP_ENV} == 'dev' ]]
 then
-    pipenv install --dev pipenv
+    pipenv install --dev
 elif [[ ${ADSELECT_APP_ENV} == 'deploy' ]]
 then
-    pipenv install --deploy pipenv
+    pipenv install --deploy
 else
-    pipenv install pipenv
+    pipenv install
 fi

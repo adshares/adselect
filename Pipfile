@@ -17,7 +17,6 @@ jsonobject = "~=0.9.5"
 fastjsonrpc = "~=0.3.0"
 txmongo = "~=18.2.0"
 Twisted = "~=18.9.0"
-pipenv = "*"
 
 [requires]
 python_version = "2.7"
