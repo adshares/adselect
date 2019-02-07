@@ -12,13 +12,19 @@
     <a href="https://github.com/adshares/adselect/wiki">Wiki</a>
 </p>
 <p align="center">
-    <a href="https://travis-ci.org/adshares/adselect" title="master" target="_blank">
+    <a href="https://travis-ci.org/adshares/adselect" title="Build Status" target="_blank">
         <img src="https://travis-ci.org/adshares/adselect.svg?branch=master" alt="Build Status">
+    </a>
+    <a href="https://sonarcloud.io/dashboard?id=adshares-adselect" title="Code Quality" target="_blank">
+        <img src="https://sonarcloud.io/api/project_badges/measure?project=adshares-adselect&metric=alert_status" alt="Code Quality">
+    </a>
+    <a href="http://adshares-adselect.readthedocs.io" title="Docs Status" target="_blank">
+        <img src="https://readthedocs.org/projects/adshares-adselect/badge/?version=latest" alt="Docs Status">
     </a>
 </p>
 
 AdSelect is a back-end service for choosing appropriate display content.
-It accepts requests from [AdServer](https://github.com/adshares/adserver).
+It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
 ## Quick Start (on Ubuntu 18.04 LTS)
 
@@ -32,6 +38,7 @@ Clone and run
 ```bash
 git clone https://github.com/adshares/adselect.git
 cd adselect
+pipenv install pipenv
 pipenv run python daemon.py
 ```
 
