@@ -26,7 +26,7 @@
 AdSelect is a back-end service for choosing appropriate display content.
 It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
-## Quick Start (on Ubuntu 18.04 LTS)
+## Quick Start (on Ubuntu 18.04)
 
 Install dependencies
 ```bash
