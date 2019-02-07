@@ -48,9 +48,15 @@ def delete_campaign(campaign_id):
     :param campaign_id: Identifier of the campaign.
     :return: Deferred.
     """
+
+    old_banners = yield db_utils.get_campaign_banners(campaign_id)
+
     # Save changes only to database
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
+
+    for ob in old_banners:
+        stats_cache.BANNERS[ob["banner_size"]].remove(ob["banner_id"])
 
 
 def add_impression(imobj, increment=True):
