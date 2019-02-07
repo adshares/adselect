@@ -19,6 +19,8 @@ then
   cd ${BUILD_PATH}/build
 fi
 
+PIPENV_VENV_IN_PROJECT=$(PIPENV_VENV_IN_PROJECT:-1)
+
 if [[ ${ADSELECT_APP_ENV} == 'dev' ]]
 then
     pipenv install --dev
