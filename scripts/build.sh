@@ -19,10 +19,12 @@ then
   cd ${BUILD_PATH}/build
 fi
 
-if [[ ${ADSELECT_APP_ENV} == 'dev' ]]; then
+if [[ ${ADSELECT_APP_ENV} == 'dev' ]]
+then
     pipenv install --dev pipenv
-elif [[ ${ADSELECT_APP_ENV} == 'deploy' ]]; then
+elif [[ ${ADSELECT_APP_ENV} == 'deploy' ]]
+then
     pipenv install --deploy pipenv
 else
-    pip install pipenv
+    pipenv install pipenv
 fi

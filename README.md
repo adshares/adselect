@@ -38,7 +38,6 @@ pipenv run python daemon.py
 ## More Info
 
 - [Documentation](https://adshares-adselect.readthedocs.io)
-- [Contributing Guidelines](docs/CONTRIBUTING.md)
 - [Authors](https://github.com/adshares/adselect/contributors)
 - Available [Versions](https://github.com/adshares/adselect/tags) (we use [Semantic Versioning](http://semver.org/))
 

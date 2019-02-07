@@ -2,15 +2,18 @@
 
 set -e
 
-# Create directories
+if [[ -v ${INSTALLATION_PATH} ]]
+then
+    printf "INSTALLATION_PATH not defined"
+    exit 1
+fi
+
 mkdir -p ${INSTALLATION_PATH}
 
 mv Pipfile ${INSTALLATION_PATH}/
 mv Pipfile.lock ${INSTALLATION_PATH}/
 
 mv .venv ${INSTALLATION_PATH}/
-
-mv .env ${INSTALLATION_PATH}/
 
 mv adselect ${INSTALLATION_PATH}/
 mv daemon.py ${INSTALLATION_PATH}/
