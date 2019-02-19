@@ -95,9 +95,11 @@ def validate_banner_with_banner_request(banner_request, proposed_banner_id):
     if not stats_utils.is_campaign_active(campaign_doc):
         defer.returnValue(False)
 
+    merged_keywords = merge_two_dicts(campaign_doc['keywords'], banner_doc['keywords'])
+
     # Validate campaign filters, Validate impression filters
     if not validate_keywords(campaign_doc['filters'], banner_request.keywords) or \
-       not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
+       not validate_keywords(banner_request.banner_filters.to_json(), merged_keywords):
         defer.returnValue(False)
 
     defer.returnValue(True)
@@ -191,3 +193,16 @@ def validate_exclude_keywords(filters_dict, keywords):
                 return False
 
     return True
+
+
+def merge_two_dicts(x, y):
+    """
+    Merges two dicts and returns it as new dict.
+
+    :param x: dict
+    :param y: dict
+    :return: merged dict
+    """
+    z = x.copy()
+    z.update(y)
+    return z
