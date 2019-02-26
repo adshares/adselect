@@ -3,7 +3,7 @@ from collections import defaultdict
 from twisted.internet import defer
 
 from adselect.db import utils as db_utils
-from adselect.stats import utils as stats_utils
+from adselect.stats import utils as stats_utils, cache as stats_cache
 
 #: Filter separator, used in range filters (see protocol or api documentation).
 FILTER_SEPARATOR = '--'
@@ -26,6 +26,10 @@ def create_or_update_campaign(cmpobj):
     del campaign_doc['banners']
     yield db_utils.update_campaign(campaign_doc)
 
+    old_banners = yield db_utils.get_campaign_banners(cmpobj.campaign_id)
+    for ob in old_banners:
+        stats_cache.BANNERS[ob["banner_size"]].remove(ob["banner_id"])
+
     # Delete previous banners
     yield db_utils.delete_campaign_banners(cmpobj.campaign_id)
 
@@ -33,7 +37,7 @@ def create_or_update_campaign(cmpobj):
         banner_doc = banner.to_json()
         banner_doc['campaign_id'] = cmpobj.campaign_id
         yield db_utils.update_banner(banner_doc)
-        # stats_cache.BANNERS[banner.banner_size].append(banner.banner_id)
+        stats_cache.BANNERS[banner.banner_size].append(banner.banner_id)
 
 
 @defer.inlineCallbacks
@@ -44,9 +48,15 @@ def delete_campaign(campaign_id):
     :param campaign_id: Identifier of the campaign.
     :return: Deferred.
     """
+
+    old_banners = yield db_utils.get_campaign_banners(campaign_id)
+
     # Save changes only to database
     yield db_utils.delete_campaign(campaign_id)
     yield db_utils.delete_campaign_banners(campaign_id)
+
+    for ob in old_banners:
+        stats_cache.BANNERS[ob["banner_size"]].remove(ob["banner_id"])
 
 
 def add_impression(imobj, increment=True):
@@ -95,9 +105,11 @@ def validate_banner_with_banner_request(banner_request, proposed_banner_id):
     if not stats_utils.is_campaign_active(campaign_doc):
         defer.returnValue(False)
 
+    merged_keywords = merge_two_dicts(campaign_doc['keywords'], banner_doc['keywords'])
+
     # Validate campaign filters, Validate impression filters
     if not validate_keywords(campaign_doc['filters'], banner_request.keywords) or \
-       not validate_keywords(banner_request.banner_filters.to_json(), campaign_doc['keywords']):
+       not validate_keywords(banner_request.banner_filters.to_json(), merged_keywords):
         defer.returnValue(False)
 
     defer.returnValue(True)
@@ -115,7 +127,6 @@ def select_banner(banners_requests):
     :param banners_requests: Iterable of banner documents.
     :return:
     """
-
     responses_dict = defaultdict()
     for banner_request in banners_requests:
         proposed_banners = stats_utils.select_best_banners(banner_request.publisher_id,
@@ -123,6 +134,7 @@ def select_banner(banners_requests):
                                                            banner_request.keywords)
         # Validate banners
         for banner_id in proposed_banners:
+
             banner_ok = yield validate_banner_with_banner_request(banner_request, banner_id)
 
             if banner_ok:
@@ -191,3 +203,16 @@ def validate_exclude_keywords(filters_dict, keywords):
                 return False
 
     return True
+
+
+def merge_two_dicts(x, y):
+    """
+    Merges two dicts and returns it as new dict.
+
+    :param x: dict
+    :param y: dict
+    :return: merged dict
+    """
+    z = x.copy()
+    z.update(y)
+    return z

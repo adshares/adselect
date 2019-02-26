@@ -2,12 +2,12 @@
 
 set -e
 
-env | sort
+HERE=$(dirname $(readlink -f "$0"))
+TOP=$(dirname ${HERE})
+cd ${TOP}
 
-if [ ! -v TRAVIS ]; then
-  # Checkout repo and change directory
-
-  # Install git
+if [[ -v GIT_CLONE ]]
+then
   git --version || apt-get -qq -y install git
 
   git clone \
@@ -19,14 +19,14 @@ if [ ! -v TRAVIS ]; then
   cd ${BUILD_PATH}/build
 fi
 
-if [ ! -v PIPENV_DONT_LOAD_ENV ]; then
-    envsubst < .env.dist | tee .env
-fi
+PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
 
-if [ ${ADSELECT_APP_ENV} == 'dev' ]; then
-    pipenv install --dev pipenv
-elif [ ${ADSELECT_APP_ENV} == 'deploy' ]; then
-    pipenv install --deploy pipenv
+if [[ ${ADSELECT_APP_ENV} == 'dev' ]]
+then
+    pipenv install --dev
+elif [[ ${ADSELECT_APP_ENV} == 'deploy' ]]
+then
+    pipenv install --deploy
 else
-    pipenv install pipenv
+    pipenv install
 fi
