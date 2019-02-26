@@ -192,6 +192,9 @@ def recalculate_stats():
     # Load banners.
     yield stats_utils.load_banners()
 
+    # Load impression count
+    yield stats_utils.load_impression_counts()
+
     # Load scores
     yield stats_utils.load_scores(scores_stats)
 
