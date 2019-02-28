@@ -143,7 +143,7 @@ class AdSelectIfaceServer(JSONRPCServer):
             defer.returnValue(ret_sb)
 
 
-def configure_iface(port=iface_const.SERVER_PORT, interface=iface_const.SERVER_INTERFACE):
+def configure_iface(port=iface_const.SERVER_PORT, host=iface_const.SERVER_INTERFACE):
     """
     Set up Twisted reactor to listen on TCP.
 
@@ -153,4 +153,4 @@ def configure_iface(port=iface_const.SERVER_PORT, interface=iface_const.SERVER_I
     logger = logging.getLogger(__name__)
     logger.info("Initializing interface server on port: {0}".format(port))
     site = Site(AdSelectIfaceServer())
-    return reactor.listenTCP(port, site, interface)
+    return reactor.listenTCP(port, site, interface=host)
