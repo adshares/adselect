@@ -41,6 +41,7 @@ jobs:
         - >
           docker run -d
           --mount type=bind,src=$HOST_PATH,dst=$BUILD_PATH
+          -e ADSELECT_SERVER_INTERFACE=""
           -e TRAVIS=true
           -e PYTHONPATH=$BUILD_PATH
           -e PIPENV_VENV_IN_PROJECT=1
