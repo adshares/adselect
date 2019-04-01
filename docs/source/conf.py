@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.abspath('../../../../'))
 sys.path.insert(0, os.path.abspath('../../../../../'))
 
 # Sphinx / readthedocs output
-if os.getenv('DOC_DEBUG', False):
+if os.getenv('ADSELECT_DOC_DEBUG', False):
     print("sys.paths:")
     for sp in sys.path:
         print(sp)
