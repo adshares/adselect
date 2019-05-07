@@ -1,0 +1,14 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Adshares\Application\:
+        resource: '../src/Application/*'
+        exclude: '../src/Application/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    Adshares\Application\Controller\:
+        resource: '../src/Application/Controller'
+        tags: ['controller.service_arguments']

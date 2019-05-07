@@ -1,0 +1,18 @@
+version: "3"
+
+volumes:
+  esdata:
+
+services:
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0
+    container_name: es
+    environment:
+      - node.name=es
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
