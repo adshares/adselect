@@ -5,12 +5,13 @@
         "php": "^7.1.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "elasticsearch/elasticsearch": "~6.0",
+        "monolog/monolog": "^1.24",
         "symfony/console": "4.2.*",
         "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
-        "symfony/yaml": "4.2.*",
-        "elasticsearch/elasticsearch": "~6.0"
+        "symfony/yaml": "4.2.*"
     },
     "config": {
         "preferred-install": {
@@ -20,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Adshares\\": "src/"
+            "Adshares\\AdSelect\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Adshares\\Tests\\": "tests/"
+            "Adshares\\AdSelect\\Tests\\": "tests/"
         }
     },
     "replace": {
@@ -59,6 +60,7 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
+        "symfony/test-pack": "^1.0",
         "symfony/web-server-bundle": "4.2.*"
     }
 }

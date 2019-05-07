@@ -1,6 +1,6 @@
 <?php
 
-namespace Adshares\Application;
+namespace Adshares\AdSelect\UI;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;

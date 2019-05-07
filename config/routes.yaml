@@ -1,3 +1,3 @@
 index:
     path: /info
-    controller: Adshares\Application\Controller\InfoController::info
+    controller: Adshares\AdSelect\Application\Controller\InfoController::info

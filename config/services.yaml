@@ -5,10 +5,18 @@ services:
         autowire: true
         autoconfigure: true
 
-    Adshares\Application\:
-        resource: '../src/Application/*'
-        exclude: '../src/Application/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    Adshares\AdSelect\UI\:
+        resource: '../src/UI/*'
+        exclude: '../src/UI/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-    Adshares\Application\Controller\:
-        resource: '../src/Application/Controller'
+    Adshares\AdSelect\UI\Controller\:
+        resource: '../src/UI/Controller'
         tags: ['controller.service_arguments']
+
+    Adshares\AdSelect\UI\Command\CreateIndex:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\Client\ElasticSearch'
+
+    Adshares\AdSelect\Infrastructure\Client\ElasticSearch:
+        arguments:
+            $hosts: { host: '%env(ES_HOST)%', port: '%env(ES_PORT' }

@@ -1,6 +1,6 @@
 <?php
 
-use Adshares\Application\Kernel;
+use Adshares\AdSelect\UI\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
