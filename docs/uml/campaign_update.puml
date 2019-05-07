@@ -1,8 +1,0 @@
-@startuml
-AdServer -> AdSelect_Interface: [list] Create/Update campaign information (incl. banners, filters)
-AdSelect_Interface -> AdSelect_Database: Create/Update campaign information (incl. filters)
-AdSelect_Interface -> AdSelect_Database: Remove campaign banners
-AdSelect_Interface -> AdSelect_Database: [list] Add campaign banners
-AdServer <-- AdSelect_Interface: OK
-@enduml
-
