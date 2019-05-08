@@ -7,8 +7,8 @@ env:
 
 matrix:
   include:
-    - php: 7.2
-    - php: 7.3
+    - php: "7.2"
+    - php: "7.3"
   fast_finish: true
 
 cache:
@@ -39,5 +39,5 @@ notifications:
   slack:
     rooms:
       secure: "fuNJCrimqsz1w3KP77SyxgDQaqAQPtiEClUn4Ne1zAjFXvHRW/xgYshPCCp53EemkF0Zq2bSyw1/OAu+kCbqTeaHWJAzkQIfQIcQgbdffXfYTa3K6249K6EkxmxNKjDgIyoL8WhwSw3ttXqWS/jOmUzRHp/bpk+gf5xp3UdhCPsqvfWfyPcGg512vJuqg0805Y4KwCTHAmA/ZSlWJjf1/zpZMsbog4lRtRmNw/G3Wd+nNP72eHlrKKT91dP+t/cQMed2wcrfuMo0gdmZpL3LNafnh9iA8Du3UULgv1QVZSmQAaGGBOexRY+HQsSyOrR+0ieScI0FRERenuID4+k248c8zAuH6y6IZeytNQIxYkPgOb4HnX1bLk+wggzIiV1yngzfxznuUAJ8Opr13jyfrHIvhQuLUq8mvtXz2KXCF3DPJ8SRpRbmeQeYTrQVoJ3Q6900J+h+wxMYfOepfNRVoZeSLX3VqJXzrthW2c/YoeA9onwuQK4UjKk8pDLt+FvdwJ5+ucZk7Oh+H9dg8HKWS6zg9cqMgwbNH8Dso2U0pporl7e9avlyN4J0Kc1yRlBRXpNXMBcgToruw+hZAsZcR2+9fLwoz1b/g0jm4RoN/yz/krm4RNesVP2rAyEKUSugsPn2z07eCWJHEeuEUFJ4Ue1YLoKV+EIksYQT2GtW91I="
-    on_success: always
+    on_success: change
     on_failure: always
