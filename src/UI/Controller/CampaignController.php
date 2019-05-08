@@ -11,6 +11,6 @@ class CampaignController
 {
     public function updateAction(): Response
     {
-
+        new Response();
     }
 }

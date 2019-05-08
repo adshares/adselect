@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\Adselect\Domain\Model;
+namespace Adshares\AdSelect\Domain\Model;
 
-class BannerCollection
+final class BannerCollection
 {
 
 }

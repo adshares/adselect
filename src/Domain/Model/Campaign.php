@@ -2,11 +2,12 @@
 
 declare(strict_types = 1);
 
-namespace Adshares\Adselect\Domain\Model;
+namespace Adshares\AdSelect\Domain\Model;
 
 use Adshares\Adselect\Domain\ValueObject\Uuid;
+use DateTime;
 
-class Campaign
+final class Campaign
 {
     /** @var Uuid */
     private $campaignId;

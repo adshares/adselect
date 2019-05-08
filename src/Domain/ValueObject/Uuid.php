@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Adshares\Adselect\Domain\ValueObject;
+namespace Adshares\AdSelect\Domain\ValueObject;
 
 class Uuid
 {

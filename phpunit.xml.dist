@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.5/phpunit.xsd"
-         backupGlobals="false"
+<phpunit backupGlobals="false"
          colors="true"
          bootstrap="config/bootstrap.php"
->
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true">
     <php>
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
@@ -14,18 +14,27 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Domain">
+            <directory suffix="Test.php">tests/Domain</directory>
+        </testsuite>
+        <testsuite name="Application">
+            <directory suffix="Test.php">tests/Application</directory>
+        </testsuite>
+        <testsuite name="UI">
+            <directory suffix="Test.php">tests/UI</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>src</directory>
+            <directory suffix=".php">./src</directory>
         </whitelist>
     </filter>
 
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
-    </listeners>
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+        <log type="coverage-clover" target="code-coverage/phpunit/coverage.xml"/>
+        <log type="junit" target="code-coverage/phpunit/logfile.xml"/>
+    </logging>
+
 </phpunit>

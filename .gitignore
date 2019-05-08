@@ -9,5 +9,11 @@
 
 .idea
 
-.phpunit
 /phpunit.xml
+.phpunit
+.phpunit.result.cache
+
+/.phpcs-cache
+/phpcs.xml
+
+code-coverage
