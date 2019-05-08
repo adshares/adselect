@@ -6,20 +6,22 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Domain\Service\CampaignUpdater;
-use Adshares\AdSelect\Infrastructure\Client\ElasticSearch;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 
 class ElasticSearchCampaignUpdater implements CampaignUpdater
 {
-    /** @var ElasticSearch */
+    /** @var Client */
     private $client;
 
-    public function __construct(ElasticSearch $client)
+    public function __construct(Client $client)
     {
         $this->client = $client;
     }
 
     public function update(CampaignCollection $campaigns): void
     {
-        // TODO: Implement update() method.
+        if (!$this->client->indexesExist()) {
+            $this->client->createIndexes();
+        }
     }
 }
