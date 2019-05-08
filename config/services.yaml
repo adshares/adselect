@@ -16,9 +16,9 @@ services:
 
     Adshares\AdSelect\UI\Command\CreateIndex:
         arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\Client\ElasticSearch'
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
 
-    Adshares\AdSelect\Infrastructure\Client\ElasticSearch:
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
         arguments:
             $hosts: { host: '%env(ES_HOST)%', port: '%env(ES_PORT' }
 

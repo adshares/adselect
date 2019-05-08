@@ -2,15 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace Adshares\AdSelect\Infrastructure\Client;
+namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use Elasticsearch\Client;
+use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 
-class ElasticSearch
+class Client
 {
     /** @var Client */
     private $client;
@@ -22,7 +22,7 @@ class ElasticSearch
             ->build();
     }
 
-    public function getClient(): Client
+    public function getClient(): BaseClient
     {
         return $this->client;
     }
@@ -41,5 +41,10 @@ class ElasticSearch
 
             throw new ElasticSearchRuntime($exception->getMessage());
         }
+    }
+
+    public function indexesExist(): bool
+    {
+        return $this->client->indices()->exists(['index' => BannerIndex::INDEX]);
     }
 }
