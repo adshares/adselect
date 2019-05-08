@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Domain\Model;
 
 use Adshares\Adselect\Domain\ValueObject\Uuid;
+use Adshares\AdSelect\Lib\ExtendedDateTime;
 use DateTime;
 
 final class Campaign
@@ -24,8 +25,8 @@ final class Campaign
 
     public function __construct(
         Uuid $campaignId,
-        DateTime $timeStart,
-        DateTime $timeEnd,
+        ExtendedDateTime $timeStart,
+        ExtendedDateTime $timeEnd,
         BannerCollection $banners,
         array $keywords,
         array $filters

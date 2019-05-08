@@ -2,6 +2,9 @@
     "composer/ca-bundle": {
         "version": "1.1.4"
     },
+    "doctrine/collections": {
+        "version": "v1.6.1"
+    },
     "doctrine/instantiator": {
         "version": "1.2.0"
     },

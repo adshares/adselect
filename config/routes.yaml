@@ -1,3 +1,10 @@
 index:
-    path: /info
-    controller: Adshares\AdSelect\Application\Controller\InfoController::info
+    path: /api/%api_version%/info
+    controller: Adshares\AdSelect\UI\Controller\InfoController::info
+
+importer:
+    path: /api/%api_version%/campaigns
+    methods: [POST]
+    controller: Adshares\AdSelect\UI\Controller\CampaignController::update
+    defaults:
+        _format: json
