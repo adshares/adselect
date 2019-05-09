@@ -9,7 +9,7 @@ use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\BannerCollection;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
-use Adshares\AdSelect\Domain\ValueObject\Uuid;
+use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 
 final class CampaignUpdateDto
@@ -23,7 +23,7 @@ final class CampaignUpdateDto
         $campaignCollection = new CampaignCollection();
 
         foreach ($campaigns as $campaign) {
-            $campaignId = new Uuid($campaign['campaign_id']);
+            $campaignId = new Id($campaign['campaign_id']);
             $banners = $this->prepareBannerCollection($campaignId, $campaign['banners']);
 
             $campaign = new Campaign(
@@ -89,14 +89,14 @@ final class CampaignUpdateDto
         }
     }
 
-    private function prepareBannerCollection(Uuid $campaignId, array $banners): BannerCollection
+    private function prepareBannerCollection(Id $campaignId, array $banners): BannerCollection
     {
         $collection = new BannerCollection();
 
         foreach ($banners as $banner) {
             $banner = new Banner(
                 $campaignId,
-                new Uuid($banner['banner_id']),
+                new Id($banner['banner_id']),
                 $banner['banner_size'],
                 $banner['keywords'] ?? []
             );
