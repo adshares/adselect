@@ -1,0 +1,80 @@
+[
+  {
+    "campaign_id": "00000000000000000000000000000001",
+    "time_start": 1555911314,
+    "time_end": null,
+    "banners": [{
+      "banner_id": "80000000000000000000000000000001",
+      "banner_size": "160x600",
+      "keywords": {
+        "type": "image",
+        "adult_score": 90,
+        "classification": ["classify:49:0"]
+      }
+    },{
+      "banner_id": "80000000000000000000000000000002",
+      "banner_size": "160x600",
+      "keywords": {
+        "type": "html",
+        "adult_score": 10,
+        "classification": ["classify:49:1"]
+      }
+    }
+    ],
+    "keywords": {
+      "source_host": "ym8p.net",
+      "adshares_address": "0001-00000005-CBCA"
+    },
+    "filters": {
+      "exclude": {
+        "user:country": ["99", "af", "bd"],
+        "user:age":     [12, "20--35"]
+      },
+      "require": {
+        "user:language": "en",
+        "user:age":     [85],
+        "device:browser": ["chrome", "edge", "firefox", "msie", "opera", "safari", "other"]
+      }
+    }
+  },
+  {
+    "campaign_id": "00000000000000000000000000000002",
+    "time_start": 1555911314,
+    "time_end": 1586602671,
+    "banners": [{
+      "banner_id": "80000000000000000000000000000003",
+      "banner_size": "160x600",
+      "keywords": {
+        "type": "image",
+        "animated": "1",
+        "adult_score": 0,
+        "classification": ["classify:49:0"]
+      }},{
+      "banner_id": "80000000000000000000000000000004",
+      "banner_size": "160x600",
+      "keywords": {
+        "type": "html",
+        "animated": "0",
+        "classification": ["classify:49:1"]
+      }
+    }
+    ],
+    "keywords": {
+      "source_host": "ym8p.net",
+      "adshares_address": "0001-00000028-3E05"
+    },
+    "filters": {
+      "exclude": {
+        "user:language": ["en"],
+        "user:country": ["de", "pl"],
+        "site:domain": ["onet.pl"]
+      },
+      "require": {
+        "user:age":     ["10--65", 85],
+        "device:browser": ["msie", "opera", "safari", "other"],
+        "device:type": ["mobile"],
+        "site:domain": ["adshares.net"]
+      }
+    }
+  }
+]
