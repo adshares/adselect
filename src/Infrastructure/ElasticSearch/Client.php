@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
@@ -27,14 +27,14 @@ class Client
         return $this->client;
     }
 
-    public function createIndexes(bool $force = false): void
+    public function createCampaignIndex(bool $force = false): void
     {
         try {
-            $this->client->indices()->create(BannerIndex::mappings());
+            $this->client->indices()->create(CampaignIndex::mappings());
         } catch (BadRequest400Exception $exception) {
             if ($force) {
-                $this->client->indices()->delete(['index' => BannerIndex::INDEX]);
-                $this->createIndexes();
+                $this->client->indices()->delete(['index' => CampaignIndex::INDEX]);
+                $this->createCampaignIndex();
 
                 return;
             }
@@ -43,8 +43,8 @@ class Client
         }
     }
 
-    public function indexesExist(): bool
+    public function isCampaignIndexExists(): bool
     {
-        return $this->client->indices()->exists(['index' => BannerIndex::INDEX]);
+        return $this->client->indices()->exists(['index' => CampaignIndex::INDEX]);
     }
 }

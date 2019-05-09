@@ -44,7 +44,10 @@ final class Campaign
         $this->timeEnd = $timeEnd;
         $this->banners = $banners;
         $this->keywords = $keywords;
-        $this->filters = $filters;
+        $this->filters = [
+            'exclude' => $filters['exclude'] ?? [],
+            'require' => $filters['require'] ?? [],
+        ];
     }
 
     public function toArray(): array
@@ -63,5 +66,44 @@ final class Campaign
             'filters' => $this->filters,
             'banners' => $banners,
         ];
+    }
+
+    public function getId(): string
+    {
+        return $this->campaignId->toString();
+    }
+
+    public function getTimeStart(): int
+    {
+        return $this->timeStart->getTimestamp();
+    }
+
+    public function getTimeEnd(): ?int
+    {
+        if (!$this->timeEnd) {
+            return null;
+        }
+
+        return $this->timeEnd->getTimestamp();
+    }
+
+    public function getBanners(): BannerCollection
+    {
+        return $this->banners;
+    }
+
+    public function getKeywords(): array
+    {
+        return $this->keywords;
+    }
+
+    public function getExcludeFilters(): array
+    {
+        return $this->filters['exclude'];
+    }
+
+    public function getRequireFilters(): array
+    {
+        return $this->filters['require'];
     }
 }

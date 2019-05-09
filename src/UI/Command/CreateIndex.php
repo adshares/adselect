@@ -40,6 +40,6 @@ class CreateIndex extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->client->createIndexes((bool)$input->getOption('force'));
+        $this->client->createCampaignIndex((bool)$input->getOption('force'));
     }
 }

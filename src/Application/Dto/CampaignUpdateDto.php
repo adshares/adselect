@@ -10,6 +10,7 @@ use Adshares\AdSelect\Domain\Model\BannerCollection;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Domain\ValueObject\Id;
+use Adshares\AdSelect\Domain\ValueObject\Size;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 
 final class CampaignUpdateDto
@@ -29,7 +30,7 @@ final class CampaignUpdateDto
             $campaign = new Campaign(
                 $campaignId,
                 ExtendedDateTime::createFromTimestamp($campaign['time_start']),
-                ExtendedDateTime::createFromTimestamp($campaign['time_end']),
+                $campaign['time_end'] ? ExtendedDateTime::createFromTimestamp($campaign['time_end']) : null,
                 $banners,
                 $campaign['keywords'],
                 $campaign['filters']
@@ -97,7 +98,7 @@ final class CampaignUpdateDto
             $banner = new Banner(
                 $campaignId,
                 new Id($banner['banner_id']),
-                $banner['banner_size'],
+                Size::fromString($banner['banner_size']),
                 $banner['keywords'] ?? []
             );
 

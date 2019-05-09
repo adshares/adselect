@@ -22,7 +22,19 @@ services:
         arguments:
             $hosts: { host: '%env(ES_HOST)%', port: '%env(ES_PORT' }
 
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
-        arguments: []
+        arguments:
+            $env: '%env(APP_ENV)%'
         tags:
             - { name: kernel.event_subscriber }
+
+    Adshares\AdSelect\UI\Controller\CampaignController:
+        public: true
+        autowire: false
+        autoconfigure: false
+        arguments:
+            $campaignUpdater: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater'

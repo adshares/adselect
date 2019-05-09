@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Adshares\AdSelect\Domain\Service;
+namespace Adshares\AdSelect\Application\Service;
 
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 

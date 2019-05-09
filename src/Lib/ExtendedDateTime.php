@@ -11,10 +11,7 @@ class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterface
 {
     public static function createFromTimestamp(int $timestamp): DateTimeInterface
     {
-        $dateTime = new self();
-        $dateTime->setTimestamp($timestamp);
-
-        return $dateTime;
+        return new self('@'.$timestamp);
     }
 
     public function toString(): string
