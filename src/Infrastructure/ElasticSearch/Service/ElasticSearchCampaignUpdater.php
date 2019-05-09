@@ -23,5 +23,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         if (!$this->client->indexesExist()) {
             $this->client->createIndexes();
         }
+
+//        $this->client->getClient()->update($params);
     }
 }

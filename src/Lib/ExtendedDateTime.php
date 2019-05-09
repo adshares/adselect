@@ -5,20 +5,20 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Lib;
 
 use DateTime;
-use DateTimeZone;
+use DateTimeImmutable;
 
-class ExtendedDateTime
+class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterface
 {
-    public function __construct(string $time = 'now', DateTimeZone $dateTimeZone = null)
-    {
-        $this->date = new DateTime($time, $dateTimeZone);
-    }
-
-    public static function createFromTimestamp(int $timestamp): self
+    public static function createFromTimestamp(int $timestamp): DateTimeInterface
     {
         $dateTime = new self();
-        $dateTime->date->setTimestamp($timestamp);
+        $dateTime->setTimestamp($timestamp);
 
         return $dateTime;
+    }
+
+    public function toString(): string
+    {
+        return $this->format(DateTime::ATOM);
     }
 }
