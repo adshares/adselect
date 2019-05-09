@@ -50,24 +50,6 @@ final class Campaign
         ];
     }
 
-    public function toArray(): array
-    {
-        $banners = [];
-
-        foreach ($this->banners as $banner) {
-            $banners[] = $banner->toArray();
-        }
-
-        return [
-            'campaignId' => $this->campaignId,
-            'timeStart' => $this->timeStart,
-            'timeEnd' => $this->timeEnd,
-            'keywords' => $this->keywords,
-            'filters' => $this->filters,
-            'banners' => $banners,
-        ];
-    }
-
     public function getId(): string
     {
         return $this->campaignId->toString();

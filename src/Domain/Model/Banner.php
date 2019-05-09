@@ -26,16 +26,6 @@ final class Banner
         $this->keywords = $keywords;
     }
 
-    public function toArray(): array
-    {
-        return [
-            'bannerId' => $this->bannerId,
-            'campaignId' => $this->campaignId,
-            'size' => $this->size,
-            'keywords' => $this->keywords,
-        ];
-    }
-
     public function getBannerId(): string
     {
         return $this->bannerId->toString();
