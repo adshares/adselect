@@ -37,11 +37,8 @@ class Helper
 
         foreach ($keywords as $key => $values) {
             $formattedValues = [];
-            if (!is_array($values)) {
-                $values = [$values];
-            }
 
-            foreach ($values as $value) {
+            foreach ((array)$values as $value) {
                 if (is_int($value) || is_float($value)) {
                     $formattedValues[] = $isRange ? self::range($value, $value) : $value;
 
