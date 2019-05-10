@@ -25,6 +25,7 @@ services:
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+            $bulkLimit: 500
 
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
         arguments:
