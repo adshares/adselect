@@ -7,7 +7,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
 
-class CampaignCollectionMapper
+class CampaignMapper
 {
     public static function map(Campaign $campaign, string $index): array
     {
