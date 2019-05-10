@@ -30,6 +30,7 @@ services:
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
         arguments:
             $env: '%env(APP_ENV)%'
+            $logger: '@logger'
         tags:
             - { name: kernel.event_subscriber }
 
