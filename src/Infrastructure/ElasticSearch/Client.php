@@ -2,15 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace Adshares\AdSelect\Infrastructure\Client;
+namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use Elasticsearch\Client;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
+use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 
-class ElasticSearch
+class Client
 {
     /** @var Client */
     private $client;
@@ -22,24 +22,29 @@ class ElasticSearch
             ->build();
     }
 
-    public function getClient(): Client
+    public function getClient(): BaseClient
     {
         return $this->client;
     }
 
-    public function createIndexes(bool $force = false): void
+    public function createCampaignIndex(bool $force = false): void
     {
         try {
-            $this->client->indices()->create(BannerIndex::mappings());
+            $this->client->indices()->create(CampaignIndex::mappings());
         } catch (BadRequest400Exception $exception) {
             if ($force) {
-                $this->client->indices()->delete(['index' => BannerIndex::INDEX]);
-                $this->createIndexes();
+                $this->client->indices()->delete(['index' => CampaignIndex::INDEX]);
+                $this->createCampaignIndex();
 
                 return;
             }
 
             throw new ElasticSearchRuntime($exception->getMessage());
         }
+    }
+
+    public function isCampaignIndexExists(): bool
+    {
+        return $this->client->indices()->exists(['index' => CampaignIndex::INDEX]);
     }
 }
