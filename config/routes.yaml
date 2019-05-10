@@ -2,9 +2,16 @@ index:
     path: /api/%api_version%/info
     controller: Adshares\AdSelect\UI\Controller\InfoController::info
 
-importer:
+campaign_update:
     path: /api/%api_version%/campaigns
     methods: [POST]
     controller: Adshares\AdSelect\UI\Controller\CampaignController::update
+    defaults:
+        _format: json
+
+campaign_delete:
+    path: /api/%api_version%/campaigns
+    methods: [DELETE]
+    controller: Adshares\AdSelect\UI\Controller\CampaignController::delete
     defaults:
         _format: json

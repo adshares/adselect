@@ -7,8 +7,10 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 use Adshares\AdSelect\Application\Exception\UpdateCampaignsException;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
+use Adshares\AdSelect\Domain\Model\IdCollection;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\IdDeleteMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
 
@@ -38,27 +40,46 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $mappedCampaigns[] = $mapped['data'];
 
             if (count($mappedCampaigns) === $this->bulkLimit) {
-                $this->bulkUpdate($mappedCampaigns);
+                $this->bulk($mappedCampaigns);
 
                 $mappedCampaigns = [];
             }
         }
 
         if ($mappedCampaigns) {
-            $this->bulkUpdate($mappedCampaigns);
+            $this->bulk($mappedCampaigns);
+        }
+    }
+
+    public function delete(IdCollection $ids): void
+    {
+        $mappedIds = [];
+        foreach ($ids as $id) {
+            $mapped = IdDeleteMapper::map($id, CampaignIndex::INDEX);
+            $mappedIds[] = $mapped;
+
+            if (count($mappedIds) === $this->bulkLimit) {
+                $this->bulk($mappedIds);
+
+                $mappedIds = [];
+            }
+        }
+
+        if ($mappedIds) {
+            $this->bulk($mappedIds);
         }
     }
 
     /**
-     * @param array $mappedCampaigns
+     * @param array $mapped
      */
-    protected function bulkUpdate(array $mappedCampaigns): void
+    protected function bulk(array $mapped): void
     {
         try {
-            $this->client->getClient()->bulk(['body' => $mappedCampaigns]);
+            $this->client->getClient()->bulk(['body' => $mapped]);
         } catch (UnexpectedValueException $exception) {
             $ids = [];
-            foreach ($mappedCampaigns as $item) {
+            foreach ($mapped as $item) {
                 $current = current($item);
 
                 if (isset($current['_id'])) {
