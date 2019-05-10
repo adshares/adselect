@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 final class CampaignMapperTest extends TestCase
 {
-    public function testOne(): void
+    public function testWhenBannersAndFiltersExist(): void
     {
         $campaignId = '43c567e1396b4cadb52223a51796fd01';
         $keywords1 = [

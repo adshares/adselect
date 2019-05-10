@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use function is_array;
 use function is_float;
 use function is_int;
 use function preg_match;

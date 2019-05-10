@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Application\Dto;
 
 use Adshares\AdSelect\Application\Exception\ValidationDtoException;
+use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\BannerCollection;
 use Adshares\AdSelect\Domain\Model\Campaign;
@@ -24,22 +25,29 @@ final class CampaignUpdateDto
         $campaignCollection = new CampaignCollection();
 
         foreach ($campaigns as $campaign) {
-            $campaignId = new Id($campaign['campaign_id']);
-            $banners = $this->prepareBannerCollection($campaignId, $campaign['banners']);
-
-            $campaign = new Campaign(
-                $campaignId,
-                ExtendedDateTime::createFromTimestamp($campaign['time_start']),
-                $campaign['time_end'] ? ExtendedDateTime::createFromTimestamp($campaign['time_end']) : null,
-                $banners,
-                $campaign['keywords'],
-                $campaign['filters']
-            );
-
-            $campaignCollection->add($campaign);
+            $campaignCollection->add($this->createCampaignModel($campaign));
         }
 
         $this->campaigns = $campaignCollection;
+    }
+
+    private function createCampaignModel(array $campaignData): Campaign
+    {
+        try {
+            $campaignId = new Id($campaignData['campaign_id']);
+            $banners = $this->prepareBannerCollection($campaignId, $campaignData['banners']);
+
+            return new Campaign(
+                $campaignId,
+                ExtendedDateTime::createFromTimestamp($campaignData['time_start']),
+                $campaignData['time_end'] ? ExtendedDateTime::createFromTimestamp($campaignData['time_end']) : null,
+                $banners,
+                $campaignData['keywords'],
+                $campaignData['filters']
+            );
+        } catch (AdSelectRuntimeException $exception) {
+            throw new ValidationDtoException($exception->getMessage());
+        }
     }
 
     private function validate(array $campaigns): void
