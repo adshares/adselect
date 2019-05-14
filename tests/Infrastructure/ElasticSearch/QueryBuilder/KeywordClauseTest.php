@@ -38,6 +38,4 @@ final class KeywordClauseTest extends TestCase
 
         $this->assertEquals($expected, $clause);
     }
-
-
 }
