@@ -62,4 +62,9 @@ class CampaignController
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
+
+    public function findBanners(Request $request)
+    {
+
+    }
 }
