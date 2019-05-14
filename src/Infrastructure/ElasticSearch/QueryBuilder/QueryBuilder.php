@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Application\Dto\BannerFinderDto;
+use Adshares\AdSelect\Application\Dto\QueryDto;
 
 class QueryBuilder
 {
@@ -14,12 +14,12 @@ class QueryBuilder
     private const PREFIX_BANNER_EXCLUDE = 'banners.keywords';
 
 
-    /** @var BannerFinderDto */
+    /** @var QueryDto */
     private $bannerFinderDto;
     /** @var array */
     private $definedRequireFilters;
 
-    public function __construct(BannerFinderDto $bannerFinderDto, array $definedRequireFilters = [])
+    public function __construct(QueryDto $bannerFinderDto, array $definedRequireFilters = [])
     {
         $this->bannerFinderDto = $bannerFinderDto;
         $this->definedRequireFilters = $definedRequireFilters;

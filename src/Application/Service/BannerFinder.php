@@ -2,9 +2,9 @@
 
 namespace Adshares\AdSelect\Application\Service;
 
-use Adshares\AdSelect\Application\Dto\BannerFinderDto;
+use Adshares\AdSelect\Application\Dto\QueryDto;
 
 interface BannerFinder
 {
-    public function find(BannerFinderDto $bannerFinderDto): array;
+    public function find(QueryDto $queryDto): array;
 }

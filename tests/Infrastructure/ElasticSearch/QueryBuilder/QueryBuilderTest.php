@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Application\Dto\BannerFinderDto;
+use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
@@ -15,7 +15,7 @@ final class QueryBuilderTest extends TestCase
     public function testWhenKeywordsAndFiltersAreEmpty(): void
     {
         $publisherId = new Id('43c567e1396b4cadb52223a51796fd01');
-        $dto = new BannerFinderDto($publisherId, 'qwer-1234-1234', new Size(200, 100));
+        $dto = new QueryDto($publisherId, 'qwer-1234-1234', new Size(200, 100));
         $defined = [
             'one',
             'two',
@@ -109,7 +109,7 @@ final class QueryBuilderTest extends TestCase
             ],
         ];
 
-        $dto = new BannerFinderDto($publisherId, $userId, new Size(160, 600), $filters, $keywords);
+        $dto = new QueryDto($publisherId, $userId, new Size(160, 600), $filters, $keywords);
         $defined = [
             'device:browser',
             'device:type',

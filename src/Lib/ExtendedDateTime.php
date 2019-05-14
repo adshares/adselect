@@ -7,7 +7,7 @@ namespace Adshares\AdSelect\Lib;
 use DateTime;
 use DateTimeImmutable;
 
-class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterface
+final class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterface
 {
     public static function createFromTimestamp(int $timestamp): DateTimeInterface
     {
