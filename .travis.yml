@@ -26,6 +26,7 @@ before_install:
 
 install:
   - composer install
+  - ./bin/console ops:es:create-index
 
 script:
   - ./bin/console security:check
