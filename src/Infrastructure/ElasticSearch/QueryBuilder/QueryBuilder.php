@@ -66,7 +66,7 @@ class QueryBuilder
                             'inner_hits' => [
                                 '_source' => false,
                                 // return only banner id
-                                'docvalue_fields' => ['banners.id']
+                                'docvalue_fields' => ['banners.id', 'banners.size']
                             ],
                             'query' => [
                                 'bool' => [

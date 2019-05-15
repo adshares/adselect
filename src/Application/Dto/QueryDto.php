@@ -9,7 +9,7 @@ use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
 
-class QueryDto
+final class QueryDto
 {
     /** @var Id */
     private $publisherId;

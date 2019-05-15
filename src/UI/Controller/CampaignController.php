@@ -11,12 +11,14 @@ use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Exception\ValidationDtoException;
 use Adshares\AdSelect\Application\Service\BannerFinder;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
+use Adshares\AdSelect\UI\Dto\FoundBannerResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function json_decode;
+use function uniqid;
 
 class CampaignController
 {
@@ -81,7 +83,10 @@ class CampaignController
         foreach ($queries as $query) {
             try {
                 $queryDto = QueryDto::fromArray($query);
-                $results[] = $this->bannerFinder->find($queryDto);
+                $requestId = $query['request_id'] ?? uniqid('', true);
+                $banners = $this->bannerFinder->find($queryDto);
+
+                $results[$requestId] = (new FoundBannerResponse($banners))->toArray();
             } catch (ValidationDtoException $exception) {
                 $results[] = null;
 

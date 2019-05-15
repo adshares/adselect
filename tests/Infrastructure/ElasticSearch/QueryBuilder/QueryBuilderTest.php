@@ -66,7 +66,7 @@ final class QueryBuilderTest extends TestCase
                             'score_mode' => 'none',
                             'inner_hits' => [
                                 '_source' => false,
-                                'docvalue_fields' => ['banners.id'],
+                                'docvalue_fields' => ['banners.id', 'banners.size'],
                             ],
                             'query' => [
                                 'bool' => [
@@ -288,6 +288,7 @@ final class QueryBuilderTest extends TestCase
                                 '_source' => false,
                                 'docvalue_fields' => [
                                     0 => 'banners.id',
+                                    1 => 'banners.size',
                                 ],
                             ],
                             'query' => [
