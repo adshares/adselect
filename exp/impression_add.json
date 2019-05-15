@@ -1,0 +1,38 @@
+[
+  {
+    "event_id": "667ea41f8fb548829ac4bb89cf00ac01",
+    "publisher_id": "1",
+    "zone_id": "1.1",
+    "campaign_id": "00000000000000000000000000000001",
+    "banner_id": "80000000000000000000000000000002",
+    "user_id":   "08a29c7f5073603537721878f9f25843",
+    "keywords": {
+      "device:type": ["mobile"],
+      "device:os": ["android"],
+      "device:browser": ["chrome"],
+      "user:language": ["de", "en"],
+      "user:age": [85],
+      "user:country": ["de"],
+      "site:domain": ["\/\/adshares.net", "\/\/adshares.net?utm_source=flyersquare", "net", "adshares.net"],
+      "site:tag": [""],
+      "human_score": [0.9]
+    }
+  },
+  {
+    "event_id": "667ea41f8fb548829ac4bb89cf00ad01",
+    "publisher_id": "1",
+    "zone_id": "1.1",
+    "campaign_id": "00000000000000000000000000000001",
+    "banner_id": "80000000000000000000000000000001",
+    "user_id":   "08a29c7f5073603537721878f9f25843",
+    "keywords": {
+      "device:type": ["desktop"],
+      "device:os": ["windows"],
+      "device:browser": ["firefox"],
+      "user:language": ["pl", "en"],
+      "user:country": ["pl"],
+      "site:domain": ["\/\/adshares.net", "\/\/adshares.net?utm_source=flyersquare", "net", "adshares.net"],
+      "human_score": [0.9]
+    }
+  }
+]
