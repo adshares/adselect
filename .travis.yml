@@ -26,9 +26,9 @@ before_install:
 
 install:
   - composer install
-  - ./bin/console ops:es:create-index
 
 script:
+  - ./bin/console ops:es:create-index
   - ./bin/console security:check
   - ./bin/console lint:yaml config
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
