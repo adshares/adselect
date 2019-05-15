@@ -74,8 +74,10 @@ $params = [
         // 'docvalue_fields' => [],
         'query' => [
             'function_score' => [
+                'boost_mode' => 'replace',
                 'query' => $query,
                 'script_score' => [
+
                     "script" => [
                         "lang"=> "painless",
                         // tu zmaiast 1.0 będzie liczony RPM
