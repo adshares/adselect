@@ -7,22 +7,33 @@ namespace Adshares\AdSelect\UI\Controller;
 
 use Adshares\AdSelect\Application\Dto\CampaignDeleteDto;
 use Adshares\AdSelect\Application\Dto\CampaignUpdateDto;
+use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Exception\ValidationDtoException;
+use Adshares\AdSelect\Application\Service\BannerFinder;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
+use Adshares\AdSelect\UI\Dto\FoundBannerResponse;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function json_decode;
+use function uniqid;
 
 class CampaignController
 {
     /** @var CampaignUpdater */
     private $campaignUpdater;
+    /** @var BannerFinder */
+    private $bannerFinder;
+    /** @var LoggerInterface */
+    private $logger;
 
-    public function __construct(CampaignUpdater $campaignUpdater)
+    public function __construct(CampaignUpdater $campaignUpdater, BannerFinder $bannerFinder, LoggerInterface $logger)
     {
         $this->campaignUpdater = $campaignUpdater;
+        $this->bannerFinder = $bannerFinder;
+        $this->logger = $logger;
     }
 
     public function update(Request $request): JsonResponse
@@ -61,5 +72,29 @@ class CampaignController
         $this->campaignUpdater->delete($dto->getIdCollection());
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function findBanners(Request $request): JsonResponse
+    {
+        $queries = json_decode($request->getContent(), true);
+
+        $results = [];
+
+        foreach ($queries as $query) {
+            try {
+                $queryDto = QueryDto::fromArray($query);
+                $requestId = $query['request_id'] ?? uniqid('', true);
+                $banners = $this->bannerFinder->find($queryDto);
+
+                $results[$requestId] = (new FoundBannerResponse($banners))->toArray();
+            } catch (ValidationDtoException $exception) {
+                $results[] = null;
+
+                $this->logger->info('[Find[ Invalid input data.', $query);
+                // think about adding a referer and more data related to a server which asks
+            }
+        }
+
+        return new JsonResponse($results, Response::HTTP_OK);
     }
 }

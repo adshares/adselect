@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Domain\ValueObject;
 
-class Size
+final class Size
 {
     /** @var int */
     private $width;

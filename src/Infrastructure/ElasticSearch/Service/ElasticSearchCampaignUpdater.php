@@ -49,6 +49,8 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         if ($mappedCampaigns) {
             $this->bulk($mappedCampaigns);
         }
+
+        // store information
     }
 
     public function delete(IdCollection $ids): void

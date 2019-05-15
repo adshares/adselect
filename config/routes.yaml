@@ -15,3 +15,10 @@ campaign_delete:
     controller: Adshares\AdSelect\UI\Controller\CampaignController::delete
     defaults:
         _format: json
+
+campaign_find_banners:
+    path: /api/%api_version%/find
+    methods: [POST]
+    controller: Adshares\AdSelect\UI\Controller\CampaignController::findBanners
+    defaults:
+        _format: json

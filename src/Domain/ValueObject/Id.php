@@ -7,7 +7,7 @@ namespace Adshares\AdSelect\Domain\ValueObject;
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use function preg_match;
 
-class Id
+final class Id
 {
     private $id;
 
