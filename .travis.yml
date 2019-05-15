@@ -4,7 +4,7 @@ sudo: false
 env:
   global:
     - MIN_PHP=7.2
-    - ES_VERSION=7.0.0 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
+    - ES_VERSION=7.0.1-linux-x86_64 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
 
 matrix:
   include:
