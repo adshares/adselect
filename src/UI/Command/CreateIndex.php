@@ -32,14 +32,14 @@ class CreateIndex extends Command
             ->addOption(
                 'force',
                 null,
-                InputOption::VALUE_REQUIRED,
-                'Force creation removes indexes (when exist) and creates new ones.',
-                false
+                InputOption::VALUE_NONE,
+                'Force creation removes indexes (when exist) and creates new ones.'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->client->createCampaignIndex((bool)$input->getOption('force'));
+        $force = (bool)$input->getOption('force');
+        $this->client->createIndexes($force);
     }
 }

@@ -30,7 +30,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
     public function update(CampaignCollection $campaigns): void
     {
         if (!$this->client->isCampaignIndexExists()) {
-            $this->client->createCampaignIndex();
+            $this->client->createIndexes();
         }
 
         $mappedCampaigns = [];

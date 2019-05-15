@@ -29,7 +29,7 @@ class Client
         return $this->client;
     }
 
-    public function createCampaignIndex(bool $force = false): void
+    public function createIndexes(bool $force = false): void
     {
         try {
             $this->client->indices()->create(CampaignIndex::mappings());
@@ -40,7 +40,6 @@ class Client
                 $this->client->indices()->delete(['index' => CampaignIndex::INDEX]);
                 $this->client->indices()->delete(['index' => EventIndex::INDEX]);
                 $this->client->indices()->delete(['index' => UserHistoryIndex::INDEX]);
-                $this->createCampaignIndex();
 
                 return;
             }
