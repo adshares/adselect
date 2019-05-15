@@ -22,11 +22,49 @@ foreach($response['campaigns']['mappings']['properties'] as $key => $def)
 
 $request = json_decode(file_get_contents('banner_select.json'), JSON_OBJECT_AS_ARRAY);
 
-$params = [
-    'index' => 'campaigns',
-];
+$select = $request[0];
 
-$query = getSelectQuery($all_require_keywords, $request[0]);
+function getLastSeenCampaings($client, $user_id) {
+    $params = [
+        'index' => 'user_history',
+        'body' => [
+            '_source' => false,
+            'docvalue_fields' => ['campaign_id'],
+            'query' => [
+                'bool' => [
+                    'must' => [
+                        [
+                            'term' => [
+                                'user_id' => $user_id,
+                            ]
+                        ],
+                        [
+                            'range' => [
+                                'time' => [
+                                    'gte' => 'now-1d'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ];
+
+    $seen = [];
+    $response = $client->search($params);
+    foreach($response['hits']['hits'] as $hit) {
+        if(!isset($seen[$hit['fields']['campaign_id'][0]])) {
+            $seen[$hit['fields']['campaign_id'][0]]=0;
+        }
+        $seen[$hit['fields']['campaign_id'][0]]++;
+    }
+    return $seen;
+}
+
+
+$last_seen = getLastSeenCampaings($client, $select['user_id']);
+$query = getSelectQuery($all_require_keywords, $select);
 
 $params = [
     'index' => 'campaigns',
@@ -34,10 +72,38 @@ $params = [
         '_source' => false,
         // return only fields
         // 'docvalue_fields' => [],
-        'query' => $query
+        'query' => [
+            'function_score' => [
+                'query' => $query,
+                'script_score' => [
+                    "script" => [
+                        "lang"=> "painless",
+                        // tu zmaiast 1.0 będzie liczony RPM
+                        "source"=> "1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)",
+                        "params" => [
+                            "last_seen" => (object)$last_seen
+                        ]
+                    ]
+                ]
+            ],
+        ]
+//        "sort" => [
+//            "_script" => [
+//                "type" => "number",
+//                "script" => [
+//                    "lang"=> "painless",
+//                        // tu zmaiast 1.0 będzie liczony RPM
+//                        "source"=> "1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)",
+//                        "params" => [
+//                            "last_seen" => $last_seen
+//                        ]
+//                ],
+//                "order" => "desc"
+//            ]
+//        ]
     ]
 ];
-
+print_r($last_seen);
 $response = $client->search($params);
 print_r($response);
 
@@ -62,6 +128,49 @@ foreach ($response['hits']['hits'] as $hit) {
 
 print_r($campaigns);
 
+exit;
+
+$sizes = [
+    8,
+    2,
+    3,
+    3
+];
+
+$intersect = [
+    '0,1' => 2,
+    '0,2' => 3,
+    '0,3' => 3,
+    '1,2' => 1,
+    '1,3' => 1,
+    '2,3' => 0
+];
+
+$m = [];
+$n = count($sizes);
+
+for($i=0;$i<$n;$i++) {
+    $m[$i][$i] = 1;
+    for($j=$i+1;$j<$n;$j++) {
+        list($x, $y) = getWeights($sizes[$i], $intersect[$i . ',' . $j], $sizes[$j]);
+        $m[$i][$j] = $x;
+        $m[$j][$i] = $y;
+    }
+}
+
+print_r($m);
+
+function getWeights($sizeA, $intersect, $sizeB)
+{
+    $a = $intersect / $sizeA;
+    $b = $intersect / $sizeB;
+    if($a == 1 && $b == 1) {
+        return [0, 1];
+    }
+    $x = (1-$b) / (1 - $a * $b);
+    $y = (1-$a) / (1 - $a * $b);
+    return [$x, $y];
+}
 
 /**
  * @param $all_require_keywords

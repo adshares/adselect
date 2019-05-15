@@ -1,5 +1,4 @@
-[
-  {
+[{
     "keywords": {
       "device:type": ["mobile"],
       "device:os": ["android"],
@@ -14,7 +13,7 @@
     "banner_size": "160x600",
     "publisher_id": "85f115636b384744949300571aad2a4f",
     "request_id": 0,
-    "user_id": "7ebc02dd-5a5b-486b-ac35-f2c676b0d018",
+    "user_id": "08a29c7f5073603537721878f9f25843",
     "banner_filters": {
       "require": {
         "classification": ["classify:49:1"]
@@ -23,5 +22,86 @@
         "classification": ["classify:49:0"]
       }
     }
-  }
-]
+  }, {
+    "keywords": {
+      "device:type": ["mobile"],
+      "device:os": ["windows"],
+      "device:browser": ["msie"],
+      "user:language": ["pl"],
+      "user:country": ["af"],
+      "site:domain": ["pl", "onet.pl"],
+      "site:tag": [""],
+      "human_score": [0.9]
+    },
+    "banner_size": "160x600",
+    "publisher_id": "85f115636b384744949300571aad2a4f",
+    "request_id": 1,
+    "user_id": "08a29c7f5073603537721878f9f25843",
+    "banner_filters": {
+      "require": {
+        "adult_score": ["0--50"]
+      },
+      "exclude": {
+        "adult_score": ["50--1000"]
+      }
+    }
+  },
+    {
+      "keywords": {
+        "user:language": ["de", "pl", "es"]
+      },
+      "banner_size": "160x600",
+      "publisher_id": "85f115636b384744949300571aad2a4f",
+      "request_id": 2,
+      "user_id": "08a29c7f5073603537721878f9f25843",
+      "banner_filters": {
+        "require": {
+
+        },
+        "exclude": {
+          "animated": [0]
+        }
+      }
+    },
+    {
+      "keywords": {
+        "device:type": ["desktop"]
+      },
+      "banner_size": "160x600",
+      "publisher_id": "85f115636b384744949300571aad2a4f",
+      "request_id": 3,
+      "user_id": "18a29c7f5073603537721878f9f25843",
+      "banner_filters": {
+        "require": {
+          "animated": ["1"]
+        },
+        "exclude": {
+          "type": ["image"]
+        }
+      }
+    },
+    {
+      "keywords": {
+        "device:type": ["mobile"],
+        "device:os": ["android"],
+        "device:browser": ["safari"],
+        "user:age": [65],
+        "user:language": ["de", "br"],
+        "user:country": [""],
+        "site:domain": ["\/\/adshares.net", "\/\/adshares.net?utm_source=flyersquare", "net", "adshares.net"],
+        "site:tag": [""],
+        "human_score": [0.9]
+      },
+      "banner_size": "160x600",
+      "publisher_id": "85f115636b384744949300571aad2a4f",
+      "request_id": 4,
+      "user_id": "18a29c7f5073603537721878f9f25843",
+      "banner_filters": {
+        "require": {
+          "classification": ["classify:49:1"]
+        },
+        "exclude": {
+          "classification": ["classify:49:0"]
+        }
+      }
+    }]
