@@ -20,6 +20,7 @@ services:
 
 before_script:
   - sleep 10
+  - ./bin/console ops:es:create-index --force=true
 
 before_install:
   - composer self-update
@@ -28,7 +29,6 @@ install:
   - composer install
 
 script:
-  - ./bin/console ops:es:create-index
   - ./bin/console security:check
   - ./bin/console lint:yaml config
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
