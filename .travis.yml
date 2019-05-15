@@ -20,7 +20,7 @@ services:
 
 before_script:
   - sleep 10
-  - elasticsearch -v
+#  - elasticsearch -v
   - "curl http://localhost:9200/"
 
 before_install:
