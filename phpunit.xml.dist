@@ -23,6 +23,12 @@
         <testsuite name="UI">
             <directory suffix="Test.php">tests/UI</directory>
         </testsuite>
+        <testsuite name="Infrastructure">
+            <directory suffix="Test.php">tests/Infrastructure</directory>
+        </testsuite>
+        <testsuite name="Lib">
+            <directory suffix="Test.php">tests/Lib</directory>
+        </testsuite>
     </testsuites>
 
     <filter>

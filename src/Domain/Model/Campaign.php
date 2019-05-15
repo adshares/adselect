@@ -4,16 +4,17 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Domain\Model;
 
-use Adshares\Adselect\Domain\ValueObject\Uuid;
-use DateTime;
+use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+use Adshares\Adselect\Domain\ValueObject\Id;
+use Adshares\AdSelect\Lib\DateTimeInterface;
 
 final class Campaign
 {
-    /** @var Uuid */
+    /** @var Id */
     private $campaignId;
-    /** @var DateTime */
+    /** @var DateTimeInterface */
     private $timeStart;
-    /** @var DateTime */
+    /** @var DateTimeInterface|null */
     private $timeEnd;
     /** @var BannerCollection */
     private $banners;
@@ -23,18 +24,68 @@ final class Campaign
     private $filters;
 
     public function __construct(
-        Uuid $campaignId,
-        DateTime $timeStart,
-        DateTime $timeEnd,
+        Id $campaignId,
+        DateTimeInterface $timeStart,
+        ?DateTimeInterface $timeEnd,
         BannerCollection $banners,
         array $keywords,
         array $filters
     ) {
+        if ($timeEnd && $timeStart > $timeEnd) {
+            throw new AdSelectRuntimeException(sprintf(
+                'Time start (%s) must be greater than end date (%s).',
+                $timeStart->toString(),
+                $timeEnd->toString()
+            ));
+        }
+
         $this->campaignId = $campaignId;
         $this->timeStart = $timeStart;
         $this->timeEnd = $timeEnd;
         $this->banners = $banners;
         $this->keywords = $keywords;
-        $this->filters = $filters;
+        $this->filters = [
+            'exclude' => $filters['exclude'] ?? [],
+            'require' => $filters['require'] ?? [],
+        ];
+    }
+
+    public function getId(): string
+    {
+        return $this->campaignId->toString();
+    }
+
+    public function getTimeStart(): int
+    {
+        return $this->timeStart->getTimestamp();
+    }
+
+    public function getTimeEnd(): ?int
+    {
+        if (!$this->timeEnd) {
+            return null;
+        }
+
+        return $this->timeEnd->getTimestamp();
+    }
+
+    public function getBanners(): BannerCollection
+    {
+        return $this->banners;
+    }
+
+    public function getKeywords(): array
+    {
+        return $this->keywords;
+    }
+
+    public function getExcludeFilters(): array
+    {
+        return $this->filters['exclude'];
+    }
+
+    public function getRequireFilters(): array
+    {
+        return $this->filters['require'];
     }
 }
