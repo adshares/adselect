@@ -17,3 +17,5 @@
 /phpcs.xml
 
 code-coverage
+
+.deptrac.cache
