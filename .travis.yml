@@ -20,7 +20,8 @@ services:
 
 before_script:
   - sleep 10
-  - ./bin/console ops:es:create-index --force=true
+  - elasticsearch -v
+  - "curl http://localhost:9200/"
 
 before_install:
   - composer self-update
@@ -33,7 +34,7 @@ script:
   - ./bin/console lint:yaml config
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
   - ./vendor/bin/phpcs -s src tests
-  - ./vendor/bin/phpunit --testsuite Domain,Application,UI
+  - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure
 
 notifications:
   email: false
