@@ -23,7 +23,10 @@ class FoundBannerResponse
 
         /** @var FoundBanner $banner */
         foreach ($this->collection as $banner) {
-            $data[] = $banner->toArray();
+            $data[] = [
+                'campaign_id' => $banner->getCampaignId(),
+                'banner_id' => $banner->getBannerId(),
+            ];
         }
 
         return $data;

@@ -20,11 +20,22 @@ final class FoundBanner
         $this->size = $size;
     }
 
+    public function getCampaignId(): string
+    {
+        return $this->campaignId;
+    }
+
+    public function getBannerId(): string
+    {
+        return $this->bannerId;
+    }
+
     public function toArray(): array
     {
         return [
             'campaign_id' => $this->campaignId,
             'banner_id' => $this->bannerId,
+            'size' => $this->size,
         ];
     }
 }
