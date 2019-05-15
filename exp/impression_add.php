@@ -209,7 +209,7 @@ function EventToDoc(array $event)
     $doc['cid'] = substr($event['event_id'], 0, -2);
 
     $extra_keywords = [
-       'zone_id' => $event['zone_id']
+       // tu może być np. godzina, dzień tygodnia
     ];
 
     $doc['keywords_flat'] = flattenKeywords(array_merge($event['keywords'], $extra_keywords));
