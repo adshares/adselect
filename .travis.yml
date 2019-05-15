@@ -4,7 +4,6 @@ sudo: false
 env:
   global:
     - MIN_PHP=7.2
-    - ES_VERSION=7.0.1-linux-x86_64 ES_DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
 
 matrix:
   include:
@@ -16,26 +15,13 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
-#services:
-#  - elasticsearch
-
-before_script:
-  - sleep 10
-#  - elasticsearch -v
-  - "curl http://localhost:9200/"
-
 before_install:
   - composer self-update
 
 install:
-  - wget ${ES_DOWNLOAD_URL}
-  - tar -xzf elasticsearch-${ES_VERSION}.tar.gz
-  - ./elasticsearch-${ES_VERSION}/bin/elasticsearch &
   - composer install
 
 script:
-  - wget -q --waitretry=1 --retry-connrefused -T 10 -O - http://127.0.0.1:9200
-  - ./bin/console ops:es:create-index
   - ./bin/console security:check
   - ./bin/console lint:yaml config
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
