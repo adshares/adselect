@@ -9,7 +9,7 @@ use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\Model\IdCollection;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 
-class CampaignDeleteDto
+final class CampaignDeleteDto
 {
     /** @var IdCollection  */
     private $ids;

@@ -6,7 +6,7 @@ namespace Adshares\AdSelect\Domain\Model;
 
 use Adshares\AdSelect\Domain\ValueObject\Id;
 
-class IdCollection extends Collection
+final class IdCollection extends Collection
 {
     public function __construct(Id ...$ids)
     {

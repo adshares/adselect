@@ -27,6 +27,10 @@ services:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $bulkLimit: 500
 
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
         arguments:
             $env: '%env(APP_ENV)%'
@@ -40,3 +44,5 @@ services:
         autoconfigure: false
         arguments:
             $campaignUpdater: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater'
+            $bannerFinder: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder'
+            $logger: '@logger'

@@ -68,6 +68,7 @@
         "roave/security-advisories": "dev-master",
         "sensiolabs/security-checker": "^5.0",
         "squizlabs/php_codesniffer": "*",
+        "symfony/browser-kit": "4.2.*",
         "symfony/web-server-bundle": "4.2.*"
     }
 }
