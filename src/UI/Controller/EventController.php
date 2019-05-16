@@ -43,7 +43,7 @@ class EventController
             $this->logger->debug(sprintf(
                 '[%s] Events have been proceed (ids: %s).',
                 'COLLECT_UNPAID_EVENTS',
-                implode(',', $dto->getEventsIds())
+                implode(', ', $dto->getEventsIds())
             ));
         }
 

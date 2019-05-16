@@ -32,7 +32,7 @@ class Client
         return $this->client;
     }
 
-    public function createEventIndex(bool $force = false)
+    public function createEventIndex(bool $force = false): void
     {
         try {
             $this->client->indices()->create(EventIndex::mappings());
