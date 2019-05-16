@@ -8,7 +8,9 @@ use Adshares\AdSelect\Application\Service\EventCollector as ImpressionCollectorI
 use Adshares\AdSelect\Domain\Model\EventCollection;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 
 class EventCollector implements ImpressionCollectorInterface
 {
@@ -31,13 +33,21 @@ class EventCollector implements ImpressionCollectorInterface
             $this->client->createEventIndex();
         }
 
+        if (!$this->client->userHistoryIndexExists()) {
+            $this->client->createUserHistory();
+        }
+
         $mappedEvents = [];
 
         foreach ($events as $event) {
-            $mapped = EventMapper::map($event, EventIndex::INDEX);
+            $mappedUnpaidEvent = EventMapper::map($event, EventIndex::INDEX);
+            $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::INDEX);
 
-            $mappedEvents[] = $mapped['index'];
-            $mappedEvents[] = $mapped['data'];
+            $mappedEvents[] = $mappedUnpaidEvent['index'];
+            $mappedEvents[] = $mappedUnpaidEvent['data'];
+
+            $mappedEvents[] = $mappedUserHistory['index'];
+            $mappedEvents[] = $mappedUserHistory['data'];
 
             if (count($mappedEvents) === $this->bulkLimit) {
                 $this->client->bulk($mappedEvents, self::ES_TYPE);

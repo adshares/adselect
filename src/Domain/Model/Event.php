@@ -47,6 +47,21 @@ final class Event
         return $this->eventId->toString();
     }
 
+    public function getUserId(): string
+    {
+        return $this->userId->toString();
+    }
+
+    public function getCampaignId(): string
+    {
+        return $this->campaignId->toString();
+    }
+
+    public function getBannerId(): string
+    {
+        return $this->bannerId->toString();
+    }
+
     public function toArray(): array
     {
         return [
