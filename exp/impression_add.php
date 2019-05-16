@@ -95,7 +95,7 @@ foreach($events as $event)
             'user_id' => $event['user_id'],
             'campaign_id' => $event['campaign_id'],
             'banner_id' => $event['banner_id'],
-            'time' => time() * 1000,
+            'time' => $event['time'] ?? time() * 1000,
         ]
     ];
 
@@ -169,6 +169,7 @@ function IncKeywordsIntersect($client, array $keywords)
                     '_index' => 'keyword_intersect',
                     '_type' => '_doc',
                     '_id' => sha1($keywordA . '--' . $keywordB),
+                    'retry_on_conflict' => 5,
                 ]
             ];
 
@@ -206,14 +207,17 @@ function EventToDoc(array $event)
 {
     $doc = $event;
 
+    unset($doc['event_type']);
+
     $doc['cid'] = substr($event['event_id'], 0, -2);
+    $doc['paid_amount'] = 0;
+    $doc['time'] = $event['time'] ?? time()*1000;
 
     $extra_keywords = [
        // tu może być np. godzina, dzień tygodnia
     ];
 
     $doc['keywords_flat'] = flattenKeywords(array_merge($event['keywords'], $extra_keywords));
-
     sort($doc['keywords_flat']);
     return $doc;
 }
@@ -242,7 +246,11 @@ function CreateEventIndex($client)
         'body' => [
             'mappings' => [
                 'properties' => [
-
+                    'time' => [
+                        'type' => 'date',
+                        'format' => 'yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis',
+                    ],
+                    'paid_amount' => [ 'type' => 'long' ],
                 ],
                 'dynamic_templates' => [
                     [

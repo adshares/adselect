@@ -1,0 +1,18 @@
+[{
+  "keywords": {
+    "x": 1
+  },
+  "publisher_id": "a52bbd13f39e4c17ba26a2ce1e149348",
+  "banner_id": "b94fdec97f8b4d2188d22c812c70726b",
+  "user_id": "08a29c7f5073603537721878f9f25843",
+  "event_id": "667ea41f8fb548829ac4bb89cf00ac01",
+  "event_type": "view",
+  "paid_amount": 100
+},{
+  "publisher_id": "a52bbd13f39e4c17ba26a2ce1e149348",
+  "banner_id": "a2399846937b4afc9da88d8f24c1190c",
+  "user_id": "a18911b910c3bf39da3c6c375f95e007",
+  "event_id": "667ea41f8fb548829ac4bb89cf00ad01",
+  "event_type": "click",
+  "paid_amount": 10000
+}]
