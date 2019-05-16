@@ -21,7 +21,7 @@ final class UnpaidEvents
         foreach ($events as $event) {
             if ($this->isValid($event)) {
                 try {
-                    $event  = new Event(
+                    $event = new Event(
                         new Id($event['event_id']),
                         new Id($event['publisher_id']),
                         new Id($event['user_id']),
@@ -39,6 +39,15 @@ final class UnpaidEvents
                 $this->failedEvents[] = $event;
             }
         }
+    }
+
+    public function getEventsIds(): array
+    {
+        return $this->events->map(
+            static function (Event $event) {
+                return $event->getId();
+            }
+        )->toArray();
     }
 
     private function isValid(array $event): bool
