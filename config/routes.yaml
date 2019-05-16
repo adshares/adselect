@@ -7,14 +7,12 @@ campaign_update:
     methods: [POST]
     controller: Adshares\AdSelect\UI\Controller\CampaignController::update
     defaults:
-        _format: json
 
 campaign_delete:
     path: /api/%api_version%/campaigns
     methods: [DELETE]
     controller: Adshares\AdSelect\UI\Controller\CampaignController::delete
     defaults:
-        _format: json
 
 campaign_find_banners:
     path: /api/%api_version%/find
@@ -22,3 +20,9 @@ campaign_find_banners:
     controller: Adshares\AdSelect\UI\Controller\CampaignController::findBanners
     defaults:
         _format: json
+
+events_unpaid:
+    path: /api/%api_version%/events/unpaid
+    methods: [POST]
+    controller: Adshares\AdSelect\UI\Controller\EventController::unpaidEvents
+

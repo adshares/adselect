@@ -9,7 +9,14 @@ class EventIndex implements Index
     public const INDEX = 'events';
 
     public const MAPPINGS = [
-        'properties' => [],
+        'properties' => [
+            'event_id' => ['type' => 'keyword'],
+            'publisher_id' => ['type' => 'keyword'],
+            'user_id' => ['type' => 'keyword'],
+            'zone_id' => ['type' => 'keyword'],
+            'campaign_id' => ['type' => 'keyword'],
+            'banner_id' => ['type' => 'keyword'],
+        ],
         'dynamic_templates' => [
             [
                 'strings_as_keywords' => [
