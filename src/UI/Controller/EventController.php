@@ -44,5 +44,4 @@ class EventController
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
-
 }

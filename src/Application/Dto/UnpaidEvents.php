@@ -34,7 +34,6 @@ final class UnpaidEvents
                     $this->events->add($event);
                 } catch (AdSelectRuntimeException $exception) {
                     $this->failedEvents[] = $event;
-
                 }
             } else {
                 $this->failedEvents[] = $event;
