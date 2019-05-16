@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Exception\UpdateCampaignsException;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
 use Adshares\AdSelect\Domain\Model\IdCollection;
@@ -12,10 +11,12 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\IdDeleteMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
-use Elasticsearch\Common\Exceptions\UnexpectedValueException;
 
 class ElasticSearchCampaignUpdater implements CampaignUpdater
 {
+    private const ES_UPDATE_TYPE = 'UPDATE_CAMPAIGNS';
+    private const ES_DELETE_TYPE = 'DELETE_CAMPAIGNS';
+
     /** @var Client */
     private $client;
     /** @var int */
@@ -29,8 +30,8 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
     public function update(CampaignCollection $campaigns): void
     {
-        if (!$this->client->isCampaignIndexExists()) {
-            $this->client->createIndexes();
+        if (!$this->client->campaignIndexExists()) {
+            $this->client->createCampaignIndex();
         }
 
         $mappedCampaigns = [];
@@ -40,17 +41,15 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $mappedCampaigns[] = $mapped['data'];
 
             if (count($mappedCampaigns) === $this->bulkLimit) {
-                $this->bulk($mappedCampaigns);
+                $this->client->bulk($mappedCampaigns, self::ES_UPDATE_TYPE);
 
                 $mappedCampaigns = [];
             }
         }
 
         if ($mappedCampaigns) {
-            $this->bulk($mappedCampaigns);
+            $this->client->bulk($mappedCampaigns, self::ES_UPDATE_TYPE);
         }
-
-        // store information
     }
 
     public function delete(IdCollection $ids): void
@@ -61,40 +60,14 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $mappedIds[] = $mapped;
 
             if (count($mappedIds) === $this->bulkLimit) {
-                $this->bulk($mappedIds);
+                $this->client->bulk($mappedIds, self::ES_DELETE_TYPE);
 
                 $mappedIds = [];
             }
         }
 
         if ($mappedIds) {
-            $this->bulk($mappedIds);
-        }
-    }
-
-    /**
-     * @param array $mapped
-     */
-    protected function bulk(array $mapped): void
-    {
-        try {
-            $this->client->getClient()->bulk(['body' => $mapped]);
-        } catch (UnexpectedValueException $exception) {
-            $ids = [];
-            foreach ($mapped as $item) {
-                $current = current($item);
-
-                if (isset($current['_id'])) {
-                    $ids[] = $current['_id'];
-                }
-            }
-
-            $message = sprintf(
-                'Update data to ES failed. Problem with campaigns: %s',
-                implode(', ', $ids)
-            );
-
-            throw new UpdateCampaignsException($message, 0, $exception);
+            $this->client->bulk($mappedIds, self::ES_DELETE_TYPE);
         }
     }
 }

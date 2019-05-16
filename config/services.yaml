@@ -27,6 +27,11 @@ services:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $bulkLimit: 500
 
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventCollector:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+            $bulkLimit: 500
+
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
@@ -45,4 +50,12 @@ services:
         arguments:
             $campaignUpdater: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater'
             $bannerFinder: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder'
+            $logger: '@logger'
+
+    Adshares\AdSelect\UI\Controller\EventController:
+        public: true
+        autowire: false
+        autoconfigure: false
+        arguments:
+            $eventCollector: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventCollector'
             $logger: '@logger'
