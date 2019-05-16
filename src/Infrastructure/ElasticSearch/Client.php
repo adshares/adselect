@@ -7,6 +7,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
@@ -47,6 +48,21 @@ class Client
         }
     }
 
+    public function createUserHistory(bool $force = false): void
+    {
+        try {
+            $this->client->indices()->create(UserHistoryIndex::mappings());
+        } catch (BadRequest400Exception $exception) {
+            if ($force) {
+                $this->client->indices()->delete(['index' => UserHistoryIndex::INDEX]);
+
+                return;
+            }
+
+            throw new ElasticSearchRuntime($exception->getMessage());
+        }
+    }
+
     public function createCampaignIndex(bool $force = false): void
     {
         try {
@@ -66,6 +82,7 @@ class Client
     {
         $this->createCampaignIndex($force);
         $this->createEventIndex($force);
+        $this->createUserHistory($force);
     }
 
     public function campaignIndexExists(): bool
@@ -76,6 +93,11 @@ class Client
     public function eventIndexExists(): bool
     {
         return $this->client->indices()->exists(['index' => EventIndex::INDEX]);
+    }
+
+    public function userHistoryIndexExists(): bool
+    {
+        return $this->client->indices()->exists(['index' => UserHistoryIndex::INDEX]);
     }
 
     public function bulk(array $mapped, string $type): void
