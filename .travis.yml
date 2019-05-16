@@ -26,6 +26,7 @@ script:
   - ./bin/console lint:yaml config
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
   - ./vendor/bin/phpcs -s src tests
+  - ./vendor/bin/deptrac
   - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure
 
 notifications:

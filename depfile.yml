@@ -1,0 +1,39 @@
+paths:
+  - ./src
+exclude_files:
+  - .*test.*
+layers:
+  - name: Domain
+    collectors:
+      - type: className
+        regex: .*AdSelect\\Domain\\.*
+  - name: Application
+    collectors:
+      - type: className
+        regex: .*AdSelect\\Application\\.*
+  - name: Infrastructure
+    collectors:
+      - type: className
+        regex: .*AdSelect\\Infrastructure\\.*
+  - name: Lib
+    collectors:
+      - type: className
+        regex: .*AdSelect\\Lib\\.*
+  - name: UI
+    collectors:
+      - type: className
+        regex: .*AdSelect\\UI\\.*
+
+ruleset:
+  Domain:
+    - Lib
+  Application:
+    - Domain
+    - Lib
+  Infrastructure:
+    - Application
+    - Domain
+  UI:
+    - Infrastructure
+    - Application
+
