@@ -59,4 +59,17 @@ class Helper
         }
         return $doc;
     }
+
+    public static function flattenKeywords(array $keywords): array
+    {
+        $ret = [];
+
+        foreach ($keywords as $key => $values) {
+            foreach ((array)$values as $value) {
+                $ret[] = $key . '=' . $value;
+            }
+        }
+
+        return $ret;
+    }
 }

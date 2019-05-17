@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\Mapper;
 
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\Helper;
 use PHPUnit\Framework\TestCase;
 
@@ -44,5 +45,61 @@ final class HelperTest extends TestCase
         ];
 
         $this->assertEquals($expected, $mapped);
+    }
+
+    public function testFlattenKeywords(): void
+    {
+        $keywords = [
+            'keyword:a' => 12,
+            'keyword:b' => [1, 2],
+        ];
+
+        $result = Helper::flattenKeywords($keywords);
+        $expected = [
+            'keyword:a=12',
+            'keyword:b=1',
+            'keyword:b=2',
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testRangeWhenNoMinAndNoMax(): void
+    {
+        $this->expectException(ElasticSearchRuntime::class);
+
+        Helper::range(null, null);
+    }
+
+    public function testRangeWhenOnlyMin(): void
+    {
+        $result = Helper::range(35, null);
+        $expected = [
+            'gte' => 35,
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testRangeWhenOnlyMax(): void
+    {
+        $result = Helper::range(null, 35);
+        $expected = [
+            'lte' => 35,
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    public function testRangeWhenMinAndMax(): void
+    {
+        $result = Helper::range(35, 52);
+        $expected = [
+            'gte' => 35,
+            'lte' => 52,
+        ];
+
+        $this->assertEquals($expected, $result);
     }
 }

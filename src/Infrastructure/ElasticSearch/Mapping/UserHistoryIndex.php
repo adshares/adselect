@@ -15,7 +15,7 @@ class UserHistoryIndex implements Index
             'banner_id' => [ 'type' => 'keyword' ],
             'time' => [
                 'type' => 'date',
-                'format' => 'yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis',
+                'format' => 'yyyy-MM-dd HH:mm:ss',
             ]
         ],
         'dynamic_templates' => [

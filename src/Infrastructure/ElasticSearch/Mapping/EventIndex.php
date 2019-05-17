@@ -16,16 +16,21 @@ class EventIndex implements Index
             'zone_id' => ['type' => 'keyword'],
             'campaign_id' => ['type' => 'keyword'],
             'banner_id' => ['type' => 'keyword'],
+            'time' => [
+                'type' => 'date',
+                'format' => 'yyyy-MM-dd HH:mm:ss',
+            ],
+            'paid_amount' => ['type' => 'long'],
         ],
         'dynamic_templates' => [
             [
                 'strings_as_keywords' => [
                     'match_mapping_type' => 'string',
                     'mapping' => [
-                        'type' => 'keyword'
+                        'type' => 'keyword',
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
     ];
 

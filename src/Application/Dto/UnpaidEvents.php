@@ -8,6 +8,7 @@ use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
 use Adshares\AdSelect\Domain\ValueObject\Id;
+use Adshares\AdSelect\Lib\ExtendedDateTime;
 
 final class UnpaidEvents
 {
@@ -28,7 +29,8 @@ final class UnpaidEvents
                         new Id($event['zone_id']),
                         new Id($event['campaign_id']),
                         new Id($event['banner_id']),
-                        (array)$event['keywords']
+                        (array)$event['keywords'],
+                        ExtendedDateTime::createFromString($event['time'])
                     );
 
                     $this->events->add($event);
@@ -77,6 +79,10 @@ final class UnpaidEvents
         }
 
         if (!isset($event['keywords'])) {
+            return false;
+        }
+
+        if (!isset($event['time'])) {
             return false;
         }
 
