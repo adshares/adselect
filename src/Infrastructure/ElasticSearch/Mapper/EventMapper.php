@@ -18,7 +18,10 @@ class EventMapper
             ],
         ];
 
-        $mapped['data'] = $event->toArray();
+        $data = $event->toArray();
+        $data['keywords_flat'] = Helper::flattenKeywords($event->getKeywords());
+
+        $mapped['data'] = $data;
 
         return $mapped;
     }

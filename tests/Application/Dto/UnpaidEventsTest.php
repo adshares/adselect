@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Tests\Application\Dto;
 
 use Adshares\AdSelect\Application\Dto\UnpaidEvents;
+use Adshares\AdSelect\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
 
 final class UnpaidEventsTest extends TestCase
@@ -32,6 +33,7 @@ final class UnpaidEventsTest extends TestCase
                     'campaign_id' => '43c567e1396b4cadb52223a51796fd01',
                     'banner_id' => '43c567e1396b4cadb52223a51796fd01',
                     'keywords' => [],
+                    'time' => (new ExtendedDateTime())->toString(),
                 ],
                 1,
                 0,
@@ -47,6 +49,7 @@ final class UnpaidEventsTest extends TestCase
                     'keywords' => [
                         'os:device' => ['firefox'],
                     ],
+                    'time' => (new ExtendedDateTime())->toString(),
                 ],
                 1,
                 0,
@@ -62,6 +65,7 @@ final class UnpaidEventsTest extends TestCase
                     'keywords' => [
                         'os:device' => ['firefox'],
                     ],
+                    'time' => (new ExtendedDateTime())->toString(),
                 ],
                 0,
                 1,

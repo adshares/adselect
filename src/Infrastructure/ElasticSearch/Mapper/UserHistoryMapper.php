@@ -21,7 +21,7 @@ class UserHistoryMapper
             'user_id' => $event->getUserId(),
             'campaign_id' => $event->getCampaignId(),
             'banner_id' => $event->getBannerId(),
-            'time' => time() * 1000,
+            'time' => $event->getDate(),
         ];
 
         return $mapped;

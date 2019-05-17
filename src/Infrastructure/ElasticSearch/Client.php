@@ -40,6 +40,7 @@ class Client
         } catch (BadRequest400Exception $exception) {
             if ($force) {
                 $this->client->indices()->delete(['index' => EventIndex::INDEX]);
+                $this->createEventIndex();
 
                 return;
             }
@@ -55,6 +56,7 @@ class Client
         } catch (BadRequest400Exception $exception) {
             if ($force) {
                 $this->client->indices()->delete(['index' => UserHistoryIndex::INDEX]);
+                $this->createUserHistory();
 
                 return;
             }
@@ -70,6 +72,7 @@ class Client
         } catch (BadRequest400Exception $exception) {
             if ($force) {
                 $this->client->indices()->delete(['index' => CampaignIndex::INDEX]);
+                $this->createCampaignIndex();
 
                 return;
             }

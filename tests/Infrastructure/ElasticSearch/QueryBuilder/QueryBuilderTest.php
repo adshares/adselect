@@ -15,7 +15,8 @@ final class QueryBuilderTest extends TestCase
     public function testWhenKeywordsAndFiltersAreEmpty(): void
     {
         $publisherId = new Id('43c567e1396b4cadb52223a51796fd01');
-        $dto = new QueryDto($publisherId, 'qwer-1234-1234', new Size(200, 100));
+        $userId = new Id('43c567e1396b4cadb52223a51796fd01');
+        $dto = new QueryDto($publisherId, $userId, new Size(200, 100));
         $defined = [
             'one',
             'two',
@@ -86,7 +87,7 @@ final class QueryBuilderTest extends TestCase
     public function testWhenFiltersExist(): void
     {
         $publisherId = new Id('85f115636b384744949300571aad2a4f');
-        $userId = '7ebc02dd-5a5b-486b-ac35-f2c676b0d018';
+        $userId = new Id('85f115636b384744949300571aad2a4f');
 
         $keywords = [
             'device:type' => ['mobile'],

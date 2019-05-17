@@ -13,7 +13,7 @@ final class QueryDto
 {
     /** @var Id */
     private $publisherId;
-    /** @var string */
+    /** @var Id */
     private $userId;
     /** @var Size */
     private $size;
@@ -24,7 +24,7 @@ final class QueryDto
     /** @var array */
     private $keywords;
 
-    public function __construct(Id $publisherId, string $userId, Size $size, array $filters = [], array $keywords = [])
+    public function __construct(Id $publisherId, Id $userId, Size $size, array $filters = [], array $keywords = [])
     {
         $this->publisherId = $publisherId;
         $this->userId = $userId;
@@ -74,7 +74,7 @@ final class QueryDto
         try {
             return new self(
                 new Id($input['publisher_id']),
-                $input['user_id'],
+                new Id($input['user_id']),
                 Size::fromString($input['banner_size']),
                 $input['banner_filters'],
                 $input['keywords']

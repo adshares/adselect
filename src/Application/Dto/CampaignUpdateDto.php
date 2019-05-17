@@ -12,6 +12,7 @@ use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
+use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 
 final class CampaignUpdateDto
@@ -45,7 +46,7 @@ final class CampaignUpdateDto
                 $campaignData['keywords'],
                 $campaignData['filters']
             );
-        } catch (AdSelectRuntimeException $exception) {
+        } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
             throw new ValidationDtoException($exception->getMessage());
         }
     }
