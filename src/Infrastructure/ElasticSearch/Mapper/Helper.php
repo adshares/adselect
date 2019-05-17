@@ -70,6 +70,7 @@ class Helper
             }
         }
 
+        sort($ret);
         return $ret;
     }
 }

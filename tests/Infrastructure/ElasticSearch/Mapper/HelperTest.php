@@ -50,15 +50,15 @@ final class HelperTest extends TestCase
     public function testFlattenKeywords(): void
     {
         $keywords = [
-            'keyword:a' => 12,
-            'keyword:b' => [1, 2],
+            'keyword:b' => 12,
+            'keyword:a' => [1, 2],
         ];
 
         $result = Helper::flattenKeywords($keywords);
         $expected = [
-            'keyword:a=12',
-            'keyword:b=1',
-            'keyword:b=2',
+            'keyword:a=1',
+            'keyword:a=2',
+            'keyword:b=12',
         ];
 
         $this->assertEquals($expected, $result);
