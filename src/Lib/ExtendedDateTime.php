@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Lib;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use DateTimeImmutable;
 use Exception;
 
@@ -15,7 +15,7 @@ final class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterf
         try {
             return new self('@'.$timestamp);
         } catch (Exception $exception) {
-            throw new AdSelectRuntimeException($exception->getMessage());
+            throw new LibraryRuntimeException($exception->getMessage());
         }
     }
 
@@ -29,7 +29,7 @@ final class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterf
         try {
             return new self($date);
         } catch (Exception $exception) {
-            throw new AdSelectRuntimeException($exception->getMessage());
+            throw new LibraryRuntimeException($exception->getMessage());
         }
     }
 }

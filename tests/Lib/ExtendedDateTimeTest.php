@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Tests\Lib;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 use DateTime;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +38,7 @@ final class ExtendedDateTimeTest extends TestCase
 
     public function testCreateFromStringWhenStringNotValid(): void
     {
-        $this->expectException(AdSelectRuntimeException::class);
+        $this->expectException(LibraryRuntimeException::class);
 
         ExtendedDateTime::createFromString('wrong format');
     }
