@@ -7,6 +7,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
@@ -33,14 +34,14 @@ class Client
         return $this->client;
     }
 
-    public function createEventIndex(bool $force = false): void
+    private function createIndex(string $indexName, bool $force = false): void
     {
         try {
-            $this->client->indices()->create(EventIndex::mappings());
+            $this->client->indices()->create($this->findMappingsForIndex($indexName));
         } catch (BadRequest400Exception $exception) {
             if ($force) {
-                $this->client->indices()->delete(['index' => EventIndex::INDEX]);
-                $this->createEventIndex();
+                $this->client->indices()->delete(['index' => $indexName]);
+                $this->createIndex($indexName);
 
                 return;
             }
@@ -49,43 +50,54 @@ class Client
         }
     }
 
-    public function createUserHistory(bool $force = false): void
+    private function findMappingsForIndex(string $indexName): array
     {
-        try {
-            $this->client->indices()->create(UserHistoryIndex::mappings());
-        } catch (BadRequest400Exception $exception) {
-            if ($force) {
-                $this->client->indices()->delete(['index' => UserHistoryIndex::INDEX]);
-                $this->createUserHistory();
-
-                return;
-            }
-
-            throw new ElasticSearchRuntime($exception->getMessage());
+        if ($indexName === CampaignIndex::INDEX) {
+            return CampaignIndex::mappings();
         }
+
+        if ($indexName === EventIndex::INDEX) {
+            return EventIndex::mappings();
+        }
+
+        if ($indexName === UserHistoryIndex::INDEX) {
+            return UserHistoryIndex::mappings();
+        }
+
+        if ($indexName === KeywordIndex::INDEX) {
+            return KeywordIndex::mappings();
+        }
+
+        throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
     }
 
     public function createCampaignIndex(bool $force = false): void
     {
-        try {
-            $this->client->indices()->create(CampaignIndex::mappings());
-        } catch (BadRequest400Exception $exception) {
-            if ($force) {
-                $this->client->indices()->delete(['index' => CampaignIndex::INDEX]);
-                $this->createCampaignIndex();
-
-                return;
-            }
-
-            throw new ElasticSearchRuntime($exception->getMessage());
-        }
+        $this->createIndex(CampaignIndex::INDEX, $force);
     }
+
+    public function createEventIndex(bool $force = false): void
+    {
+        $this->createIndex(EventIndex::INDEX, $force);
+    }
+
+    public function createUserHistory(bool $force = false): void
+    {
+        $this->createIndex(UserHistoryIndex::INDEX, $force);
+    }
+
+    public function createKeywordIndex(bool $force = false): void
+    {
+        $this->createIndex(KeywordIndex::INDEX, $force);
+    }
+
 
     public function createIndexes(bool $force = false): void
     {
         $this->createCampaignIndex($force);
         $this->createEventIndex($force);
         $this->createUserHistory($force);
+        $this->createKeywordIndex($force);
     }
 
     public function campaignIndexExists(): bool
@@ -103,10 +115,15 @@ class Client
         return $this->client->indices()->exists(['index' => UserHistoryIndex::INDEX]);
     }
 
-    public function bulk(array $mapped, string $type): void
+    public function keywordIndexExists(): bool
+    {
+        return $this->client->indices()->exists(['index' => KeywordIndex::INDEX]);
+    }
+
+    public function bulk(array $mapped, string $type): array
     {
         try {
-            $this->client->bulk(['body' => $mapped]);
+            return $this->client->bulk(['body' => $mapped]);
         } catch (UnexpectedValueException $exception) {
             $ids = [];
             foreach ($mapped as $item) {
