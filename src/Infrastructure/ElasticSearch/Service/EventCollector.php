@@ -9,11 +9,15 @@ use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use function array_filter;
+use function array_keys;
 
 class EventCollector implements ImpressionCollectorInterface
 {
@@ -23,26 +27,19 @@ class EventCollector implements ImpressionCollectorInterface
     private $client;
     /** @var int */
     private $bulkLimit;
+    /** @var int */
+    private $keywordIntersectThreshold;
 
-    public function __construct(Client $client, int $bulkLimit = 2)
+    public function __construct(Client $client, int $bulkLimit = 2, int $keywordIntersectThreshold = 10)
     {
         $this->client = $client;
         $this->bulkLimit = $bulkLimit * 2;
+        $this->keywordIntersectThreshold = $keywordIntersectThreshold;
     }
 
     public function collect(EventCollection $events): void
     {
-        if (!$this->client->eventIndexExists()) {
-            $this->client->createEventIndex();
-        }
-
-        if (!$this->client->userHistoryIndexExists()) {
-            $this->client->createUserHistory();
-        }
-
-        if (!$this->client->keywordIndexExists()) {
-            $this->client->createKeywordIndex();
-        }
+        $this->createIndexesIfNeeded();
 
         $mappedEvents = [];
 
@@ -71,58 +68,76 @@ class EventCollector implements ImpressionCollectorInterface
         $this->updateKeywords($events);
     }
 
-    private function updateKeywords(EventCollection $events): array
+    private function createIndexesIfNeeded(): void
     {
-        $mapped = [];
-        $after = [];
-        $allFlatKeywords = $events->flattenKeywords();
-
-        /** @var Event $event */
-        foreach ($events as $event) {
-            $mappedKeywords = KeywordMapper::map($event, KeywordIndex::INDEX);
-
-
-            foreach ($mappedKeywords as $mappedKeyword) {
-                $mapped[] = $mappedKeyword;
-            }
-
-            if (count($mapped) >= $this->bulkLimit) {
-                $response = $this->client->bulk($mapped, self::ES_TYPE);
-
-                foreach ($response['items'] as $response) {
-                    $id = $response['update']['_id'];
-                    $newCount = $response['update']['get']['_source']['count'];
-
-                    $keywordName = $allFlatKeywords[$id] ?? null;
-
-                    if ($keywordName) {
-                        $after[$keywordName] = $newCount;
-                    }
-                }
-
-                $mapped = [];
-            }
+        if (!$this->client->eventIndexExists()) {
+            $this->client->createEventIndex();
         }
 
-        if ($mapped) {
-            $response = $this->client->bulk($mapped, self::ES_TYPE);
+        if (!$this->client->userHistoryIndexExists()) {
+            $this->client->createUserHistory();
+        }
+
+        if (!$this->client->keywordIndexExists()) {
+            $this->client->createKeywordIndex();
+        }
+
+        if (!$this->client->keywordIntersectionIndexExists()) {
+            $this->client->createKeywordIntersectionIndex();
+        }
+    }
+
+    private function updateKeywords(EventCollection $events): void
+    {
+        /** @var Event $event */
+        foreach ($events as $event) {
+            $flatKeywords = $event->flatKeywords();
+            $mappedKeywords = KeywordMapper::map($flatKeywords, KeywordIndex::INDEX);
+
+            $response = $this->client->bulk($mappedKeywords, self::ES_TYPE);
+
+            $actualKeywordsCount = [];
             foreach ($response['items'] as $response) {
                 $id = $response['update']['_id'];
                 $newCount = $response['update']['get']['_source']['count'];
 
-                $keywordName = $allFlatKeywords[$id] ?? null;
+                $keywordName = $flatKeywords[$id] ?? null;
 
                 if ($keywordName) {
-                    $after[$keywordName] = $newCount;
+                    $actualKeywordsCount[$keywordName] = $newCount;
                 }
             }
-        }
 
-        return $after;
+            if ($actualKeywordsCount) {
+                $threshold = $this->keywordIntersectThreshold;
+                $keywords = array_keys(array_filter(
+                    $actualKeywordsCount,
+                    static function ($count) use ($threshold) {
+                        return $count >= $threshold;
+                    }
+                ));
+
+                $this->updateKeywordsIntersect($keywords);
+            }
+        }
     }
 
-    private function actualEventsCountValue(array $response, array $flatKeywords)
+    private function updateKeywordsIntersect(array $keywords): void
     {
-        return 1;
+        $keywordsSize = count($keywords);
+        for ($i = 0; $i < $keywordsSize; $i++) {
+            for ($j = $i + 1; $j < $keywordsSize; $j++) {
+                $keywordA = $keywords[$i];
+                $keywordB = $keywords[$j];
+
+                $keywordIntersectMapper = KeywordIntersectMapper::map(
+                    $keywordA,
+                    $keywordB,
+                    KeywordIntersectIndex::INDEX
+                );
+
+                $this->client->bulk($keywordIntersectMapper, self::ES_TYPE);
+            }
+        }
     }
 }
