@@ -30,7 +30,7 @@ class EventCollector implements ImpressionCollectorInterface
     /** @var int */
     private $keywordIntersectThreshold;
 
-    public function __construct(Client $client, int $bulkLimit = 2, int $keywordIntersectThreshold = 10)
+    public function __construct(Client $client, int $bulkLimit = 500, int $keywordIntersectThreshold = 10)
     {
         $this->client = $client;
         $this->bulkLimit = $bulkLimit * 2;
