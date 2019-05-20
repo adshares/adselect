@@ -47,23 +47,6 @@ final class HelperTest extends TestCase
         $this->assertEquals($expected, $mapped);
     }
 
-    public function testFlattenKeywords(): void
-    {
-        $keywords = [
-            'keyword:b' => 12,
-            'keyword:a' => [1, 2],
-        ];
-
-        $result = Helper::flattenKeywords($keywords);
-        $expected = [
-            'keyword:a=1',
-            'keyword:a=2',
-            'keyword:b=12',
-        ];
-
-        $this->assertEquals($expected, $result);
-    }
-
     public function testRangeWhenNoMinAndNoMax(): void
     {
         $this->expectException(ElasticSearchRuntime::class);

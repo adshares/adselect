@@ -40,7 +40,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $mappedCampaigns[] = $mapped['index'];
             $mappedCampaigns[] = $mapped['data'];
 
-            if (count($mappedCampaigns) === $this->bulkLimit) {
+            if (count($mappedCampaigns) >= $this->bulkLimit) {
                 $this->client->bulk($mappedCampaigns, self::ES_UPDATE_TYPE);
 
                 $mappedCampaigns = [];

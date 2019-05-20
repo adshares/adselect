@@ -58,10 +58,10 @@ class EventMapperTest extends TestCase
                 'date' => $date->format('Y-m-d H:i:s'),
                 'paid_amount' => null,
                 'keywords_flat' => [
-                    'keyword1=one',
-                    'keyword1=two',
-                    'keyword2=a',
-                    'keyword2=b',
+                    'd1877b7548904d471f541d57b5f5e253e3b89b5e' => 'keyword1=one',
+                    '0e72232081e036f1e795b9a8694e76da12785eda' => 'keyword1=two',
+                    '17e45341c01794e936d336be871bf56a0137084a' => 'keyword2=a',
+                    'f23dff5e693533b0ae82d5533a751653a443fadb' => 'keyword2=b',
                 ],
             ],
         ];
