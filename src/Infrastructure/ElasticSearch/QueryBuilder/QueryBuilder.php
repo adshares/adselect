@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @phpcs:disable Generic.Files.LineLength.TooLong
+ */
 declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
@@ -13,16 +15,18 @@ class QueryBuilder
     private const PREFIX_BANNER_REQUIRE = 'banners.keywords';
     private const PREFIX_BANNER_EXCLUDE = 'banners.keywords';
 
-
     /** @var QueryDto */
     private $bannerFinderDto;
     /** @var array */
     private $definedRequireFilters;
+    /** @var array */
+    private $userHistory;
 
-    public function __construct(QueryDto $bannerFinderDto, array $definedRequireFilters = [])
+    public function __construct(QueryDto $bannerFinderDto, array $definedRequireFilters = [], array $userHistory = [])
     {
         $this->bannerFinderDto = $bannerFinderDto;
         $this->definedRequireFilters = $definedRequireFilters;
+        $this->userHistory = $userHistory;
     }
 
     public function build(): array
@@ -45,7 +49,7 @@ class QueryBuilder
             $this->bannerFinderDto->getExcludeFilters()
         );
 
-        return [
+        $query = [
             'bool' => [
                 // exclude
                 'must_not' => $excludes,
@@ -56,8 +60,8 @@ class QueryBuilder
                             'bool' => [
                                 'should' => $requires,
                                 'minimum_should_match' => count($this->definedRequireFilters),
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     [
                         'nested' => [
@@ -65,21 +69,37 @@ class QueryBuilder
                             'score_mode' => "none",
                             'inner_hits' => [
                                 '_source' => false,
-                                // return only banner id
-                                'docvalue_fields' => ['banners.id', 'banners.size']
+                                'docvalue_fields' => ['banners.id', 'banners.size'],
                             ],
                             'query' => [
                                 'bool' => [
                                     // filter exclude
                                     'must_not' => $excludeFilter,
                                     // filter require
-                                    'must' => $requireFilter
-                                ]
+                                    'must' => $requireFilter,
+                                ],
 
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
-                ]
+                ],
+            ],
+        ];
+
+        return [
+            'function_score' => [
+                'boost_mode' => 'replace',
+                'query' => $query,
+                'script_score' => [
+
+                    'script' => [
+                        'lang' => 'painless',
+                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'params' => [
+                            'last_seen' => (object)$this->userHistory,
+                        ],
+                    ],
+                ],
             ],
         ];
     }

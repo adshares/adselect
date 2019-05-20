@@ -8,7 +8,6 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntim
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
-use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
@@ -26,11 +25,6 @@ class Client
         $this->client = ClientBuilder::create()
             ->setHosts($hosts)
             ->build();
-    }
-
-    public function getClient(): BaseClient
-    {
-        return $this->client;
     }
 
     public function createEventIndex(bool $force = false): void
@@ -125,5 +119,15 @@ class Client
 
             throw new ElasticSearchRuntime($message, 0, $exception);
         }
+    }
+
+    public function search(array $params): array
+    {
+        return $this->client->search($params);
+    }
+
+    public function getMapping(array $params): array
+    {
+        return $this->client->indices()->getMapping($params);
     }
 }

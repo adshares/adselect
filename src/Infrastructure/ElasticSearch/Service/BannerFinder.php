@@ -10,7 +10,9 @@ use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\UserHistory;
 
 class BannerFinder implements BannerFinderInterface
 {
@@ -24,8 +26,9 @@ class BannerFinder implements BannerFinderInterface
 
     public function find(QueryDto $queryDto): FoundBannersCollection
     {
+        $userHistory = $this->fetchUserHistory($queryDto->getUserId());
         $defined = $this->getDefinedRequireKeywords();
-        $queryBuilder = new QueryBuilder($queryDto, $defined);
+        $queryBuilder = new QueryBuilder($queryDto, $defined, $userHistory);
 
         $params = [
             'index' => CampaignIndex::INDEX,
@@ -35,7 +38,7 @@ class BannerFinder implements BannerFinderInterface
             ]
         ];
 
-        $response = $this->client->getClient()->search($params);
+        $response = $this->client->search($params);
         $collection = new FoundBannersCollection();
 
         if ($response['hits']['total']['value'] === 0) {
@@ -59,10 +62,32 @@ class BannerFinder implements BannerFinderInterface
         return $collection;
     }
 
+    private function fetchUserHistory(string $userId): array
+    {
+        $params = [
+            'index' => UserHistoryIndex::INDEX,
+            'body' =>  UserHistory::build($userId),
+        ];
+
+        $seen = [];
+
+        $response = $this->client->search($params);
+
+        foreach ($response['hits']['hits'] as $hit) {
+            if (!isset($seen[$hit['fields']['campaign_id'][0]])) {
+                $seen[$hit['fields']['campaign_id'][0]] = 0;
+            }
+
+            $seen[$hit['fields']['campaign_id'][0]]++;
+        }
+
+        return $seen;
+    }
+
     private function getDefinedRequireKeywords(): array
     {
         $params = ['index' => CampaignIndex::INDEX];
-        $response = $this->client->getClient()->indices()->getMapping($params);
+        $response = $this->client->getMapping($params);
 
         $required = [];
         foreach ($response['campaigns']['mappings']['properties'] as $key => $def) {

@@ -49,6 +49,11 @@ final class QueryDto
         return $this->excludeFilters;
     }
 
+    public function getUserId(): string
+    {
+        return $this->userId->toString();
+    }
+
     public static function fromArray(array $input): self
     {
         if (!isset($input['publisher_id'])) {
