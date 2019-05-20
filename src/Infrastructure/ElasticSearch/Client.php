@@ -7,7 +7,10 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
@@ -27,14 +30,19 @@ class Client
             ->build();
     }
 
-    public function createEventIndex(bool $force = false): void
+    public function getClient(): BaseClient
+    {
+        return $this->client;
+    }
+
+    private function createIndex(string $indexName, bool $force = false): void
     {
         try {
-            $this->client->indices()->create(EventIndex::mappings());
+            $this->client->indices()->create($this->findMappingsForIndex($indexName));
         } catch (BadRequest400Exception $exception) {
             if ($force) {
-                $this->client->indices()->delete(['index' => EventIndex::INDEX]);
-                $this->createEventIndex();
+                $this->client->indices()->delete(['index' => $indexName]);
+                $this->createIndex($indexName);
 
                 return;
             }
@@ -43,36 +51,54 @@ class Client
         }
     }
 
-    public function createUserHistory(bool $force = false): void
+    private function findMappingsForIndex(string $indexName): array
     {
-        try {
-            $this->client->indices()->create(UserHistoryIndex::mappings());
-        } catch (BadRequest400Exception $exception) {
-            if ($force) {
-                $this->client->indices()->delete(['index' => UserHistoryIndex::INDEX]);
-                $this->createUserHistory();
-
-                return;
-            }
-
-            throw new ElasticSearchRuntime($exception->getMessage());
+        if ($indexName === CampaignIndex::INDEX) {
+            return CampaignIndex::mappings();
         }
+
+        if ($indexName === EventIndex::INDEX) {
+            return EventIndex::mappings();
+        }
+
+        if ($indexName === UserHistoryIndex::INDEX) {
+            return UserHistoryIndex::mappings();
+        }
+
+        if ($indexName === KeywordIndex::INDEX) {
+            return KeywordIndex::mappings();
+        }
+
+        if ($indexName === KeywordIntersectIndex::INDEX) {
+            return KeywordIntersectIndex::mappings();
+        }
+
+        throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
     }
 
     public function createCampaignIndex(bool $force = false): void
     {
-        try {
-            $this->client->indices()->create(CampaignIndex::mappings());
-        } catch (BadRequest400Exception $exception) {
-            if ($force) {
-                $this->client->indices()->delete(['index' => CampaignIndex::INDEX]);
-                $this->createCampaignIndex();
+        $this->createIndex(CampaignIndex::INDEX, $force);
+    }
 
-                return;
-            }
+    public function createEventIndex(bool $force = false): void
+    {
+        $this->createIndex(EventIndex::INDEX, $force);
+    }
 
-            throw new ElasticSearchRuntime($exception->getMessage());
-        }
+    public function createUserHistory(bool $force = false): void
+    {
+        $this->createIndex(UserHistoryIndex::INDEX, $force);
+    }
+
+    public function createKeywordIndex(bool $force = false): void
+    {
+        $this->createIndex(KeywordIndex::INDEX, $force);
+    }
+
+    public function createKeywordIntersectionIndex(bool $force = false): void
+    {
+        $this->createIndex(KeywordIntersectIndex::INDEX, $force);
     }
 
     public function createIndexes(bool $force = false): void
@@ -80,6 +106,8 @@ class Client
         $this->createCampaignIndex($force);
         $this->createEventIndex($force);
         $this->createUserHistory($force);
+        $this->createKeywordIndex($force);
+        $this->createKeywordIntersectionIndex($force);
     }
 
     public function campaignIndexExists(): bool
@@ -97,10 +125,20 @@ class Client
         return $this->client->indices()->exists(['index' => UserHistoryIndex::INDEX]);
     }
 
-    public function bulk(array $mapped, string $type): void
+    public function keywordIndexExists(): bool
+    {
+        return $this->client->indices()->exists(['index' => KeywordIndex::INDEX]);
+    }
+
+    public function keywordIntersectionIndexExists(): bool
+    {
+        return $this->client->indices()->exists(['index' => KeywordIntersectIndex::INDEX]);
+    }
+
+    public function bulk(array $mapped, string $type): array
     {
         try {
-            $this->client->bulk(['body' => $mapped]);
+            return $this->client->bulk(['body' => $mapped]);
         } catch (UnexpectedValueException $exception) {
             $ids = [];
             foreach ($mapped as $item) {

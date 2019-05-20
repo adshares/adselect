@@ -51,6 +51,21 @@ final class Event
         $this->paidAmount = $paidAmount;
     }
 
+    public function flatKeywords(): array
+    {
+        $flatKeywords = [];
+        foreach ($this->keywords as $key => $values) {
+            foreach ((array)$values as $value) {
+                $keyword = $key . '=' . $value;
+                $flatKeywords[sha1($keyword)] = $keyword;
+            }
+        }
+
+        asort($flatKeywords);
+
+        return $flatKeywords;
+    }
+
     private function getCaseIdFromEvent(Id $eventId): Id
     {
         $id = substr($eventId->toString(), 0, -2).'00';
