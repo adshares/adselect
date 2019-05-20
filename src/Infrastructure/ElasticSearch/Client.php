@@ -14,20 +14,26 @@ use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
+use Psr\Log\LoggerInterface;
 use function current;
 use function implode;
+use function json_encode;
 use function sprintf;
 
 class Client
 {
     /** @var Client */
     private $client;
+    /** @var LoggerInterface */
+    private $logger;
 
-    public function __construct(array $hosts)
+    public function __construct(array $hosts, LoggerInterface $logger)
     {
         $this->client = ClientBuilder::create()
             ->setHosts($hosts)
             ->build();
+
+        $this->logger = $logger;
     }
 
     public function getClient(): BaseClient
@@ -138,7 +144,22 @@ class Client
     public function bulk(array $mapped, string $type): array
     {
         try {
-            return $this->client->bulk(['body' => $mapped]);
+            $response =  $this->client->bulk(['body' => $mapped]);
+
+            if ($response['errors'] === true) {
+                $errors = json_encode(array_map(
+                    static function ($item) {
+                        return $item;
+                    },
+                    $response['items']
+                ));
+
+                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s', $type, $errors));
+
+                return [];
+            }
+
+            return $response;
         } catch (UnexpectedValueException $exception) {
             $ids = [];
             foreach ($mapped as $item) {

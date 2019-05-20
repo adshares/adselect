@@ -26,7 +26,7 @@ final class Event
     private $keywords;
     /** @var DateTimeInterface */
     private $date;
-    /** @var float|null */
+    /** @var float */
     private $paidAmount;
 
     public function __construct(
@@ -38,7 +38,7 @@ final class Event
         Id $bannerId,
         array $keywords,
         DateTimeInterface $date,
-        ?float $paidAmount = null
+        float $paidAmount = 0
     ) {
         $this->eventId = $this->getCaseIdFromEvent($eventId);
         $this->publisherId = $publisherId;

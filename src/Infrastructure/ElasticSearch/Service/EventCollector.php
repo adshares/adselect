@@ -4,13 +4,14 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Service\EventCollector as ImpressionCollectorInterface;
+use Adshares\AdSelect\Application\Service\EventCollector as EventCollectorInterface;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaidEventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
@@ -19,7 +20,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use function array_filter;
 use function array_keys;
 
-class EventCollector implements ImpressionCollectorInterface
+class EventCollector implements EventCollectorInterface
 {
     private const ES_TYPE = 'COLLECT_UNPAID_EVENTS';
 
@@ -96,6 +97,10 @@ class EventCollector implements ImpressionCollectorInterface
 
             $response = $this->client->bulk($mappedKeywords, self::ES_TYPE);
 
+            if (!isset($response['items'])) {
+                return;
+            }
+
             $actualKeywordsCount = [];
             foreach ($response['items'] as $response) {
                 $id = $response['update']['_id'] ?? null;
@@ -138,6 +143,29 @@ class EventCollector implements ImpressionCollectorInterface
 
                 $this->client->bulk($keywordIntersectMapper, self::ES_TYPE);
             }
+        }
+    }
+
+    public function collectPaidEvents(EventCollection $events): void
+    {
+        $mappedEvents = [];
+
+        /** @var Event $event */
+        foreach ($events as $event) {
+            $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::INDEX);
+
+            $mappedEvents[] = $mappedPaidEvent['index'];
+            $mappedEvents[] = $mappedPaidEvent['data'];
+
+            if (count($mappedEvents) >= $this->bulkLimit) {
+                $this->client->bulk($mappedEvents, self::ES_TYPE);
+
+                $mappedEvents = [];
+            }
+        }
+
+        if ($mappedEvents) {
+            $this->client->bulk($mappedEvents, self::ES_TYPE);
         }
     }
 }
