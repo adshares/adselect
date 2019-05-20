@@ -98,8 +98,8 @@ class EventCollector implements ImpressionCollectorInterface
 
             $actualKeywordsCount = [];
             foreach ($response['items'] as $response) {
-                $id = $response['update']['_id'];
-                $newCount = $response['update']['get']['_source']['count'];
+                $id = $response['update']['_id'] ?? null;
+                $newCount = $response['update']['get']['_source']['count'] ?? null;
 
                 $keywordName = $flatKeywords[$id] ?? null;
 

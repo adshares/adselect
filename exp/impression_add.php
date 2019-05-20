@@ -95,7 +95,7 @@ foreach($events as $event)
             'user_id' => $event['user_id'],
             'campaign_id' => $event['campaign_id'],
             'banner_id' => $event['banner_id'],
-            'time' => $event['time'] ?? time() * 1000,
+            'time' => $event['time'] ?? date('Y-m-d H:i:s'),
         ]
     ];
 
@@ -211,7 +211,7 @@ function EventToDoc(array $event)
 
     $doc['cid'] = substr($event['event_id'], 0, -2);
     $doc['paid_amount'] = 0;
-    $doc['time'] = $event['time'] ?? time()*1000;
+    $doc['time'] = $event['time'] ?? date('Y-m-d H:i:s');
 
     $extra_keywords = [
        // tu może być np. godzina, dzień tygodnia
