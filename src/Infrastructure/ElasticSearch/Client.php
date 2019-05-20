@@ -158,4 +158,14 @@ class Client
             throw new ElasticSearchRuntime($message, 0, $exception);
         }
     }
+
+    public function search(array $params): array
+    {
+        return $this->client->search($params);
+    }
+
+    public function getMapping(array $params): array
+    {
+        return $this->client->indices()->getMapping($params);
+    }
 }

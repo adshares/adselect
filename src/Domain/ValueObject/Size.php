@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Domain\ValueObject;
 
+use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+
 final class Size
 {
     /** @var int */
@@ -17,11 +19,18 @@ final class Size
         $this->height = $height;
     }
 
-    public static function fromString(string $size): self
+    public static function fromString(string $input): self
     {
-        [$width, $height] = explode('x', $size);
+        $size = explode('x', $input);
 
-        return new self((int)$width, (int)$height);
+        if (!isset($size[0], $size[1])) {
+            throw new AdSelectRuntimeException(sprintf(
+                'Given size (%s) format is not valid. We support only {$width}x{$height}.',
+                $input
+            ));
+        }
+
+        return new self((int)$size[0], (int)$size[1]);
     }
 
     public function getWidth(): int

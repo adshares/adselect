@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @phpcs:disable Generic.Files.LineLength.TooLong
+ */
 declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\QueryBuilder;
@@ -22,11 +24,16 @@ final class QueryBuilderTest extends TestCase
             'two',
         ];
 
-        $queryBuilder = new QueryBuilder($dto, $defined);
+        $campaignId = 'c5f115636b384744949300571aad2a4f';
+        $userHistory = [
+            $campaignId => 2,
+        ];
+
+        $queryBuilder = new QueryBuilder($dto, $defined, $userHistory);
 
         $result = $queryBuilder->build();
 
-        $expected = [
+        $query = [
             'bool' => [
                 'must_not' => [],
                 'must' => [
@@ -81,6 +88,24 @@ final class QueryBuilderTest extends TestCase
             ],
         ];
 
+        $expected = [
+            'function_score' => [
+                'boost_mode' => 'replace',
+                'query' => $query,
+                'script_score' => [
+
+                    'script' => [
+                        'lang' => 'painless',
+                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'params' => [
+                            'last_seen' => (object)$userHistory,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+
         $this->assertEquals($expected, $result);
     }
 
@@ -120,11 +145,16 @@ final class QueryBuilderTest extends TestCase
 
         ];
 
-        $queryBuilder = new QueryBuilder($dto, $defined);
+        $campaignId = 'c5f115636b384744949300571aad2a4f';
+        $userHistory = [
+            $campaignId => 2,
+        ];
+
+        $queryBuilder = new QueryBuilder($dto, $defined, $userHistory);
 
         $result = $queryBuilder->build();
 
-        $expected = [
+        $query = [
             'bool' => [
                 'must_not' =>
                     [
@@ -310,6 +340,23 @@ final class QueryBuilderTest extends TestCase
                                     ],
                                 ],
                             ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $expected = [
+            'function_score' => [
+                'boost_mode' => 'replace',
+                'query' => $query,
+                'script_score' => [
+
+                    'script' => [
+                        'lang' => 'painless',
+                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'params' => [
+                            'last_seen' => (object)$userHistory,
                         ],
                     ],
                 ],

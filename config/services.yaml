@@ -36,6 +36,7 @@ services:
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+            $logger: '@logger'
 
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
         arguments:
