@@ -92,6 +92,10 @@ class EventCollector implements EventCollectorInterface
     {
         /** @var Event $event */
         foreach ($events as $event) {
+            if (!$event->getKeywords()) {
+                return;
+            }
+
             $flatKeywords = $event->flatKeywords();
             $mappedKeywords = KeywordMapper::map($flatKeywords, KeywordIndex::INDEX);
 
