@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Application\Dto;
 
-use Adshares\AdSelect\Domain\Model\EventCollection;
-
 class PaidEvents extends Events
 {
     protected function isValid(array $event): bool
