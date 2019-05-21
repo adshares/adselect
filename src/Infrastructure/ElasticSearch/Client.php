@@ -6,6 +6,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignStatsIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
@@ -79,6 +80,10 @@ class Client
             return KeywordIntersectIndex::mappings();
         }
 
+        if ($indexName === CampaignStatsIndex::INDEX) {
+            return CampaignStatsIndex::mappings();
+        }
+
         throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
     }
 
@@ -107,6 +112,11 @@ class Client
         $this->createIndex(KeywordIntersectIndex::INDEX, $force);
     }
 
+    public function createCampaignStatsIndex(bool $force = false): void
+    {
+        $this->createIndex(CampaignStatsIndex::INDEX, $force);
+    }
+
     public function createIndexes(bool $force = false): void
     {
         $this->createCampaignIndex($force);
@@ -114,6 +124,7 @@ class Client
         $this->createUserHistory($force);
         $this->createKeywordIndex($force);
         $this->createKeywordIntersectionIndex($force);
+        $this->createCampaignStatsIndex($force);
     }
 
     public function campaignIndexExists(): bool
@@ -140,6 +151,12 @@ class Client
     {
         return $this->client->indices()->exists(['index' => KeywordIntersectIndex::INDEX]);
     }
+
+    public function campaignStatsIndexExists(): bool
+    {
+        return $this->client->indices()->exists(['index' => CampaignStatsIndex::INDEX]);
+    }
+
 
     public function bulk(array $mapped, string $type): array
     {

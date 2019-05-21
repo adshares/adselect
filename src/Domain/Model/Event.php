@@ -66,6 +66,11 @@ final class Event
         return $flatKeywords;
     }
 
+    public function getDayDate(): string
+    {
+        return $this->date->format('Y-m-d');
+    }
+
     private function getCaseIdFromEvent(Id $eventId): Id
     {
         $id = substr($eventId->toString(), 0, -2).'00';

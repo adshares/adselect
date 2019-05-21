@@ -7,12 +7,15 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 use Adshares\AdSelect\Application\Service\EventCollector as EventCollectorInterface;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
+use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignStatsMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaidEventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignStatsIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
@@ -48,12 +51,20 @@ class EventCollector implements EventCollectorInterface
         foreach ($events as $event) {
             $mappedUnpaidEvent = EventMapper::map($event, EventIndex::INDEX);
             $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::INDEX);
+            $mappedCampaignStats = CampaignStatsMapper::map(
+                $event,
+                EventType::createView(),
+                CampaignStatsIndex::INDEX
+            );
 
             $mappedEvents[] = $mappedUnpaidEvent['index'];
             $mappedEvents[] = $mappedUnpaidEvent['data'];
 
             $mappedEvents[] = $mappedUserHistory['index'];
             $mappedEvents[] = $mappedUserHistory['data'];
+
+            $mappedEvents[] = $mappedCampaignStats['index'];
+            $mappedEvents[] = $mappedCampaignStats['data'];
 
             if (count($mappedEvents) >= $this->bulkLimit) {
                 $this->client->bulk($mappedEvents, self::ES_TYPE);
@@ -157,9 +168,17 @@ class EventCollector implements EventCollectorInterface
         /** @var Event $event */
         foreach ($events as $event) {
             $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::INDEX);
+            $mappedCampaignStats = CampaignStatsMapper::map(
+                $event,
+                EventType::createClick(),
+                CampaignStatsIndex::INDEX
+            );
 
             $mappedEvents[] = $mappedPaidEvent['index'];
             $mappedEvents[] = $mappedPaidEvent['data'];
+
+            $mappedEvents[] = $mappedCampaignStats['index'];
+            $mappedEvents[] = $mappedCampaignStats['data'];
 
             if (count($mappedEvents) >= $this->bulkLimit) {
                 $this->client->bulk($mappedEvents, self::ES_TYPE);
