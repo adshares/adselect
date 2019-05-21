@@ -26,3 +26,8 @@ events_unpaid:
     methods: [POST]
     controller: Adshares\AdSelect\UI\Controller\EventController::unpaidEvents
 
+events_paid:
+    path: /api/%api_version%/events/paid
+    methods: [POST]
+    controller: Adshares\AdSelect\UI\Controller\EventController::paidEvents
+

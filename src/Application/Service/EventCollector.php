@@ -9,4 +9,6 @@ use Adshares\AdSelect\Domain\Model\EventCollection;
 interface EventCollector
 {
     public function collect(EventCollection $events): void;
+
+    public function collectPaidEvents(EventCollection $events): void;
 }
