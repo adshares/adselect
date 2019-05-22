@@ -7,5 +7,5 @@ use Adshares\AdSelect\Application\Dto\QueryDto;
 
 interface BannerFinder
 {
-    public function find(QueryDto $queryDto): FoundBannersCollection;
+    public function find(QueryDto $queryDto, int $size): FoundBannersCollection;
 }

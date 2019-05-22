@@ -24,34 +24,43 @@ class BannerFinder implements BannerFinderInterface
     private $client;
     /** @var LoggerInterface */
     private $logger;
+    /** @var int */
+    private $expInterval;
+    /** @var int */
+    private $expThreshold;
 
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(Client $client, int $expInterval, int $expThreshold, LoggerInterface $logger)
     {
         $this->client = $client;
         $this->logger = $logger;
+        $this->expInterval = $expInterval;
+        $this->expThreshold = $expThreshold;
     }
 
-    public function find(QueryDto $queryDto): FoundBannersCollection
+    public function find(QueryDto $queryDto, int $size): FoundBannersCollection
     {
         $userHistory = $this->fetchUserHistory($queryDto->getUserId());
         $defined = $this->getDefinedRequireKeywords();
         $second = date('s');
         $query = new BaseQuery($queryDto, $defined);
-        if ($second % 30) {
-            $queryBuilder = new ExpQueryBuilder($query, 3);
+
+        $params = [
+            'index' => CampaignIndex::INDEX,
+            'size' => $size,
+            'body' => [
+                '_source' => false,
+            ],
+        ];
+
+        $exp = false;
+        if ($second % $this->expInterval === 0) {
+            $queryBuilder = new ExpQueryBuilder($query, $this->expThreshold);
+            $exp = true;
         } else {
             $queryBuilder = new QueryBuilder($query, $userHistory);
         }
 
-        $params = [
-            'index' => CampaignIndex::INDEX,
-            'size' => 100,
-            'body' => [
-                '_source' => false,
-                'query' => $queryBuilder->build()
-            ]
-        ];
-
+        $params['body']['query'] = $queryBuilder->build();
         $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s', json_encode($params)));
         $response = $this->client->search($params);
         $collection = new FoundBannersCollection();
@@ -74,7 +83,11 @@ class BannerFinder implements BannerFinderInterface
             }
         }
 
-        return $collection;
+        if ($exp) {
+            return $collection->random();
+        }
+
+        return $collection->limit($size);
     }
 
     private function fetchUserHistory(string $userId): array
