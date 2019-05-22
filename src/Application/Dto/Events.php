@@ -35,7 +35,9 @@ abstract class Events
                         (float)($event['paid_amount'] ?? 0)
                     );
 
-                    $this->events->add($event);
+                    if (!$this->events->eventExists($event)) {
+                        $this->events->add($event);
+                    }
                 } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
                     $this->failedEvents[] = $event;
                 }

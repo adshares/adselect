@@ -15,7 +15,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaidEventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignStatsIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
@@ -54,7 +54,7 @@ class EventCollector implements EventCollectorInterface
             $mappedCampaignStats = CampaignStatsMapper::map(
                 $event,
                 EventType::createView(),
-                CampaignStatsIndex::INDEX
+                CampaignIndex::INDEX
             );
 
             $mappedEvents[] = $mappedUnpaidEvent['index'];
@@ -82,20 +82,20 @@ class EventCollector implements EventCollectorInterface
 
     private function createIndexesIfNeeded(): void
     {
-        if (!$this->client->eventIndexExists()) {
-            $this->client->createEventIndex();
+        if (!$this->client->indexExists(EventIndex::INDEX)) {
+            $this->client->createIndex(EventIndex::INDEX);
         }
 
-        if (!$this->client->userHistoryIndexExists()) {
-            $this->client->createUserHistory();
+        if (!$this->client->indexExists(UserHistoryIndex::INDEX)) {
+            $this->client->createIndex(UserHistoryIndex::INDEX);
         }
 
-        if (!$this->client->keywordIndexExists()) {
-            $this->client->createKeywordIndex();
+        if (!$this->client->indexExists(KeywordIndex::INDEX)) {
+            $this->client->createIndex(KeywordIndex::INDEX);
         }
 
-        if (!$this->client->keywordIntersectionIndexExists()) {
-            $this->client->createKeywordIntersectionIndex();
+        if (!$this->client->indexExists(KeywordIntersectIndex::INDEX)) {
+            $this->client->createIndex(KeywordIntersectIndex::INDEX);
         }
     }
 
@@ -171,7 +171,7 @@ class EventCollector implements EventCollectorInterface
             $mappedCampaignStats = CampaignStatsMapper::map(
                 $event,
                 EventType::createClick(),
-                CampaignStatsIndex::INDEX
+                CampaignIndex::INDEX
             );
 
             $mappedEvents[] = $mappedPaidEvent['index'];

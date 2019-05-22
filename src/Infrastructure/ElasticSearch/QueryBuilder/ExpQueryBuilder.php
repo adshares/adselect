@@ -1,14 +1,12 @@
 <?php
-/**
- * @phpcs:disable Generic.Files.LineLength.TooLong
- */
+
 declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 use Adshares\AdSelect\Application\Dto\QueryDto;
 
-class QueryBuilder
+class ExpQueryBuilder
 {
     private const PREFIX_FILTER_REQUIRE = 'filters:require';
     private const PREFIX_FILTER_EXCLUDE = 'filters:exclude';
@@ -19,14 +17,18 @@ class QueryBuilder
     private $bannerFinderDto;
     /** @var array */
     private $definedRequireFilters;
-    /** @var array */
-    private $userHistory;
+    /** @var int */
+    private $threshold;
 
-    public function __construct(QueryDto $bannerFinderDto, array $definedRequireFilters = [], array $userHistory = [])
+    public function __construct(
+        QueryDto $bannerFinderDto,
+        array $definedRequireFilters = [],
+        int $threshold = 3
+    )
     {
         $this->bannerFinderDto = $bannerFinderDto;
         $this->definedRequireFilters = $definedRequireFilters;
-        $this->userHistory = $userHistory;
+        $this->threshold = $threshold;
     }
 
     public function build(): array
@@ -58,6 +60,29 @@ class QueryBuilder
                     [
                         [
                             'bool' => [
+                                'must' => [
+                                    [
+                                        'range' => [
+                                            'stats_views' => [
+                                                'lte' => 100, // it can be replaced by any calculation later
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'range' => [
+                                            'stats_clicks' => [
+                                                'lte' => 10,
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'range' => [
+                                            'stats_exp' => [
+                                                'lte' => 100,
+                                            ],
+                                        ],
+                                    ],
+                                ],
                                 'should' => $requires,
                                 'minimum_should_match' => count($this->definedRequireFilters),
                             ],
@@ -88,18 +113,24 @@ class QueryBuilder
 
         return [
             'function_score' => [
-                'boost_mode' => 'replace',
                 'query' => $query,
+                'boost_mode' => 'replace',
                 'script_score' => [
                     'script' => [
                         'lang' => 'painless',
-                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'source' => "
+                            if (doc['stats_views'].value < params.threshold || doc['stats_clicks'].value < 1) {
+                                return 1.0 / doc['stats_views'].value + doc['stats_clicks'].value + 1;
+                            }
+                            
+                            return 1.0 / (doc['stats_clicks'].value / doc['stats_views'].value);
+                        ",
                         'params' => [
-                            'last_seen' => (object)$this->userHistory,
-                        ],
+                            'threshold' => $this->threshold,
+                        ]
                     ],
                 ],
-            ],
+            ]
         ];
     }
 }

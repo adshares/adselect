@@ -127,4 +127,9 @@ final class Event
             'paid_amount' => $this->paidAmount,
         ];
     }
+
+    public function equals(Event $event): bool
+    {
+        return $this->eventId->equals($event->eventId);
+    }
 }

@@ -6,7 +6,6 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignStatsIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
@@ -42,13 +41,15 @@ class Client
         return $this->client;
     }
 
-    private function createIndex(string $indexName, bool $force = false): void
+    public function createIndex(string $indexName, bool $force = false): void
     {
         try {
             $this->client->indices()->create($this->findMappingsForIndex($indexName));
         } catch (BadRequest400Exception $exception) {
             if ($force) {
-                $this->client->indices()->delete(['index' => $indexName]);
+                if ($this->client->indices()->exists(['index' => $indexName])) {
+                    $this->client->indices()->delete(['index' => $indexName]);
+                }
                 $this->createIndex($indexName);
 
                 return;
@@ -80,83 +81,22 @@ class Client
             return KeywordIntersectIndex::mappings();
         }
 
-        if ($indexName === CampaignStatsIndex::INDEX) {
-            return CampaignStatsIndex::mappings();
-        }
-
         throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
-    }
-
-    public function createCampaignIndex(bool $force = false): void
-    {
-        $this->createIndex(CampaignIndex::INDEX, $force);
-    }
-
-    public function createEventIndex(bool $force = false): void
-    {
-        $this->createIndex(EventIndex::INDEX, $force);
-    }
-
-    public function createUserHistory(bool $force = false): void
-    {
-        $this->createIndex(UserHistoryIndex::INDEX, $force);
-    }
-
-    public function createKeywordIndex(bool $force = false): void
-    {
-        $this->createIndex(KeywordIndex::INDEX, $force);
-    }
-
-    public function createKeywordIntersectionIndex(bool $force = false): void
-    {
-        $this->createIndex(KeywordIntersectIndex::INDEX, $force);
-    }
-
-    public function createCampaignStatsIndex(bool $force = false): void
-    {
-        $this->createIndex(CampaignStatsIndex::INDEX, $force);
     }
 
     public function createIndexes(bool $force = false): void
     {
-        $this->createCampaignIndex($force);
-        $this->createEventIndex($force);
-        $this->createUserHistory($force);
-        $this->createKeywordIndex($force);
-        $this->createKeywordIntersectionIndex($force);
-        $this->createCampaignStatsIndex($force);
+        $this->createIndex(CampaignIndex::INDEX, $force);
+        $this->createIndex(EventIndex::INDEX, $force);
+        $this->createIndex(UserHistoryIndex::INDEX, $force);
+        $this->createIndex(KeywordIndex::INDEX, $force);
+        $this->createIndex(KeywordIntersectIndex::INDEX, $force);
     }
 
-    public function campaignIndexExists(): bool
+    public function indexExists(string $indexName): bool
     {
-        return $this->client->indices()->exists(['index' => CampaignIndex::INDEX]);
+        return $this->client->indices()->exists(['index' => $indexName]);
     }
-
-    public function eventIndexExists(): bool
-    {
-        return $this->client->indices()->exists(['index' => EventIndex::INDEX]);
-    }
-
-    public function userHistoryIndexExists(): bool
-    {
-        return $this->client->indices()->exists(['index' => UserHistoryIndex::INDEX]);
-    }
-
-    public function keywordIndexExists(): bool
-    {
-        return $this->client->indices()->exists(['index' => KeywordIndex::INDEX]);
-    }
-
-    public function keywordIntersectionIndexExists(): bool
-    {
-        return $this->client->indices()->exists(['index' => KeywordIntersectIndex::INDEX]);
-    }
-
-    public function campaignStatsIndexExists(): bool
-    {
-        return $this->client->indices()->exists(['index' => CampaignStatsIndex::INDEX]);
-    }
-
 
     public function bulk(array $mapped, string $type): array
     {
