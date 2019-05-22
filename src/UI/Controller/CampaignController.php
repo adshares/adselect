@@ -77,6 +77,7 @@ class CampaignController
     public function findBanners(Request $request): JsonResponse
     {
         $queries = json_decode($request->getContent(), true);
+        $size = 3;
 
         $results = [];
 
@@ -84,7 +85,7 @@ class CampaignController
             try {
                 $queryDto = QueryDto::fromArray($query);
                 $requestId = $query['request_id'] ?? uniqid('', true);
-                $banners = $this->bannerFinder->find($queryDto);
+                $banners = $this->bannerFinder->find($queryDto, $size);
 
                 $results[$requestId] = (new FoundBannerResponse($banners))->toArray();
             } catch (ValidationDtoException $exception) {

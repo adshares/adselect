@@ -7,7 +7,6 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 use Adshares\AdSelect\Application\Service\EventCollector as EventCollectorInterface;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignStatsMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
@@ -15,7 +14,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaidEventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignStatsIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
@@ -51,11 +50,7 @@ class EventCollector implements EventCollectorInterface
         foreach ($events as $event) {
             $mappedUnpaidEvent = EventMapper::map($event, EventIndex::INDEX);
             $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::INDEX);
-            $mappedCampaignStats = CampaignStatsMapper::map(
-                $event,
-                EventType::createView(),
-                CampaignStatsIndex::INDEX
-            );
+            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::INDEX);
 
             $mappedEvents[] = $mappedUnpaidEvent['index'];
             $mappedEvents[] = $mappedUnpaidEvent['data'];
@@ -82,20 +77,20 @@ class EventCollector implements EventCollectorInterface
 
     private function createIndexesIfNeeded(): void
     {
-        if (!$this->client->eventIndexExists()) {
-            $this->client->createEventIndex();
+        if (!$this->client->indexExists(EventIndex::INDEX)) {
+            $this->client->createIndex(EventIndex::INDEX);
         }
 
-        if (!$this->client->userHistoryIndexExists()) {
-            $this->client->createUserHistory();
+        if (!$this->client->indexExists(UserHistoryIndex::INDEX)) {
+            $this->client->createIndex(UserHistoryIndex::INDEX);
         }
 
-        if (!$this->client->keywordIndexExists()) {
-            $this->client->createKeywordIndex();
+        if (!$this->client->indexExists(KeywordIndex::INDEX)) {
+            $this->client->createIndex(KeywordIndex::INDEX);
         }
 
-        if (!$this->client->keywordIntersectionIndexExists()) {
-            $this->client->createKeywordIntersectionIndex();
+        if (!$this->client->indexExists(KeywordIntersectIndex::INDEX)) {
+            $this->client->createIndex(KeywordIntersectIndex::INDEX);
         }
     }
 
@@ -168,11 +163,7 @@ class EventCollector implements EventCollectorInterface
         /** @var Event $event */
         foreach ($events as $event) {
             $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::INDEX);
-            $mappedCampaignStats = CampaignStatsMapper::map(
-                $event,
-                EventType::createClick(),
-                CampaignStatsIndex::INDEX
-            );
+            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::INDEX);
 
             $mappedEvents[] = $mappedPaidEvent['index'];
             $mappedEvents[] = $mappedPaidEvent['data'];

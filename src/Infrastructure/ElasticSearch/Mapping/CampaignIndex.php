@@ -14,6 +14,10 @@ class CampaignIndex implements Index
         'properties' => [
             'banners' =>    [ 'type' => 'nested' ],
             'time_range' =>    [ 'type' => 'long_range' ],
+            'stats_views' => ['type' => 'long'],
+            'stats_clicks' => ['type' => 'long'],
+            'stats_exp_count' => ['type' => 'long'],
+            'stats_paid_amount' => ['type' => 'long'],
         ],
         'dynamic_templates' => [
             [

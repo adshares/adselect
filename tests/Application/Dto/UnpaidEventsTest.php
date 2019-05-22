@@ -87,8 +87,8 @@ final class UnpaidEventsTest extends TestCase
                     'time' => (new ExtendedDateTime())->toString(),
                     'type' => 'click',
                 ],
-                0,
                 1,
+                0,
             ],
             [
                 [

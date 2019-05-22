@@ -6,13 +6,14 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
+use function array_merge;
 
 class CampaignMapper
 {
     public static function map(Campaign $campaign, string $index): array
     {
         $mapped['index'] = [
-            'index' => [
+            'update' => [
                 '_index' => $index,
                 '_type' => '_doc',
                 '_id' => $campaign->getId(),
@@ -35,7 +36,7 @@ class CampaignMapper
             );
         }
 
-        $mapped['data'] = array_merge(
+        $data = array_merge(
             [
                 'time_range' => Helper::range($campaign->getTimeStart(), $campaign->getTimeEnd()),
                 'banners' => $banners,
@@ -43,6 +44,18 @@ class CampaignMapper
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)
         );
+
+        $stats = [
+            'stats_views' => 0,
+            'stats_clicks' => 0,
+            'stats_exp' => 0,
+            'stats_paid_amount' => 0,
+        ];
+
+        $mapped['data'] = [
+            'doc' => $data,
+            'upsert' => array_merge($data, $stats),
+        ];
 
         return $mapped;
     }

@@ -11,6 +11,8 @@ use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\UserHistory;
 use Psr\Log\LoggerInterface;
@@ -22,28 +24,41 @@ class BannerFinder implements BannerFinderInterface
     private $client;
     /** @var LoggerInterface */
     private $logger;
+    /** @var int */
+    private $expInterval;
+    /** @var int */
+    private $expThreshold;
 
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(Client $client, int $expInterval, int $expThreshold, LoggerInterface $logger)
     {
         $this->client = $client;
         $this->logger = $logger;
+        $this->expInterval = $expInterval;
+        $this->expThreshold = $expThreshold;
     }
 
-    public function find(QueryDto $queryDto): FoundBannersCollection
+    public function find(QueryDto $queryDto, int $size): FoundBannersCollection
     {
         $userHistory = $this->fetchUserHistory($queryDto->getUserId());
         $defined = $this->getDefinedRequireKeywords();
-        $queryBuilder = new QueryBuilder($queryDto, $defined, $userHistory);
+        $second = date('s');
+        $query = new BaseQuery($queryDto, $defined);
 
         $params = [
             'index' => CampaignIndex::INDEX,
+            'size' => $size,
             'body' => [
                 '_source' => false,
-                'query' => $queryBuilder->build()
-            ]
+            ],
         ];
 
+        if ($second % $this->expInterval === 0) {
+            $queryBuilder = new ExpQueryBuilder($query, $this->expThreshold);
+        } else {
+            $queryBuilder = new QueryBuilder($query, $userHistory);
+        }
 
+        $params['body']['query'] = $queryBuilder->build();
         $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s', json_encode($params)));
         $response = $this->client->search($params);
         $collection = new FoundBannersCollection();
@@ -66,7 +81,7 @@ class BannerFinder implements BannerFinderInterface
             }
         }
 
-        return $collection;
+        return $collection->limit($size);
     }
 
     private function fetchUserHistory(string $userId): array

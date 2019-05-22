@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Tests\Domain\Model;
 
 use Adshares\AdSelect\Domain\Model\Event;
+use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
@@ -26,6 +27,7 @@ final class EventTest extends TestCase
                 'keyword2' => ['a', 'b'],
             ],
             $date,
+            EventType::createClick(),
             12.0
         );
 
@@ -61,6 +63,7 @@ final class EventTest extends TestCase
                 'keyword2' => ['a', 'b'],
             ],
             new ExtendedDateTime(),
+            EventType::createClick(),
             12.0
         );
 

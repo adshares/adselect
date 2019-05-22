@@ -172,8 +172,15 @@ final class CampaignMapperTest extends TestCase
             ],
         ];
 
+        $expectedStats = [
+            'stats_views' => 0,
+            'stats_clicks' => 0,
+            'stats_exp' => 0,
+            'stats_paid_amount' => 0,
+        ];
+
         $this->assertCount(2, $mapped);
-        $this->assertEquals($campaignId, $index['index']['_id']);
-        $this->assertEquals($expected, $data);
+        $this->assertEquals($campaignId, $index['update']['_id']);
+        $this->assertEquals(['doc' => $expected, 'upsert' => array_merge($expected, $expectedStats)], $data);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Domain\Model;
 
+use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\DateTimeInterface;
 use function substr;
@@ -28,6 +29,8 @@ final class Event
     private $date;
     /** @var float */
     private $paidAmount;
+    /** @var EventType */
+    private $type;
 
     public function __construct(
         Id $eventId,
@@ -38,6 +41,7 @@ final class Event
         Id $bannerId,
         array $keywords,
         DateTimeInterface $date,
+        EventType $type,
         float $paidAmount = 0
     ) {
         $this->eventId = $this->getCaseIdFromEvent($eventId);
@@ -49,6 +53,7 @@ final class Event
         $this->keywords = $keywords;
         $this->date = $date;
         $this->paidAmount = $paidAmount;
+        $this->type = $type;
     }
 
     public function flatKeywords(): array
@@ -113,6 +118,21 @@ final class Event
         return $this->keywords;
     }
 
+    public function getType(): string
+    {
+        return $this->type->toString();
+    }
+
+    public function isView(): bool
+    {
+        return $this->type->isView();
+    }
+
+    public function isClick(): bool
+    {
+        return $this->type->isClick();
+    }
+
     public function toArray(): array
     {
         return [
@@ -126,5 +146,10 @@ final class Event
             'date' => $this->getDate(),
             'paid_amount' => $this->paidAmount,
         ];
+    }
+
+    public function equals(Event $event): bool
+    {
+        return $this->eventId->equals($event->eventId);
     }
 }

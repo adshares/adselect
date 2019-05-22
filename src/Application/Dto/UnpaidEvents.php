@@ -40,7 +40,7 @@ final class UnpaidEvents extends Events
             return false;
         }
 
-        if (!isset($event['type']) || $event['type'] !== 'view') {
+        if (!isset($event['type'])) {
             return false;
         }
 

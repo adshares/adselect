@@ -39,4 +39,9 @@ final class Id
     {
         return $this->toString();
     }
+
+    public function equals(Id $id): bool
+    {
+        return $this->id === $id->id;
+    }
 }

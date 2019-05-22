@@ -9,6 +9,7 @@ namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\QueryBuilder;
 use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +30,8 @@ final class QueryBuilderTest extends TestCase
             $campaignId => 2,
         ];
 
-        $queryBuilder = new QueryBuilder($dto, $defined, $userHistory);
+        $baseQuery = new BaseQuery($dto, $defined);
+        $queryBuilder = new QueryBuilder($baseQuery, $userHistory);
 
         $result = $queryBuilder->build();
 
@@ -150,7 +152,8 @@ final class QueryBuilderTest extends TestCase
             $campaignId => 2,
         ];
 
-        $queryBuilder = new QueryBuilder($dto, $defined, $userHistory);
+        $baseQuery = new BaseQuery($dto, $defined);
+        $queryBuilder = new QueryBuilder($baseQuery, $userHistory);
 
         $result = $queryBuilder->build();
 

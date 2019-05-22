@@ -5,12 +5,10 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Event;
-use Adshares\AdSelect\Domain\ValueObject\EventType;
-use function sha1;
 
 class CampaignStatsMapper
 {
-    public static function map(Event $event, EventType $eventType, string $index): array
+    public static function map(Event $event, string $index): array
     {
         $mapped = [];
 
@@ -18,24 +16,27 @@ class CampaignStatsMapper
             'update' => [
                 '_index' => $index,
                 '_type' => '_doc',
-                '_id' => sha1($event->getCampaignId() . '--' . $event->getDayDate()),
+                '_id' => $event->getCampaignId(),
                 'retry_on_conflict' => 5,
             ],
         ];
 
 
-        if ($eventType->isView()) {
+        if ($event->isView()) {
             $mapped['data'] = [
                 'script' => [
-                    'source' => 'ctx._source.views++',
+                    'source' => 'ctx._source.stats_views++; ctx._source.stats_paid_amount+=params.paid_amount',
                     'lang' => 'painless',
+                    'params' => [
+                        'paid_amount' => $event->getPaidAmount(),
+                    ]
                 ],
                 'upsert' => [
-                    'campaign_id' => $event->getCampaignId(),
-                    'date' => $event->getDayDate(),
-                    'views' => 1,
-                    'clicks' => 0,
-                    'exp_count' => 0,
+//                    'date' => $event->getDayDate(),
+                    'stats_views' => 1,
+                    'stats_clicks' => 0,
+                    'stats_exp' => 0,
+                    'paid_amount' => 0,
                 ]
             ];
 
@@ -45,15 +46,18 @@ class CampaignStatsMapper
         // click - we should think if we want to add click without view, maybe no??
         $mapped['data'] = [
             'script' => [
-                'source' => 'ctx._source.clicks++',
+                'source' => 'ctx._source.stats_clicks++; ctx._source.stats_paid_amount+=params.paid_amount',
                 'lang' => 'painless',
+                'params' => [
+                    'paid_amount' => $event->getPaidAmount(),
+                ]
             ],
             'upsert' => [
-                'campaign_id' => $event->getCampaignId(),
-                'date' => $event->getDayDate(),
-                'views' => 0,
-                'clicks' => 1,
-                'exp_count' => 0,
+//                'date' => $event->getDayDate(),
+                'stats_views' => 0,
+                'stats_clicks' => 1,
+                'stats_exp' => 0,
+                'paid_amount' => 0,
             ]
         ];
 

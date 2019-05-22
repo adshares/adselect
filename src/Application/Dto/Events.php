@@ -7,6 +7,7 @@ namespace Adshares\AdSelect\Application\Dto;
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
+use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
@@ -32,10 +33,13 @@ abstract class Events
                         new Id($event['banner_id']),
                         $event['keywords'] ?? [],
                         ExtendedDateTime::createFromString($event['time']),
+                        new EventType($event['type']),
                         (float)($event['paid_amount'] ?? 0)
                     );
 
-                    $this->events->add($event);
+                    if (!$this->events->eventExists($event)) {
+                        $this->events->add($event);
+                    }
                 } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
                     $this->failedEvents[] = $event;
                 }

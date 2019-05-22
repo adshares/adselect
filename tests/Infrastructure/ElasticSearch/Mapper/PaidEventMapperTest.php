@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Event;
+use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaidEventMapper;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
@@ -27,6 +28,7 @@ final class PaidEventMapperTest extends TestCase
                 'keyword2' => ['a', 'b'],
             ],
             $date,
+            EventType::createView(),
             12345
         );
 
