@@ -7,7 +7,6 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 use Adshares\AdSelect\Application\Service\EventCollector as EventCollectorInterface;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignStatsMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
@@ -51,11 +50,7 @@ class EventCollector implements EventCollectorInterface
         foreach ($events as $event) {
             $mappedUnpaidEvent = EventMapper::map($event, EventIndex::INDEX);
             $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::INDEX);
-            $mappedCampaignStats = CampaignStatsMapper::map(
-                $event,
-                EventType::createView(),
-                CampaignIndex::INDEX
-            );
+            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::INDEX);
 
             $mappedEvents[] = $mappedUnpaidEvent['index'];
             $mappedEvents[] = $mappedUnpaidEvent['data'];
@@ -168,11 +163,7 @@ class EventCollector implements EventCollectorInterface
         /** @var Event $event */
         foreach ($events as $event) {
             $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::INDEX);
-            $mappedCampaignStats = CampaignStatsMapper::map(
-                $event,
-                EventType::createClick(),
-                CampaignIndex::INDEX
-            );
+            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::INDEX);
 
             $mappedEvents[] = $mappedPaidEvent['index'];
             $mappedEvents[] = $mappedPaidEvent['data'];

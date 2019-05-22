@@ -176,6 +176,7 @@ final class CampaignMapperTest extends TestCase
             'stats_views' => 0,
             'stats_clicks' => 0,
             'stats_exp' => 0,
+            'stats_paid_amount' => 0,
         ];
 
         $this->assertCount(2, $mapped);

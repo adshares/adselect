@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Event;
+use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
@@ -26,7 +27,8 @@ class EventMapperTest extends TestCase
                 'keyword1' => ['one', 'two'],
                 'keyword2' => ['a', 'b'],
             ],
-            $date
+            $date,
+            EventType::createView()
         );
 
         $mapped = EventMapper::map($event, 'index-name');

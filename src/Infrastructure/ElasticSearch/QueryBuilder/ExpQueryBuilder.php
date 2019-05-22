@@ -31,7 +31,11 @@ class ExpQueryBuilder
                                 return 1.0 / doc['stats_views'].value + doc['stats_clicks'].value + 1;
                             }
                             
-                            return 1.0 / (doc['stats_clicks'].value / (doc['stats_views'].value + 1));
+                            if (doc['stats_paid_amount'].value > 0) {
+                                return 1.0 / ((doc['stats_clicks'].value + doc['stats_views'].value) / (0.01*doc['stats_paid_amount'].value));
+                            }
+                            
+                            return 1.0 / (doc['stats_clicks'].value / (doc['stats_views'].value + 0.1));
                         ",
                         'params' => [
                             'threshold' => $this->threshold,

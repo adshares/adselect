@@ -52,10 +52,8 @@ class BannerFinder implements BannerFinderInterface
             ],
         ];
 
-        $exp = false;
         if ($second % $this->expInterval === 0) {
             $queryBuilder = new ExpQueryBuilder($query, $this->expThreshold);
-            $exp = true;
         } else {
             $queryBuilder = new QueryBuilder($query, $userHistory);
         }
@@ -81,10 +79,6 @@ class BannerFinder implements BannerFinderInterface
                     $bannerHit['fields']['banners.size'][0]
                 ));
             }
-        }
-
-        if ($exp) {
-            return $collection->random($size);
         }
 
         return $collection->limit($size);

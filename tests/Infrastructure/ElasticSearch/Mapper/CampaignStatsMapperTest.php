@@ -28,12 +28,16 @@ final class CampaignStatsMapperTest extends TestCase
                 'keyword2' => ['a', 'b'],
             ],
             $date,
+            EventType::createView(),
             12345
         );
 
-        $mapped = CampaignStatsMapper::map($event, EventType::createView(), 'index-name');
+        $mapped = CampaignStatsMapper::map($event, 'index-name');
 
-        $this->assertEquals('ctx._source.stats_views++', $mapped['data']['script']['source']);
+        $this->assertEquals(
+            'ctx._source.stats_views++; ctx._source.stats_paid_amount+=params.paid_amount',
+            $mapped['data']['script']['source']
+        );
         $this->assertEquals(1, $mapped['data']['upsert']['stats_views']);
         $this->assertEquals(0, $mapped['data']['upsert']['stats_clicks']);
         $this->assertEquals(0, $mapped['data']['upsert']['stats_exp']);
@@ -54,12 +58,16 @@ final class CampaignStatsMapperTest extends TestCase
                 'keyword2' => ['a', 'b'],
             ],
             $date,
+            EventType::createClick(),
             12345
         );
 
-        $mapped = CampaignStatsMapper::map($event, EventType::createClick(), 'index-name');
+        $mapped = CampaignStatsMapper::map($event, 'index-name');
 
-        $this->assertEquals('ctx._source.stats_clicks++', $mapped['data']['script']['source']);
+        $this->assertEquals(
+            'ctx._source.stats_clicks++; ctx._source.stats_paid_amount+=params.paid_amount',
+            $mapped['data']['script']['source']
+        );
         $this->assertEquals(1, $mapped['data']['upsert']['stats_clicks']);
         $this->assertEquals(0, $mapped['data']['upsert']['stats_views']);
         $this->assertEquals(0, $mapped['data']['upsert']['stats_exp']);

@@ -5,11 +5,10 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Event;
-use Adshares\AdSelect\Domain\ValueObject\EventType;
 
 class CampaignStatsMapper
 {
-    public static function map(Event $event, EventType $eventType, string $index): array
+    public static function map(Event $event, string $index): array
     {
         $mapped = [];
 
@@ -23,7 +22,7 @@ class CampaignStatsMapper
         ];
 
 
-        if ($eventType->isView()) {
+        if ($event->isView()) {
             $mapped['data'] = [
                 'script' => [
                     'source' => 'ctx._source.stats_views++; ctx._source.stats_paid_amount+=params.paid_amount',
