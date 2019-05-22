@@ -45,11 +45,17 @@ class CampaignMapper
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)
         );
 
-        $mapped['data'] = [
-            'doc' => $data,
-            'upsert' => array_merge($data, ['stats_views' => 0, 'stats_clicks' => 0, 'stats_exp' => 0, 'stats_paid_amount' => 0]),
+        $stats = [
+            'stats_views' => 0,
+            'stats_clicks' => 0,
+            'stats_exp' => 0,
+            'stats_paid_amount' => 0,
         ];
 
+        $mapped['data'] = [
+            'doc' => $data,
+            'upsert' => array_merge($data, $stats),
+        ];
 
         return $mapped;
     }
