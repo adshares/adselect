@@ -11,6 +11,7 @@ use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\UserHistory;
@@ -35,10 +36,11 @@ class BannerFinder implements BannerFinderInterface
         $userHistory = $this->fetchUserHistory($queryDto->getUserId());
         $defined = $this->getDefinedRequireKeywords();
         $second = date('s');
+        $query = new BaseQuery($queryDto, $defined);
         if ($second % 30) {
-            $queryBuilder = new ExpQueryBuilder($queryDto, $defined, 3);
+            $queryBuilder = new ExpQueryBuilder($query, 3);
         } else {
-            $queryBuilder = new QueryBuilder($queryDto, $defined, $userHistory);
+            $queryBuilder = new QueryBuilder($query, $userHistory);
         }
 
         $params = [
