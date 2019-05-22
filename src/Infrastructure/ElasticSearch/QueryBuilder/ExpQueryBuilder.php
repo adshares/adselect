@@ -27,7 +27,7 @@ class ExpQueryBuilder
                     'script' => [
                         'lang' => 'painless',
                         'source' => "
-                            if (doc['stats_views'].value < params.threshold || doc['stats_clicks'].value < 1) {
+                            if (doc['stats_views'].value < params.threshold) {
                                 return 1.0 / doc['stats_views'].value + doc['stats_clicks'].value + 1;
                             }
                             

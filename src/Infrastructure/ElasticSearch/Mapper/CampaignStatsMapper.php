@@ -33,7 +33,7 @@ class CampaignStatsMapper
 //                    'date' => $event->getDayDate(),
                     'stats_views' => 1,
                     'stats_clicks' => 0,
-                    'stats_exp_count' => 0,
+                    'stats_exp' => 0,
                 ]
             ];
 
@@ -50,7 +50,7 @@ class CampaignStatsMapper
 //                'date' => $event->getDayDate(),
                 'stats_views' => 0,
                 'stats_clicks' => 1,
-                'stats_exp_count' => 0,
+                'stats_exp' => 0,
             ]
         ];
 

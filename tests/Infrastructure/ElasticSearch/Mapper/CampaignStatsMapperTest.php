@@ -33,10 +33,10 @@ final class CampaignStatsMapperTest extends TestCase
 
         $mapped = CampaignStatsMapper::map($event, EventType::createView(), 'index-name');
 
-        $this->assertEquals('ctx._source.views++', $mapped['data']['script']['source']);
-        $this->assertEquals(1, $mapped['data']['upsert']['views']);
-        $this->assertEquals(0, $mapped['data']['upsert']['clicks']);
-        $this->assertEquals(0, $mapped['data']['upsert']['exp_count']);
+        $this->assertEquals('ctx._source.stats_views++', $mapped['data']['script']['source']);
+        $this->assertEquals(1, $mapped['data']['upsert']['stats_views']);
+        $this->assertEquals(0, $mapped['data']['upsert']['stats_clicks']);
+        $this->assertEquals(0, $mapped['data']['upsert']['stats_exp']);
     }
 
     public function testWhenClickEvent(): void
@@ -59,9 +59,9 @@ final class CampaignStatsMapperTest extends TestCase
 
         $mapped = CampaignStatsMapper::map($event, EventType::createClick(), 'index-name');
 
-        $this->assertEquals('ctx._source.clicks++', $mapped['data']['script']['source']);
-        $this->assertEquals(1, $mapped['data']['upsert']['clicks']);
-        $this->assertEquals(0, $mapped['data']['upsert']['views']);
-        $this->assertEquals(0, $mapped['data']['upsert']['exp_count']);
+        $this->assertEquals('ctx._source.stats_clicks++', $mapped['data']['script']['source']);
+        $this->assertEquals(1, $mapped['data']['upsert']['stats_clicks']);
+        $this->assertEquals(0, $mapped['data']['upsert']['stats_views']);
+        $this->assertEquals(0, $mapped['data']['upsert']['stats_exp']);
     }
 }
