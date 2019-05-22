@@ -27,11 +27,11 @@ class ExpQueryBuilder
                     'script' => [
                         'lang' => 'painless',
                         'source' => "
-                            if (doc['stats_views'].value < params.threshold) {
+                            if (doc['stats_views'].value < params.threshold && doc['stats_paid_amount'] === 0) {
                                 return 1.0 / doc['stats_views'].value + doc['stats_clicks'].value + 1;
                             }
                             
-                            return 1.0 / (doc['stats_clicks'].value / doc['stats_views'].value);
+                            return 1.0 / (doc['stats_clicks'].value / (doc['stats_views'].value + 1));
                         ",
                         'params' => [
                             'threshold' => $this->threshold,

@@ -84,7 +84,7 @@ class BannerFinder implements BannerFinderInterface
         }
 
         if ($exp) {
-            return $collection->random();
+            return $collection->random($size);
         }
 
         return $collection->limit($size);

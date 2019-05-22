@@ -13,12 +13,14 @@ final class FoundBannersCollection extends ArrayCollection
     public function random(int $size = 1): self
     {
         $data = $this->toArray();
-        $count = min($size, count($data));
+        $count = min($size, count($data) - 1);
         $random = [];
-
+        $randKeys = array_keys($data);
         for ($i = 0; $i <= $count; $i++) {
-            $key = array_rand($data);
+            $key = array_rand($randKeys);
             $random[] = $data[$key];
+
+            unset($randKeys[$key]);
         }
 
 

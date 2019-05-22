@@ -47,7 +47,7 @@ class CampaignMapper
 
         $mapped['data'] = [
             'doc' => $data,
-            'upsert' => array_merge($data, ['stats_views' => 0, 'stats_clicks' => 0, 'stats_exp' => 0]),
+            'upsert' => array_merge($data, ['stats_views' => 0, 'stats_clicks' => 0, 'stats_exp' => 0, 'stats_paid_amount' => 0]),
         ];
 
 

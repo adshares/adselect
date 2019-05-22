@@ -17,6 +17,7 @@ class CampaignIndex implements Index
             'stats_views' => ['type' => 'long'],
             'stats_clicks' => ['type' => 'long'],
             'stats_exp_count' => ['type' => 'long'],
+            'stats_paid_amount' => ['type' => 'long'],
         ],
         'dynamic_templates' => [
             [
