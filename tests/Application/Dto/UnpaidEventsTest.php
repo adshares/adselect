@@ -26,7 +26,8 @@ final class UnpaidEventsTest extends TestCase
         return [
             [
                 [
-                    'event_id' => '43c567e1396b4cadb52223a51796fd01',
+                    'id' => 1,
+                    'case_id' => '43c567e1396b4cadb52223a51796fd00',
                     'publisher_id' => '43c567e1396b4cadb52223a51796fd01',
                     'user_id' => '43c567e1396b4cadb52223a51796fd01',
                     'zone_id' => '43c567e1396b4cadb52223a51796fd01',
@@ -41,7 +42,8 @@ final class UnpaidEventsTest extends TestCase
             ],
             [
                 [
-                    'event_id' => '43c567e1396b4cadb52223a51796fd01',
+                    'id' => 1,
+                    'case_id' => '43c567e1396b4cadb52223a51796fd00',
                     'publisher_id' => '43c567e1396b4cadb52223a51796fd01',
                     'user_id' => '43c567e1396b4cadb52223a51796fd01',
                     'zone_id' => '43c567e1396b4cadb52223a51796fd01',
@@ -58,7 +60,7 @@ final class UnpaidEventsTest extends TestCase
             ],
             [
                 [
-                    'event_id' => '1',
+                    'case_id' => '43c567e1396b4cadb52223a51796fd00',
                     'publisher_id' => '43c567e1396b4cadb52223a51796fd01',
                     'user_id' => '43c567e1396b4cadb52223a51796fd01',
                     'zone_id' => '43c567e1396b4cadb52223a51796fd01',
@@ -75,7 +77,8 @@ final class UnpaidEventsTest extends TestCase
             ],
             [
                 [
-                    'event_id' => '43c567e1396b4cadb52223a51796fd01',
+                    'id' => 1,
+                    'case_id' => '43c567e1396b4cadb52223a51796fd00',
                     'publisher_id' => '43c567e1396b4cadb52223a51796fd01',
                     'user_id' => '43c567e1396b4cadb52223a51796fd01',
                     'zone_id' => '43c567e1396b4cadb52223a51796fd01',
@@ -92,7 +95,8 @@ final class UnpaidEventsTest extends TestCase
             ],
             [
                 [
-                    'event_id' => '43c567e1396b4cadb52223a51796fd01',
+                    'id' => 1,
+                    'case_id' => '43c567e1396b4cadb52223a51796fd01',
                     'publisher_id' => '43c567e1396b4cadb52223a51796fd01',
                     'user_id' => '43c567e1396b4cadb52223a51796fd01',
                     'zone_id' => '43c567e1396b4cadb52223a51796fd01',

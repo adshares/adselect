@@ -16,7 +16,8 @@ final class EventTest extends TestCase
     {
         $date = new ExtendedDateTime();
         $event = new Event(
-            new Id('667ea41f8fb548829ac4bb89cf00ac01'),
+            1,
+            new Id('667ea41f8fb548829ac4bb89cf00ac00'),
             new Id('667ea41f8fb548829ac4bb89cf00ac02'),
             new Id('667ea41f8fb548829ac4bb89cf00ac03'),
             new Id('667ea41f8fb548829ac4bb89cf00ac04'),
@@ -32,7 +33,8 @@ final class EventTest extends TestCase
         );
 
         $expected = [
-            'event_id' => '667ea41f8fb548829ac4bb89cf00ac00',
+            'id' => 1,
+            'case_id' => '667ea41f8fb548829ac4bb89cf00ac00',
             'publisher_id' => '667ea41f8fb548829ac4bb89cf00ac02',
             'user_id' => '667ea41f8fb548829ac4bb89cf00ac03',
             'zone_id' => '667ea41f8fb548829ac4bb89cf00ac04',
@@ -52,7 +54,8 @@ final class EventTest extends TestCase
     public function testFlattenKeywords(): void
     {
         $event = new Event(
-            new Id('667ea41f8fb548829ac4bb89cf00ac01'),
+            1,
+            new Id('667ea41f8fb548829ac4bb89cf00ac00'),
             new Id('667ea41f8fb548829ac4bb89cf00ac02'),
             new Id('667ea41f8fb548829ac4bb89cf00ac03'),
             new Id('667ea41f8fb548829ac4bb89cf00ac04'),

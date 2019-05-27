@@ -82,14 +82,14 @@ class CampaignController
         $results = [];
 
         foreach ($queries as $query) {
+            $requestId = $query['request_id'] ?? uniqid('', true);
+
             try {
                 $queryDto = QueryDto::fromArray($query);
-                $requestId = $query['request_id'] ?? uniqid('', true);
                 $banners = $this->bannerFinder->find($queryDto, $size);
-
                 $results[$requestId] = (new FoundBannerResponse($banners))->toArray();
             } catch (ValidationDtoException $exception) {
-                $results[] = null;
+                $results[$requestId] = [];
 
                 $this->logger->info('[Find[ Invalid input data.', $query);
                 // think about adding a referer and more data related to a server which asks
