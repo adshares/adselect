@@ -10,7 +10,8 @@ class EventIndex implements Index
 
     public const MAPPINGS = [
         'properties' => [
-            'event_id' => ['type' => 'keyword'],
+            'id' => ['type' => 'long'],
+            'case_id' => ['type' => 'keyword'],
             'publisher_id' => ['type' => 'keyword'],
             'user_id' => ['type' => 'keyword'],
             'zone_id' => ['type' => 'keyword'],

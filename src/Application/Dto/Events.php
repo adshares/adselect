@@ -25,7 +25,8 @@ abstract class Events
             if ($this->isValid($event)) {
                 try {
                     $event = new Event(
-                        new Id($event['event_id']),
+                        $event['id'],
+                        new Id($event['case_id']),
                         new Id($event['publisher_id']),
                         new Id($event['user_id']),
                         new Id($event['zone_id']),
@@ -53,7 +54,7 @@ abstract class Events
     {
         return $this->events->map(
             static function (Event $event) {
-                return $event->getId();
+                return $event->getCaseId();
             }
         )->toArray();
     }

@@ -8,7 +8,11 @@ class PaidEvents extends Events
 {
     protected function isValid(array $event): bool
     {
-        if (!isset($event['event_id'])) {
+        if (!isset($event['id'])) {
+            return false;
+        }
+
+        if (!isset($event['case_id'])) {
             return false;
         }
 

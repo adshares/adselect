@@ -14,7 +14,7 @@ class EventMapper
             'index' => [
                 '_index' => $index,
                 '_type' => '_doc',
-                '_id' => $event->getId(),
+                '_id' => $event->getCaseId(),
             ],
         ];
 

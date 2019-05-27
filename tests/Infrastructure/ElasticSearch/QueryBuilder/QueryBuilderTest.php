@@ -81,7 +81,13 @@ final class QueryBuilderTest extends TestCase
                             'query' => [
                                 'bool' => [
                                     'must_not' => [],
-                                    'must' => [],
+                                    'must' => [
+                                        0 => [
+                                            'term' => [
+                                                'banners.size' => '200x100',
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
                         ],
@@ -337,9 +343,15 @@ final class QueryBuilderTest extends TestCase
                                     'must' => [
                                         0 => [
                                             'term' => [
+                                                'banners.size' => '160x600',
+                                            ],
+                                        ],
+                                        1 => [
+                                            'term' => [
                                                 'banners.keywords:classification' => 'classify:49:1',
                                             ],
                                         ],
+
                                     ],
                                 ],
                             ],

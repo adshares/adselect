@@ -7,12 +7,11 @@ namespace Adshares\AdSelect\Domain\Model;
 use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\DateTimeInterface;
-use function substr;
 
 final class Event
 {
     /** @var Id */
-    private $eventId;
+    private $caseId;
     /** @var Id */
     private $publisherId;
     /** @var Id */
@@ -31,9 +30,12 @@ final class Event
     private $paidAmount;
     /** @var EventType */
     private $type;
+    /** @var int */
+    private $id;
 
     public function __construct(
-        Id $eventId,
+        int $id,
+        Id $caseId,
         Id $publisherId,
         Id $userId,
         Id $zoneId,
@@ -44,7 +46,8 @@ final class Event
         EventType $type,
         float $paidAmount = 0
     ) {
-        $this->eventId = $this->getCaseIdFromEvent($eventId);
+        $this->id = $id;
+        $this->caseId = $caseId;
         $this->publisherId = $publisherId;
         $this->userId = $userId;
         $this->zoneId = $zoneId;
@@ -76,16 +79,9 @@ final class Event
         return $this->date->format('Y-m-d');
     }
 
-    private function getCaseIdFromEvent(Id $eventId): Id
+    public function getCaseId(): string
     {
-        $id = substr($eventId->toString(), 0, -2).'00';
-
-        return new Id($id);
-    }
-
-    public function getId(): string
-    {
-        return $this->eventId->toString();
+        return $this->caseId->toString();
     }
 
     public function getUserId(): string
@@ -136,7 +132,8 @@ final class Event
     public function toArray(): array
     {
         return [
-            'event_id' => $this->eventId->toString(),
+            'id' => $this->id,
+            'case_id' => $this->caseId->toString(),
             'publisher_id' => $this->publisherId->toString(),
             'user_id' => $this->userId->toString(),
             'zone_id' => $this->zoneId->toString(),
@@ -150,6 +147,6 @@ final class Event
 
     public function equals(Event $event): bool
     {
-        return $this->eventId->equals($event->eventId);
+        return $this->caseId->equals($event->caseId);
     }
 }

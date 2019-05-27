@@ -17,7 +17,8 @@ final class PaidEventMapperTest extends TestCase
     {
         $date = new ExtendedDateTime();
         $event = new Event(
-            new Id('667ea41f8fb548829ac4bb89cf00ac01'),
+            1,
+            new Id('667ea41f8fb548829ac4bb89cf00ac00'),
             new Id('667ea41f8fb548829ac4bb89cf00ac02'),
             new Id('667ea41f8fb548829ac4bb89cf00ac03'),
             new Id('667ea41f8fb548829ac4bb89cf00ac04'),

@@ -17,7 +17,8 @@ class EventMapperTest extends TestCase
     {
         $date = new ExtendedDateTime();
         $event = new Event(
-            new Id('667ea41f8fb548829ac4bb89cf00ac01'),
+            1,
+            new Id('667ea41f8fb548829ac4bb89cf00ac00'),
             new Id('667ea41f8fb548829ac4bb89cf00ac02'),
             new Id('667ea41f8fb548829ac4bb89cf00ac03'),
             new Id('667ea41f8fb548829ac4bb89cf00ac04'),
@@ -38,11 +39,12 @@ class EventMapperTest extends TestCase
                 'index' => [
                     '_index' => 'index-name',
                     '_type' => '_doc',
-                    '_id' => '667ea41f8fb548829ac4bb89cf00ac00', // case_id
+                    '_id' => '667ea41f8fb548829ac4bb89cf00ac00',
                 ]
             ],
             'data' => [
-                'event_id' => '667ea41f8fb548829ac4bb89cf00ac00', // case_id
+                'id' => 1,
+                'case_id' => '667ea41f8fb548829ac4bb89cf00ac00',
                 'publisher_id' => '667ea41f8fb548829ac4bb89cf00ac02',
                 'user_id' => '667ea41f8fb548829ac4bb89cf00ac03',
                 'zone_id' => '667ea41f8fb548829ac4bb89cf00ac04',

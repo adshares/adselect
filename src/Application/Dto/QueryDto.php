@@ -54,6 +54,11 @@ final class QueryDto
         return $this->userId->toString();
     }
 
+    public function getSize(): string
+    {
+        return $this->size->toString();
+    }
+
     public static function fromArray(array $input): self
     {
         if (!isset($input['publisher_id'])) {

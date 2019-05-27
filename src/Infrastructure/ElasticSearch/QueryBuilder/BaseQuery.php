@@ -33,6 +33,7 @@ class BaseQuery implements QueryInterface
         );
 
         $excludes = KeywordsToExclude::build(self::PREFIX_FILTER_EXCLUDE, $this->bannerFinderDto->getKeywords());
+        $sizeFilter = FilterClause::build('banners.size', [$this->bannerFinderDto->getSize()]);
 
         $requireFilter = FilterToBanner::build(
             self::PREFIX_BANNER_REQUIRE,
@@ -71,7 +72,7 @@ class BaseQuery implements QueryInterface
                                     // filter exclude
                                     'must_not' => $excludeFilter,
                                     // filter require
-                                    'must' => $requireFilter,
+                                    'must' => array_merge([$sizeFilter], $requireFilter),
                                 ],
 
                             ],
