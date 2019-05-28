@@ -31,3 +31,12 @@ events_paid:
     methods: [POST]
     controller: Adshares\AdSelect\UI\Controller\EventController::paidEvents
 
+last_events_unpaid:
+    path: /api/%api_version%/events/unpaid/last
+    methods: [GET]
+    controller: Adshares\AdSelect\UI\Controller\EventController::lastUnpaidEvent
+
+last_events_paid:
+    path: /api/%api_version%/events/paid/last
+    methods: [GET]
+    controller: Adshares\AdSelect\UI\Controller\EventController::lastPaidEvent
