@@ -6,16 +6,19 @@ namespace Adshares\AdSelect\UI\Controller;
 
 use Adshares\AdSelect\Application\Dto\PaidEvents;
 use Adshares\AdSelect\Application\Dto\UnpaidEvents;
+use Adshares\AdSelect\Application\Exception\EventNotFound;
 use Adshares\AdSelect\Application\Service\EventCollector;
-use function implode;
-use function json_encode;
+use Adshares\AdSelect\Application\Service\EventFinder;
 use Psr\Log\LoggerInterface;
-use function sprintf;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use function json_decode;
+use function implode;
+use function json_encode;
+use function sprintf;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EventController
 {
@@ -23,10 +26,13 @@ class EventController
     private $eventCollector;
     /** @var LoggerInterface */
     private $logger;
+    /** @var EventFinder */
+    private $eventFinder;
 
-    public function __construct(EventCollector $eventCollector, LoggerInterface $logger)
+    public function __construct(EventCollector $eventCollector, EventFinder $eventFinder, LoggerInterface $logger)
     {
         $this->eventCollector = $eventCollector;
+        $this->eventFinder = $eventFinder;
         $this->logger = $logger;
     }
 
@@ -43,11 +49,13 @@ class EventController
         if (count($dto->events()) > 0) {
             $this->eventCollector->collect($dto->events());
 
-            $this->logger->debug(sprintf(
-                '[%s] Events have been proceed (ids: %s).',
-                'COLLECT_UNPAID_EVENTS',
-                implode(', ', $dto->getEventsIds())
-            ));
+            $this->logger->debug(
+                sprintf(
+                    '[%s] Events have been proceed (ids: %s).',
+                    'COLLECT_UNPAID_EVENTS',
+                    implode(', ', $dto->getEventsIds())
+                )
+            );
         }
 
         if (count($dto->failedEvents()) > 0) {
@@ -57,11 +65,13 @@ class EventController
                 'failed_events' => $dto->failedEvents(),
             ];
 
-            $this->logger->debug(sprintf(
-                '[%s] Some events have not been proceed (%s)',
-                'COLLECT_UNPAID_EVENTS',
-                json_encode($dto->failedEvents())
-            ));
+            $this->logger->debug(
+                sprintf(
+                    '[%s] Some events have not been proceed (%s)',
+                    'COLLECT_UNPAID_EVENTS',
+                    json_encode($dto->failedEvents())
+                )
+            );
 
             return new JsonResponse($response, Response::HTTP_BAD_REQUEST);
         }
@@ -82,11 +92,13 @@ class EventController
         if (count($dto->events()) > 0) {
             $this->eventCollector->collectPaidEvents($dto->events());
 
-            $this->logger->debug(sprintf(
-                '[%s] Events have been proceed (ids: %s).',
-                'COLLECT_PAID_EVENTS',
-                implode(', ', $dto->getEventsIds())
-            ));
+            $this->logger->debug(
+                sprintf(
+                    '[%s] Events have been proceed (ids: %s).',
+                    'COLLECT_PAID_EVENTS',
+                    implode(', ', $dto->getEventsIds())
+                )
+            );
         }
 
         if (count($dto->failedEvents()) > 0) {
@@ -96,15 +108,39 @@ class EventController
                 'failed_events' => $dto->failedEvents(),
             ];
 
-            $this->logger->debug(sprintf(
-                '[%s] Some events have not been proceed (%s)',
-                'COLLECT_PAID_EVENTS',
-                json_encode($dto->failedEvents())
-            ));
+            $this->logger->debug(
+                sprintf(
+                    '[%s] Some events have not been proceed (%s)',
+                    'COLLECT_PAID_EVENTS',
+                    json_encode($dto->failedEvents())
+                )
+            );
 
             return new JsonResponse($response, Response::HTTP_BAD_REQUEST);
         }
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function lastUnpaidEvent(): JsonResponse
+    {
+        try {
+            $event = $this->eventFinder->findLastUnpaidEvent();
+        } catch (EventNotFound $exception) {
+            throw new NotFoundHttpException($exception->getMessage());
+        }
+        return new JsonResponse($event->toArray(), Response::HTTP_OK);
+    }
+
+    public function lastPaidEvent(): JsonResponse
+    {
+        try {
+            $event = $this->eventFinder->findLastPaidEvent();
+        } catch (EventNotFound $exception) {
+            throw new NotFoundHttpException($exception->getMessage());
+        }
+
+
+        return new JsonResponse($event->toArray(), Response::HTTP_OK);
     }
 }

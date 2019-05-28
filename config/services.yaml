@@ -34,6 +34,11 @@ services:
             $bulkLimit: 500
             $keywordIntersectThreshold: 10
 
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+            $logger: '@logger'
+
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
@@ -63,4 +68,5 @@ services:
         autoconfigure: false
         arguments:
             $eventCollector: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventCollector'
+            $eventFinder: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder'
             $logger: '@logger'
