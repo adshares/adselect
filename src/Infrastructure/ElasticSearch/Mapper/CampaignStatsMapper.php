@@ -17,7 +17,7 @@ class CampaignStatsMapper
                 '_index' => $index,
                 '_type' => '_doc',
                 '_id' => $event->getCampaignId(),
-                'retry_on_conflict' => 5,
+                'retry_on_conflict' => 10,
             ],
         ];
 
@@ -47,8 +47,8 @@ class CampaignStatsMapper
         $mapped['data'] = [
             'script' => [
                 'source' => 'ctx._source.stats_clicks++; ctx._source.stats_paid_amount+=params.paid_amount',
-                'lang' => 'painless',
                 'params' => [
+                    'lang' => 'painless',
                     'paid_amount' => $event->getPaidAmount(),
                 ]
             ],

@@ -35,12 +35,11 @@ abstract class Events
                         $event['keywords'] ?? [],
                         ExtendedDateTime::createFromString($event['time']),
                         new EventType($event['type']),
-                        (float)($event['paid_amount'] ?? 0)
+                        (float)($event['paid_amount'] ?? 0),
+                        isset($event['payment_id'])  ? (int)$event['payment_id'] : null
                     );
 
-                    if (!$this->events->eventExists($event)) {
-                        $this->events->add($event);
-                    }
+                    $this->events->add($event);
                 } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
                     $this->failedEvents[] = $event;
                 }

@@ -32,6 +32,8 @@ final class Event
     private $type;
     /** @var int */
     private $id;
+    /** @var int */
+    private $paymentId;
 
     public function __construct(
         int $id,
@@ -44,7 +46,8 @@ final class Event
         array $keywords,
         DateTimeInterface $date,
         EventType $type,
-        float $paidAmount = 0
+        float $paidAmount = 0,
+        int $paymentId = null
     ) {
         $this->id = $id;
         $this->caseId = $caseId;
@@ -57,6 +60,7 @@ final class Event
         $this->date = $date;
         $this->paidAmount = $paidAmount;
         $this->type = $type;
+        $this->paymentId = $paymentId;
     }
 
     public function flatKeywords(): array
@@ -109,6 +113,11 @@ final class Event
         return $this->paidAmount;
     }
 
+    public function getPaymentId(): ?int
+    {
+        return $this->paymentId;
+    }
+
     public function getKeywords(): array
     {
         return $this->keywords;
@@ -142,6 +151,7 @@ final class Event
             'keywords' => $this->keywords,
             'date' => $this->getDate(),
             'paid_amount' => $this->paidAmount,
+            'payment_id' => $this->paymentId,
         ];
     }
 

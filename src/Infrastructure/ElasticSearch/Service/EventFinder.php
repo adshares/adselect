@@ -32,11 +32,7 @@ class EventFinder implements EventFinderInterface
                 '_source' => true,
                 'size' => 1,
                 'query' => [],
-                'sort' => [
-                    'id' => [
-                        'order' => 'desc'
-                    ],
-                ],
+                'sort' => [],
             ],
         ];
 
@@ -46,13 +42,26 @@ class EventFinder implements EventFinderInterface
     public function findLastUnpaidEvent(): FoundEvent
     {
         $query = [
-            'term' => [
-                'paid_amount' => 0,
+            'bool' => [
+                'must_not' => [
+                    'exists' => [
+                        'field' => 'payment_id',
+                    ],
+                ],
+            ],
+        ];
+
+        $sort = [
+            [
+                'id' => [
+                    'order' => 'desc'
+                ],
             ],
         ];
 
         $params = $this->params;
         $params['body']['query'] = $query;
+        $params['body']['sort'] = $sort;
 
         $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($params)));
 
@@ -75,15 +84,26 @@ class EventFinder implements EventFinderInterface
     public function findLastPaidEvent(): FoundEvent
     {
         $query = [
-            'range' => [
-                'paid_amount' => [
-                    'gt' => 0,
+            'bool' => [
+                'must' => [
+                    'exists' => [
+                        'field' => 'payment_id',
+                    ],
+                ],
+            ],
+        ];
+
+        $sort = [
+            [
+                'payment_id' => [
+                    'order' => 'desc'
                 ],
             ],
         ];
 
         $params = $this->params;
         $params['body']['query'] = $query;
+        $params['body']['sort'] = $sort;
 
         $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($params)));
 
@@ -99,7 +119,8 @@ class EventFinder implements EventFinderInterface
             $data['case_id'],
             $data['publisher_id'],
             $data['paid_amount'],
-            $data['date']
+            $data['date'],
+            $data['payment_id']
         );
     }
 }

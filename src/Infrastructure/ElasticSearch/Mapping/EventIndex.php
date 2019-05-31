@@ -22,6 +22,7 @@ class EventIndex implements Index
                 'format' => 'yyyy-MM-dd HH:mm:ss',
             ],
             'paid_amount' => ['type' => 'long'],
+            'payment_id' => ['type' => 'long'],
         ],
         'dynamic_templates' => [
             [

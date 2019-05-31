@@ -16,14 +16,23 @@ class FoundEvent
     private $paidAmount;
     /** @var string */
     private $date;
+    /** @var int|null */
+    private $payment_id;
 
-    public function __construct(int $id, string $caseId, string $publisherId, float $paidAmount, string $date)
-    {
+    public function __construct(
+        int $id,
+        string $caseId,
+        string $publisherId,
+        float $paidAmount,
+        string $date,
+        ?int $payment_id = null
+    ) {
         $this->id = $id;
         $this->caseId = $caseId;
         $this->publisherId = $publisherId;
         $this->paidAmount = $paidAmount;
         $this->date = $date;
+        $this->payment_id = $payment_id;
     }
 
     public function toArray(): array
@@ -34,6 +43,7 @@ class FoundEvent
             'publisher_id' => $this->publisherId,
             'paid_amount' => $this->paidAmount,
             'date' => $this->date,
+            'payment_id' => $this->payment_id,
         ];
     }
 }

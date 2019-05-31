@@ -21,6 +21,10 @@ class EventMapper
         $data = $event->toArray();
         $data['keywords_flat'] = $event->flatKeywords();
 
+        if ($data['payment_id'] === null) {
+            unset($data['payment_id']);
+        }
+
         $mapped['data'] = $data;
 
         return $mapped;

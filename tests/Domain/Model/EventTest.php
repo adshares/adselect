@@ -45,7 +45,8 @@ final class EventTest extends TestCase
                 'keyword2' => ['a', 'b'],
             ],
             'date' => $date->format('Y-m-d H:i:s'),
-            'paid_amount' => 12.0
+            'paid_amount' => 12.0,
+            'payment_id' => null,
         ];
 
         $this->assertEquals($expected, $event->toArray());

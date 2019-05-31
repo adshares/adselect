@@ -48,6 +48,10 @@ class PaidEvents extends Events
             return false;
         }
 
+        if (!isset($event['payment_id'])) {
+            return false;
+        }
+
         return true;
     }
 }

@@ -22,9 +22,10 @@ class PaidEventMapper
         $mapped['data'] = [
             '_source' => 'paid_amount',
             'script' => [
-                'source' => 'ctx._source.paid_amount+=params.paid_amount',
+                'source' => 'ctx._source.paid_amount+=params.paid_amount;ctx._source.payment_id=params.payment_id',
                 'params' => [
-                    'paid_amount' => $event->getPaidAmount()
+                    'paid_amount' => $event->getPaidAmount(),
+                    'payment_id' => $event->getPaymentId(),
                 ],
                 'lang' => 'painless',
             ],

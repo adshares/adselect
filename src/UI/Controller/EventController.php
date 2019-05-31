@@ -14,11 +14,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use function json_decode;
 use function implode;
 use function json_encode;
 use function sprintf;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EventController
 {
