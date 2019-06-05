@@ -50,12 +50,11 @@ class Client
                 if ($this->client->indices()->exists(['index' => $indexName])) {
                     $this->client->indices()->delete(['index' => $indexName]);
                 }
+
                 $this->createIndex($indexName);
 
                 return;
             }
-
-            throw new ElasticSearchRuntime($exception->getMessage());
         }
     }
 
