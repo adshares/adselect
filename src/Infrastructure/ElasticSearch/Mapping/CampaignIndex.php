@@ -6,7 +6,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
-class CampaignIndex implements Index
+class CampaignIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'campaigns';
 
@@ -57,14 +57,4 @@ class CampaignIndex implements Index
             ],
         ],
     ];
-
-    public static function mappings(): array
-    {
-        return [
-            'index' => self::INDEX,
-            'body' => [
-                'mappings' => self::MAPPINGS,
-            ],
-        ];
-    }
 }

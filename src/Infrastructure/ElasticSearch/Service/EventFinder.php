@@ -27,7 +27,7 @@ class EventFinder implements EventFinderInterface
         $this->client = $client;
 
         $this->params = [
-            'index' => EventIndex::INDEX,
+            'index' => EventIndex::name(),
             'body' => [
                 '_source' => true,
                 'size' => 1,

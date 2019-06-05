@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
-class KeywordIndex
+class KeywordIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'keywords';
 
@@ -23,14 +23,4 @@ class KeywordIndex
             ],
         ],
     ];
-
-    public static function mappings(): array
-    {
-        return [
-            'index' => self::INDEX,
-            'body' => [
-                'mappings' => self::MAPPINGS,
-            ],
-        ];
-    }
 }

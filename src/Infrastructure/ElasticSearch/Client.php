@@ -26,6 +26,8 @@ class Client
     private $client;
     /** @var LoggerInterface */
     private $logger;
+    /** @var string|null */
+    private $namespace;
 
     public function __construct(array $hosts, LoggerInterface $logger)
     {
@@ -34,6 +36,15 @@ class Client
             ->build();
 
         $this->logger = $logger;
+
+        $namespace = getenv('ES_NAMESPACE');
+
+        $this->namespace = $namespace ? $namespace . '_' : '';
+    }
+
+    private function addNamespace(string $indexName): string
+    {
+        return $this->namespace . $indexName;
     }
 
     public function getClient(): BaseClient
@@ -47,8 +58,8 @@ class Client
             $this->client->indices()->create($this->findMappingsForIndex($indexName));
         } catch (BadRequest400Exception $exception) {
             if ($force) {
-                if ($this->client->indices()->exists(['index' => $indexName])) {
-                    $this->client->indices()->delete(['index' => $indexName]);
+                if ($this->client->indices()->exists(['index' => $this->addNamespace($indexName)])) {
+                    $this->client->indices()->delete(['index' => $this->addNamespace($indexName)]);
                 }
 
                 $this->createIndex($indexName);

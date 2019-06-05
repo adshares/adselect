@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
-class EventIndex implements Index
+class EventIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'events';
 
@@ -35,14 +35,4 @@ class EventIndex implements Index
             ],
         ],
     ];
-
-    public static function mappings(): array
-    {
-        return [
-            'index' => self::INDEX,
-            'body' => [
-                'mappings' => self::MAPPINGS,
-            ],
-        ];
-    }
 }

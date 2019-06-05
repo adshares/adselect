@@ -42,15 +42,13 @@ class EventCollector implements EventCollectorInterface
 
     public function collect(EventCollection $events): void
     {
-        $this->createIndexesIfNeeded();
-
         $mappedEvents = [];
 
         /** @var Event $event */
         foreach ($events as $event) {
-            $mappedUnpaidEvent = EventMapper::map($event, EventIndex::INDEX);
-            $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::INDEX);
-            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::INDEX);
+            $mappedUnpaidEvent = EventMapper::map($event, EventIndex::name());
+            $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::name());
+            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::name());
 
             $mappedEvents[] = $mappedUnpaidEvent['index'];
             $mappedEvents[] = $mappedUnpaidEvent['data'];
@@ -75,25 +73,6 @@ class EventCollector implements EventCollectorInterface
         $this->updateKeywords($events);
     }
 
-    private function createIndexesIfNeeded(): void
-    {
-        if (!$this->client->indexExists(EventIndex::INDEX)) {
-            $this->client->createIndex(EventIndex::INDEX);
-        }
-
-        if (!$this->client->indexExists(UserHistoryIndex::INDEX)) {
-            $this->client->createIndex(UserHistoryIndex::INDEX);
-        }
-
-        if (!$this->client->indexExists(KeywordIndex::INDEX)) {
-            $this->client->createIndex(KeywordIndex::INDEX);
-        }
-
-        if (!$this->client->indexExists(KeywordIntersectIndex::INDEX)) {
-            $this->client->createIndex(KeywordIntersectIndex::INDEX);
-        }
-    }
-
     private function updateKeywords(EventCollection $events): void
     {
         /** @var Event $event */
@@ -103,7 +82,7 @@ class EventCollector implements EventCollectorInterface
             }
 
             $flatKeywords = $event->flatKeywords();
-            $mappedKeywords = KeywordMapper::map($flatKeywords, KeywordIndex::INDEX);
+            $mappedKeywords = KeywordMapper::map($flatKeywords, KeywordIndex::name());
 
             $response = $this->client->bulk($mappedKeywords, self::ES_TYPE);
 
@@ -148,7 +127,7 @@ class EventCollector implements EventCollectorInterface
                 $keywordIntersectMapper = KeywordIntersectMapper::map(
                     $keywordA,
                     $keywordB,
-                    KeywordIntersectIndex::INDEX
+                    KeywordIntersectIndex::name()
                 );
 
                 $this->client->bulk($keywordIntersectMapper, self::ES_TYPE);
@@ -162,8 +141,8 @@ class EventCollector implements EventCollectorInterface
 
         /** @var Event $event */
         foreach ($events as $event) {
-            $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::INDEX);
-            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::INDEX);
+            $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::name());
+            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::name());
 
             $mappedEvents[] = $mappedPaidEvent['index'];
             $mappedEvents[] = $mappedPaidEvent['data'];

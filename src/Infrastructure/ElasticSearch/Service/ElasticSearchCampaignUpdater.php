@@ -30,13 +30,13 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
     public function update(CampaignCollection $campaigns): void
     {
-        if (!$this->client->indexExists(CampaignIndex::INDEX)) {
-            $this->client->createIndex(CampaignIndex::INDEX);
+        if (!$this->client->indexExists(CampaignIndex::name())) {
+            $this->client->createIndex(CampaignIndex::name());
         }
 
         $mappedCampaigns = [];
         foreach ($campaigns as $campaign) {
-            $mapped = CampaignMapper::map($campaign, CampaignIndex::INDEX);
+            $mapped = CampaignMapper::map($campaign, CampaignIndex::name());
             $mappedCampaigns[] = $mapped['index'];
             $mappedCampaigns[] = $mapped['data'];
 
@@ -56,7 +56,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
     {
         $mappedIds = [];
         foreach ($ids as $id) {
-            $mapped = IdDeleteMapper::map($id, CampaignIndex::INDEX);
+            $mapped = IdDeleteMapper::map($id, CampaignIndex::name());
             $mappedIds[] = $mapped;
 
             if (count($mappedIds) === $this->bulkLimit) {

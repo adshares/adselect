@@ -20,7 +20,8 @@ services:
 
     Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
         arguments:
-            $hosts: { host: '%env(ES_HOST)%', port: '%env(ES_PORT' }
+            $hosts:
+                - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
             $logger: '@logger'
 
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
-class KeywordIntersectIndex
+class KeywordIntersectIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'keywords_intersection';
 
@@ -23,14 +23,4 @@ class KeywordIntersectIndex
             ],
         ],
     ];
-
-    public static function mappings(): array
-    {
-        return [
-            'index' => self::INDEX,
-            'body' => [
-                'mappings' => self::MAPPINGS,
-            ],
-        ];
-    }
 }

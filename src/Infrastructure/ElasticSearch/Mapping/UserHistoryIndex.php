@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
-class UserHistoryIndex implements Index
+class UserHistoryIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'user_history';
 
@@ -29,14 +29,4 @@ class UserHistoryIndex implements Index
             ]
         ],
     ];
-
-    public static function mappings(): array
-    {
-        return [
-            'index' => self::INDEX,
-            'body' => [
-                'mappings' => self::MAPPINGS,
-            ],
-        ];
-    }
 }

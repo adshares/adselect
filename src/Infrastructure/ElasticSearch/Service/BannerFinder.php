@@ -45,7 +45,7 @@ class BannerFinder implements BannerFinderInterface
         $query = new BaseQuery($queryDto, $defined);
 
         $params = [
-            'index' => CampaignIndex::INDEX,
+            'index' => CampaignIndex::name(),
             'size' => $size,
             'body' => [
                 '_source' => false,
@@ -89,7 +89,7 @@ class BannerFinder implements BannerFinderInterface
     private function fetchUserHistory(string $userId): array
     {
         $params = [
-            'index' => UserHistoryIndex::INDEX,
+            'index' => UserHistoryIndex::name(),
             'body' =>  UserHistory::build($userId),
         ];
 
@@ -110,11 +110,11 @@ class BannerFinder implements BannerFinderInterface
 
     private function getDefinedRequireKeywords(): array
     {
-        $params = ['index' => CampaignIndex::INDEX];
+        $params = ['index' => CampaignIndex::name()];
         $response = $this->client->getMapping($params);
 
         $required = [];
-        foreach ($response['campaigns']['mappings']['properties'] as $key => $def) {
+        foreach ($response[CampaignIndex::name()]['mappings']['properties'] as $key => $def) {
             if (preg_match('/^filters:require:(.+)/', $key, $match)) {
                 $required[] = $match[1];
             }
