@@ -36,7 +36,7 @@ class CampaignStatsMapper
                     'stats_views' => 1,
                     'stats_clicks' => 0,
                     'stats_exp' => 0,
-                    'paid_amount' => 0,
+                    'stats_paid_amount' => 0,
                 ]
             ];
 
@@ -57,7 +57,7 @@ class CampaignStatsMapper
                 'stats_views' => 0,
                 'stats_clicks' => 1,
                 'stats_exp' => 0,
-                'paid_amount' => 0,
+                'stats_paid_amount' => 0,
             ]
         ];
 
