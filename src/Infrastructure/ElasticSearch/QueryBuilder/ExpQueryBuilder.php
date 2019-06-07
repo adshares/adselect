@@ -10,6 +10,7 @@ class ExpQueryBuilder
 {
     /** @var int */
     private $threshold;
+
     /** @var QueryInterface */
     private $query;
 
@@ -28,7 +29,7 @@ class ExpQueryBuilder
                 'script_score' => [
                     'script' => [
                         'lang' => 'painless',
-                        'source' => "
+                        'source' => <<<PAINLESS
                             if (doc['stats_views'].value < params.threshold && doc['stats_paid_amount'] === 0) {
                                 return 1.0 / doc['stats_views'].value + doc['stats_clicks'].value + 1;
                             }
@@ -38,13 +39,14 @@ class ExpQueryBuilder
                             }
                             
                             return 1.0 / (doc['stats_clicks'].value / (doc['stats_views'].value + 0.1));
-                        ",
+PAINLESS
+                        ,
                         'params' => [
                             'threshold' => $this->threshold,
-                        ]
+                        ],
                     ],
                 ],
-            ]
+            ],
         ];
     }
 }
