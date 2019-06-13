@@ -20,7 +20,7 @@ use function json_encode;
 
 class BannerFinder implements BannerFinderInterface
 {
-    private const BANNER_SIZE_RETURNED = 3;
+    private const BANNER_SIZE_RETURNED = 1;
 
     /** @var Client */
     private $client;
