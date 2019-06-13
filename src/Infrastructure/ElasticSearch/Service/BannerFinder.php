@@ -20,6 +20,8 @@ use function json_encode;
 
 class BannerFinder implements BannerFinderInterface
 {
+    private const BANNER_SIZE_RETURNED = 3;
+
     /** @var Client */
     private $client;
     /** @var LoggerInterface */
@@ -81,9 +83,9 @@ class BannerFinder implements BannerFinderInterface
             }
         }
 
-        $collection = $collection->random($size);
+//        $collection = $collection->random($size);
 
-        return $collection->limit($size);
+        return $collection->limit(self::BANNER_SIZE_RETURNED);
     }
 
     private function fetchUserHistory(string $userId): array

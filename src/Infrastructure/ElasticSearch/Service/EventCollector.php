@@ -70,7 +70,7 @@ class EventCollector implements EventCollectorInterface
             $this->client->bulk($mappedEvents, self::ES_TYPE);
         }
 
-        $this->updateKeywords($events);
+//        $this->updateKeywords($events);
     }
 
     private function updateKeywords(EventCollection $events): void

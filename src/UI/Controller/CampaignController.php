@@ -77,7 +77,7 @@ class CampaignController
     public function findBanners(Request $request): JsonResponse
     {
         $queries = json_decode($request->getContent(), true);
-        $size = 3;
+        $size = 100;
 
         $results = [];
 
