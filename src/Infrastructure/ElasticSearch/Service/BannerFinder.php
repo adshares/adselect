@@ -95,7 +95,8 @@ class BannerFinder implements BannerFinderInterface
 
     private function fetchUserHistory(string $userId): array
     {
-        /** @todo think about aggregations
+        /**
+         * @todo think about aggregations
          * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html
          */
         $params = [
