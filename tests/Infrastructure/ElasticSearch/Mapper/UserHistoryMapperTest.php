@@ -9,6 +9,7 @@ use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
+use DateTime;
 use PHPUnit\Framework\TestCase;
 
 class UserHistoryMapperTest extends TestCase
@@ -31,7 +32,13 @@ class UserHistoryMapperTest extends TestCase
             EventType::createView()
         );
 
-        $mapped = UserHistoryMapper::map($event, 'index-name');
+        $mapped = UserHistoryMapper::map(
+            $event->getUserId(),
+            $event->getCampaignId(),
+            $event->getBannerId(),
+            (new DateTime())->format('Y-m-d H:i:s'),
+            'index-name'
+        );
 
         $this->assertEquals('index-name', $mapped['index']['index']['_index']);
         $this->assertEquals('667ea41f8fb548829ac4bb89cf00ac03', $mapped['data']['user_id']);
