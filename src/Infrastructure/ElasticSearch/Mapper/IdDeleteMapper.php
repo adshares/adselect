@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
 
 class IdDeleteMapper
 {
