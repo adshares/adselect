@@ -30,7 +30,7 @@ class ExpQueryBuilder
                     'script' => [
                         'lang' => 'painless',
                         'source' => <<<PAINLESS
-                            int paidAmount = (int) doc['stats_paid_amount'].value;                            
+                            int paidAmount = (int) doc['stats_paid_amount'].value;
                             
                             if (doc['stats_views'].value < params.threshold && paidAmount === 0) {
                                 return (Math.random() + 0.5) / (doc['stats_views'].value + doc['stats_clicks'].value + 1.0)
@@ -41,7 +41,7 @@ class ExpQueryBuilder
 
                             }
                             
-                            return (Math.random() + 0.5) / ((doc['stats_clicks'].value / (doc['stats_views'].value + 0.1)) + 1.0);                        
+                            return (Math.random() + 0.5) / ((doc['stats_clicks'].value / (doc['stats_views'].value + 0.1)) + 1.0);
 PAINLESS
                         ,
                         'params' => [
