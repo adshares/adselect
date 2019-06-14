@@ -47,7 +47,13 @@ class EventCollector implements EventCollectorInterface
         /** @var Event $event */
         foreach ($events as $event) {
             $mappedUnpaidEvent = EventMapper::map($event, EventIndex::name());
-            $mappedUserHistory = UserHistoryMapper::map($event, UserHistoryIndex::name());
+            $mappedUserHistory = UserHistoryMapper::map(
+                $event->getUserId(),
+                $event->getCampaignId(),
+                $event->getBannerId(),
+                $event->getDate(),
+                UserHistoryIndex::name()
+            );
             $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::name());
 
             $mappedEvents[] = $mappedUnpaidEvent['index'];
