@@ -11,6 +11,11 @@ class UserHistory
         return [
             '_source' => false,
             'docvalue_fields' => ['campaign_id'],
+            'sort' => [
+                'time' => [
+                    'order' => 'desc',
+                ]
+            ],
             'query' => [
                 'bool' => [
                     'must' => [

@@ -43,8 +43,8 @@ services:
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-            $expInterval: 5
-            $expThreshold: 3
+            $expInterval: 10
+            $expThreshold: 50
             $logger: '@logger'
 
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:

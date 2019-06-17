@@ -40,6 +40,7 @@ class CampaignMapper
             [
                 'time_range' => Helper::range($campaign->getTimeStart(), $campaign->getTimeEnd()),
                 'banners' => $banners,
+                'searchable' => true,
             ],
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)

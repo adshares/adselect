@@ -10,12 +10,21 @@ class IdDeleteMapper
 {
     public static function map(Id $id, string $index)
     {
-        return [
-            'delete' => [
+        $mapped['index'] = [
+            'update' => [
                 '_index' => $index,
                 '_type' => '_doc',
                 '_id' => $id->toString(),
-            ]
+            ],
         ];
+
+
+        $mapped['data'] = [
+            'doc' => [
+                'searchable' => false,
+            ],
+        ];
+
+        return $mapped;
     }
 }

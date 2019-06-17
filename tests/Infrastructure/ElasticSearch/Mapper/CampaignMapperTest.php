@@ -170,6 +170,7 @@ final class CampaignMapperTest extends TestCase
                 2 => 'firefox',
                 3 => 'safari',
             ],
+            'searchable' => true,
         ];
 
         $expectedStats = [

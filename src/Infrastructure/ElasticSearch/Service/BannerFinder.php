@@ -9,17 +9,21 @@ use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
 use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\UserHistory;
+use DateTime;
 use Psr\Log\LoggerInterface;
 use function json_encode;
 
 class BannerFinder implements BannerFinderInterface
 {
+    private const BANNER_SIZE_RETURNED = 1;
+
     /** @var Client */
     private $client;
     /** @var LoggerInterface */
@@ -58,8 +62,11 @@ class BannerFinder implements BannerFinderInterface
             $queryBuilder = new QueryBuilder($query, $userHistory);
         }
 
+//        $params['body']['explain'] = true;
         $params['body']['query'] = $queryBuilder->build();
+
         $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s', json_encode($params)));
+
         $response = $this->client->search($params);
         $collection = new FoundBannersCollection();
 
@@ -81,16 +88,21 @@ class BannerFinder implements BannerFinderInterface
             }
         }
 
-        $collection = $collection->random($size);
+        $this->updateHistory($queryDto, $collection);
 
-        return $collection->limit($size);
+        return $collection->limit(self::BANNER_SIZE_RETURNED);
     }
 
     private function fetchUserHistory(string $userId): array
     {
+        /**
+         * @todo think about aggregations
+         * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html
+         */
         $params = [
+            'size' => 1000,
             'index' => UserHistoryIndex::name(),
-            'body' =>  UserHistory::build($userId),
+            'body' => UserHistory::build($userId),
         ];
 
         $seen = [];
@@ -121,5 +133,23 @@ class BannerFinder implements BannerFinderInterface
         }
 
         return $required;
+    }
+
+    private function updateHistory(QueryDto $queryDto, FoundBannersCollection $collection): void
+    {
+        // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
+        if ($collection->count() > 0) {
+            $userEvent = UserHistoryMapper::map(
+                $queryDto->getUserId(),
+                $collection[0]->getCampaignId(),
+                $collection[0]->getBannerId(),
+                (new DateTime())->format('Y-m-d H:i:s'),
+                UserHistoryIndex::name()
+            );
+
+            $index = $userEvent['index'];
+            $data = $userEvent['data'];
+            $this->client->bulk([$index, $data], 'VIEW_HISTORY_UPDATE');
+        }
     }
 }
