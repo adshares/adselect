@@ -99,8 +99,6 @@ class Client
         $this->createIndex(CampaignIndex::INDEX, $force);
         $this->createIndex(EventIndex::INDEX, $force);
         $this->createIndex(UserHistoryIndex::INDEX, $force);
-//        $this->createIndex(KeywordIndex::INDEX, $force);
-//        $this->createIndex(KeywordIntersectIndex::INDEX, $force);
     }
 
     public function indexExists(string $indexName): bool
