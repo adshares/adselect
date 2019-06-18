@@ -11,7 +11,12 @@ abstract class AbstractIndex
 {
     public const INDEX = '';
 
-    public const MAPPINGS = '';
+    public const MAPPINGS = [];
+
+    public const SETTINGS = [
+        'number_of_shards' => 1,
+        'number_of_replicas' => 0,
+    ];
 
     public static function mappings(): array
     {
@@ -19,7 +24,7 @@ abstract class AbstractIndex
             throw new ElasticSearchRuntime('Index name cannot be empty.');
         }
 
-        if (static::MAPPINGS === '') {
+        if (empty(static::MAPPINGS)) {
             throw new ElasticSearchRuntime('Mappings cannot be empty.');
         }
 
@@ -31,6 +36,7 @@ abstract class AbstractIndex
             'index' => $indexName,
             'body' => [
                 'mappings' => static::MAPPINGS,
+                'settings' => static::SETTINGS,
             ],
         ];
     }

@@ -18,11 +18,19 @@ services:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
 
+    Adshares\AdSelect\UI\Command\CleanUserHistory:
+        arguments:
+            $dataCleaner: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\DataCleaner'
+
     Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
         arguments:
             $hosts:
                 - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
             $logger: '@logger'
+
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\DataCleaner:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
 
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:
         arguments:

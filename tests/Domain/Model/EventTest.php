@@ -44,7 +44,7 @@ final class EventTest extends TestCase
                 'keyword1' => ['one', 'two'],
                 'keyword2' => ['a', 'b'],
             ],
-            'date' => $date->format('Y-m-d H:i:s'),
+            'time' => $date->format('Y-m-d H:i:s'),
             'paid_amount' => 12.0,
             'payment_id' => null,
         ];

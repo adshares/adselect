@@ -51,7 +51,7 @@ class EventCollector implements EventCollectorInterface
                 $event->getUserId(),
                 $event->getCampaignId(),
                 $event->getBannerId(),
-                $event->getDate(),
+                $event->getTime(),
                 UserHistoryIndex::name()
             );
             $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::name());
