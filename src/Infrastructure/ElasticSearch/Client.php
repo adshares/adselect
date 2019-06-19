@@ -63,8 +63,6 @@ class Client
                 }
 
                 $this->createIndex($indexName);
-
-                return;
             }
         }
     }
@@ -111,7 +109,7 @@ class Client
     public function bulk(array $mapped, string $type): array
     {
         try {
-            $response =  $this->client->bulk(['body' => $mapped]);
+            $response = $this->client->bulk(['body' => $mapped]);
 
             if ($response['errors'] === true) {
                 $errors = json_encode(array_map(

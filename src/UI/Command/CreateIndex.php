@@ -37,7 +37,7 @@ class CreateIndex extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $force = (bool)$input->getOption('force');
         $this->client->createIndexes($force);

@@ -6,4 +6,4 @@ cd ${2:-"."}
 composer install --no-dev
 
 ./bin/console cache:clear
-./bin/console ops:es:create-index --force
+./bin/console ops:es:create-index
