@@ -29,7 +29,8 @@ class EventFinder implements EventFinderInterface
         $this->params = [
             'index' => EventIndex::name(),
             'body' => [
-                '_source' => true,
+                '_source' => false,
+                'docvalue_fields' => ['id', 'case_id', 'publisher_id', 'paid_amount', 'time', 'payment_id'],
                 'size' => 1,
                 'query' => [],
                 'sort' => [],
@@ -66,18 +67,18 @@ class EventFinder implements EventFinderInterface
         $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($params)));
 
         $response = $this->client->search($params);
-        $data = $response['hits']['hits'][0]['_source'] ?? null;
+        $data = $response['hits']['hits'][0]['fields'] ?? null;
 
         if (!$data) {
             throw new EventNotFound('No unpaid events.');
         }
 
         return new FoundEvent(
-            $data['id'],
-            $data['case_id'],
-            $data['publisher_id'],
-            $data['paid_amount'],
-            $data['date']
+            $data['id'][0],
+            $data['case_id'][0],
+            $data['publisher_id'][0],
+            $data['paid_amount'][0],
+            $data['time'][0]
         );
     }
 
@@ -115,12 +116,12 @@ class EventFinder implements EventFinderInterface
         }
 
         return new FoundEvent(
-            $data['id'],
-            $data['case_id'],
-            $data['publisher_id'],
-            $data['paid_amount'],
-            $data['date'],
-            $data['payment_id']
+            $data['id'][0],
+            $data['case_id'][0],
+            $data['publisher_id'][0],
+            $data['paid_amount'][0],
+            $data['time'][0],
+            $data['payment_id'][0]
         );
     }
 }

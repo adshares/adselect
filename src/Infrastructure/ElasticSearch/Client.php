@@ -63,8 +63,6 @@ class Client
                 }
 
                 $this->createIndex($indexName);
-
-                return;
             }
         }
     }
@@ -99,8 +97,6 @@ class Client
         $this->createIndex(CampaignIndex::INDEX, $force);
         $this->createIndex(EventIndex::INDEX, $force);
         $this->createIndex(UserHistoryIndex::INDEX, $force);
-        $this->createIndex(KeywordIndex::INDEX, $force);
-        $this->createIndex(KeywordIntersectIndex::INDEX, $force);
     }
 
     public function indexExists(string $indexName): bool
@@ -111,7 +107,7 @@ class Client
     public function bulk(array $mapped, string $type): array
     {
         try {
-            $response =  $this->client->bulk(['body' => $mapped]);
+            $response = $this->client->bulk(['body' => $mapped]);
 
             if ($response['errors'] === true) {
                 $errors = json_encode(array_map(
@@ -155,5 +151,31 @@ class Client
     public function getMapping(array $params): array
     {
         return $this->client->indices()->getMapping($params);
+    }
+
+    public function delete(array $query, string $indexName): void
+    {
+        $params = [
+            'index' => $indexName,
+            'body' => [
+                'query' => $query,
+            ],
+        ];
+
+        try {
+            $result = $this->client->deleteByQuery($params);
+
+            $this->logger->debug(sprintf(
+                '%s documents has been removed from index %s',
+                $result['deleted'],
+                $indexName
+            ));
+        } catch (BadRequest400Exception $exception) {
+            $this->logger->error(sprintf(
+                'Documents from index %s could not be removed (%s)',
+                $indexName,
+                $exception->getMessage()
+            ));
+        }
     }
 }

@@ -54,20 +54,21 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
     public function delete(IdCollection $ids): void
     {
-        $mappedIds = [];
+        $mapped = [];
         foreach ($ids as $id) {
-            $mapped = IdDeleteMapper::map($id, CampaignIndex::name());
-            $mappedIds[] = $mapped;
+            $mappedIdDelete = IdDeleteMapper::map($id, CampaignIndex::name());
+            $mapped[] = $mappedIdDelete['index'];
+            $mapped[] = $mappedIdDelete['data'];
 
-            if (count($mappedIds) === $this->bulkLimit) {
-                $this->client->bulk($mappedIds, self::ES_DELETE_TYPE);
+            if (count($mapped) === $this->bulkLimit) {
+                $this->client->bulk($mapped, self::ES_DELETE_TYPE);
 
-                $mappedIds = [];
+                $mapped = [];
             }
         }
 
-        if ($mappedIds) {
-            $this->client->bulk($mappedIds, self::ES_DELETE_TYPE);
+        if ($mapped) {
+            $this->client->bulk($mapped, self::ES_DELETE_TYPE);
         }
     }
 }

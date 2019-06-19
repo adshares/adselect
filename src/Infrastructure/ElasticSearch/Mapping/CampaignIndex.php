@@ -18,6 +18,9 @@ class CampaignIndex extends AbstractIndex implements Index
             'stats_clicks' => ['type' => 'long'],
             'stats_exp_count' => ['type' => 'long'],
             'stats_paid_amount' => ['type' => 'long'],
+            'searchable' => [
+                'type' => 'boolean',
+            ],
         ],
         'dynamic_templates' => [
             [
