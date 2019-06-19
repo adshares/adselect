@@ -28,7 +28,7 @@ class QueryBuilder
                 'script_score' => [
                     'script' => [
                         'lang' => 'painless',
-                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'source' => '(Math.random() + 0.5) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
                         'params' => [
                             'last_seen' => (object)$this->userHistory,
                         ],

@@ -58,6 +58,11 @@ class BaseQuery implements QueryInterface
                                 'minimum_should_match' => count($this->definedRequireFilters),
                             ],
                         ],
+                        [
+                            'term' => [
+                                'searchable' => true,
+                            ]
+                        ]
                     ],
                     [
                         'nested' => [

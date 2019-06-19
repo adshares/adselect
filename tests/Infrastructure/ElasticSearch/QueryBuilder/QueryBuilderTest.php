@@ -69,6 +69,11 @@ final class QueryBuilderTest extends TestCase
                                 'minimum_should_match' => 2,
                             ],
                         ],
+                        [
+                            'term' => [
+                                'searchable' => true,
+                            ]
+                        ]
                     ],
                     [
                         'nested' => [
@@ -104,7 +109,7 @@ final class QueryBuilderTest extends TestCase
 
                     'script' => [
                         'lang' => 'painless',
-                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'source' => '(Math.random() + 0.5) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
                         'params' => [
                             'last_seen' => (object)$userHistory,
                         ],
@@ -319,6 +324,11 @@ final class QueryBuilderTest extends TestCase
                                 'minimum_should_match' => 5,
                             ],
                         ],
+                        1 => [
+                            'term' => [
+                                'searchable' => true,
+                            ],
+                        ],
                     ],
                     1 => [
                         'nested' => [
@@ -369,7 +379,7 @@ final class QueryBuilderTest extends TestCase
 
                     'script' => [
                         'lang' => 'painless',
-                        'source' => '1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
+                        'source' => '(Math.random() + 0.5) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)',
                         'params' => [
                             'last_seen' => (object)$userHistory,
                         ],

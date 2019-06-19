@@ -25,7 +25,7 @@ final class Event
     /** @var array */
     private $keywords;
     /** @var DateTimeInterface */
-    private $date;
+    private $time;
     /** @var float */
     private $paidAmount;
     /** @var EventType */
@@ -44,7 +44,7 @@ final class Event
         Id $campaignId,
         Id $bannerId,
         array $keywords,
-        DateTimeInterface $date,
+        DateTimeInterface $time,
         EventType $type,
         float $paidAmount = 0,
         int $paymentId = null
@@ -57,7 +57,7 @@ final class Event
         $this->campaignId = $campaignId;
         $this->bannerId = $bannerId;
         $this->keywords = $keywords;
-        $this->date = $date;
+        $this->time = $time;
         $this->paidAmount = $paidAmount;
         $this->type = $type;
         $this->paymentId = $paymentId;
@@ -80,7 +80,7 @@ final class Event
 
     public function getDayDate(): string
     {
-        return $this->date->format('Y-m-d');
+        return $this->time->format('Y-m-d');
     }
 
     public function getCaseId(): string
@@ -103,9 +103,9 @@ final class Event
         return $this->bannerId->toString();
     }
 
-    public function getDate(): string
+    public function getTime(): string
     {
-        return $this->date->format('Y-m-d H:i:s');
+        return $this->time->format('Y-m-d H:i:s');
     }
 
     public function getPaidAmount(): ?float
@@ -149,7 +149,7 @@ final class Event
             'campaign_id' => $this->campaignId->toString(),
             'banner_id' => $this->bannerId->toString(),
             'keywords' => $this->keywords,
-            'date' => $this->getDate(),
+            'time' => $this->getTime(),
             'paid_amount' => $this->paidAmount,
             'payment_id' => $this->paymentId,
         ];
