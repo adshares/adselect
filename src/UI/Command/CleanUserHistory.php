@@ -35,7 +35,7 @@ class CleanUserHistory extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Older documents than `from` date will be removed. Supported format: Y-m-d H:i:s',
-                new DateTime('-1 day')
+                new DateTime('-2 day')
             );
     }
 

@@ -31,7 +31,7 @@ class CleanEvents extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Remove events from documents older than given date (or -2 days by default).')
+            ->setDescription('Remove events from documents older than given date (or -10 days by default).')
             ->addOption(
                 'from',
                 null,
