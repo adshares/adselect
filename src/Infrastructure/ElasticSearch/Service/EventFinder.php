@@ -30,7 +30,7 @@ class EventFinder implements EventFinderInterface
             'index' => EventIndex::name(),
             'body' => [
                 '_source' => false,
-                'docvalue_fields' => ['id', 'case_id', 'publisher_id', 'paid_amount', 'date', 'payment_id'],
+                'docvalue_fields' => ['id', 'case_id', 'publisher_id', 'paid_amount', 'time', 'payment_id'],
                 'size' => 1,
                 'query' => [],
                 'sort' => [],
@@ -78,7 +78,7 @@ class EventFinder implements EventFinderInterface
             $data['case_id'][0],
             $data['publisher_id'][0],
             $data['paid_amount'][0],
-            $data['date'][0]
+            $data['time'][0]
         );
     }
 
@@ -120,7 +120,7 @@ class EventFinder implements EventFinderInterface
             $data['case_id'][0],
             $data['publisher_id'][0],
             $data['paid_amount'][0],
-            $data['date'][0],
+            $data['time'][0],
             $data['payment_id'][0]
         );
     }
