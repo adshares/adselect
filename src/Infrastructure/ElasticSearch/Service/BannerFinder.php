@@ -43,7 +43,7 @@ class BannerFinder implements BannerFinderInterface
 
     public function find(QueryDto $queryDto, int $size): FoundBannersCollection
     {
-        $userHistory = $this->fetchUserHistory($queryDto->getUserId());
+        $userHistory = $this->fetchUserHistory($queryDto);
         $defined = $this->getDefinedRequireKeywords();
         $second = date('s');
         $query = new BaseQuery($queryDto, $defined);
@@ -93,7 +93,7 @@ class BannerFinder implements BannerFinderInterface
         return $collection->limit(self::BANNER_SIZE_RETURNED);
     }
 
-    private function fetchUserHistory(string $userId): array
+    private function fetchUserHistory(QueryDto $queryDto): array
     {
         /**
          * @todo think about aggregations
@@ -102,7 +102,7 @@ class BannerFinder implements BannerFinderInterface
         $params = [
             'size' => 1000,
             'index' => UserHistoryIndex::name(),
-            'body' => UserHistory::build($userId),
+            'body' => UserHistory::build($queryDto->getUserId(), $queryDto->getTrackingId()),
         ];
 
         $seen = [];
@@ -141,6 +141,7 @@ class BannerFinder implements BannerFinderInterface
         if ($collection->count() > 0) {
             $userEvent = UserHistoryMapper::map(
                 $queryDto->getUserId(),
+                $queryDto->getTrackingId(),
                 $collection[0]->getCampaignId(),
                 $collection[0]->getBannerId(),
                 (new DateTime())->format('Y-m-d H:i:s'),

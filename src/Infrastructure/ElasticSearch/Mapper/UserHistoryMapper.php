@@ -6,8 +6,14 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 class UserHistoryMapper
 {
-    public static function map(string $userId, string $campaignId, string $bannerId, string $date, string $index): array
-    {
+    public static function map(
+        string $userId,
+        string $trackingId,
+        string $campaignId,
+        string $bannerId,
+        string $date,
+        string $index
+    ): array {
         $mapped['index'] = [
             'index' => [
                 '_index' => $index,
@@ -17,6 +23,7 @@ class UserHistoryMapper
 
         $mapped['data'] = [
             'user_id' => $userId,
+            'tracking_id' => $trackingId,
             'campaign_id' => $campaignId,
             'banner_id' => $bannerId,
             'time' => $date,

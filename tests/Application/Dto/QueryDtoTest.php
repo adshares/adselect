@@ -39,6 +39,7 @@ final class QueryDtoTest extends TestCase
                 [
                     'publisher_id' => '00000000000000000000000000000001',
                     'user_id' => '00000000000000000000000000000002',
+                    'tracking_id' => '00000000000000000000000000000002',
                     'banner_size' => '620x300',
                     'keywords' => [
                         'keyword1',
@@ -59,6 +60,7 @@ final class QueryDtoTest extends TestCase
                 [
                     'publisher_id' => '00000000000000000000000000000001',
                     'user_id' => '00000000000000000000000000000002',
+                    'tracking_id' => '00000000000000000000000000000002',
                     'banner_size' => '620x300',
                     'keywords' => [],
                     'banner_filters' => [],
@@ -69,6 +71,7 @@ final class QueryDtoTest extends TestCase
                 [
                     'publisher_id' => '000000001',
                     'user_id' => '00000000000000000000000000000002',
+                    'tracking_id' => '00000000000000000000000000000002',
                     'banner_size' => '620x300',
                     'keywords' => [
                         'keyword1',
@@ -107,6 +110,7 @@ final class QueryDtoTest extends TestCase
                 [
                     'publisher_id' => '00000000000000000000000000000001',
                     'user_id' => '00000000000000000000000000000002',
+                    'tracking_id' => '00000000000000000000000000000002',
                     'banner_size' => '620300',
                     'keywords' => [
                         'keyword1',

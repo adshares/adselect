@@ -19,7 +19,8 @@ final class QueryBuilderTest extends TestCase
     {
         $publisherId = new Id('43c567e1396b4cadb52223a51796fd01');
         $userId = new Id('43c567e1396b4cadb52223a51796fd01');
-        $dto = new QueryDto($publisherId, $userId, new Size(200, 100));
+        $trackingId = new Id('43c567e1396b4cadb52223a51796fd02');
+        $dto = new QueryDto($publisherId, $userId, $trackingId, new Size(200, 100));
         $defined = [
             'one',
             'two',
@@ -126,6 +127,7 @@ final class QueryBuilderTest extends TestCase
     {
         $publisherId = new Id('85f115636b384744949300571aad2a4f');
         $userId = new Id('85f115636b384744949300571aad2a4f');
+        $trackingId = new Id('85f115636b384744949300571aad2a4d');
 
         $keywords = [
             'device:type' => ['mobile'],
@@ -148,7 +150,7 @@ final class QueryBuilderTest extends TestCase
             ],
         ];
 
-        $dto = new QueryDto($publisherId, $userId, new Size(160, 600), $filters, $keywords);
+        $dto = new QueryDto($publisherId, $userId, $trackingId, new Size(160, 600), $filters, $keywords);
         $defined = [
             'device:browser',
             'device:type',

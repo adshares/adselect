@@ -11,9 +11,12 @@ use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
+use function array_diff;
+use function array_keys;
 
 abstract class Events
 {
+    protected const REQUIRED_FIELDS = [];
     protected $events;
     protected $failedEvents = [];
 
@@ -29,6 +32,7 @@ abstract class Events
                         new Id($event['case_id']),
                         new Id($event['publisher_id']),
                         new Id($event['user_id']),
+                        new Id($event['tracking_id']),
                         new Id($event['zone_id']),
                         new Id($event['campaign_id']),
                         new Id($event['banner_id']),
@@ -68,5 +72,14 @@ abstract class Events
         return $this->events;
     }
 
-    abstract protected function isValid(array $event): bool;
+    protected function isValid(array $event): bool
+    {
+        $diff = array_diff(static::REQUIRED_FIELDS, array_keys($event));
+
+        if (count($diff) > 0) {
+            return false;
+        }
+
+        return true;
+    }
 }
