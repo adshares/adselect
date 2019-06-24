@@ -6,7 +6,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 class UserHistory
 {
-    public static function build(string $userId): array
+    public static function build(string $userId, string $trackingId): array
     {
         return [
             '_source' => false,
@@ -21,13 +21,13 @@ class UserHistory
                     'must' => [
                         [
                             'term' => [
-                                'user_id' => $userId,
+                                'tracking_id' => $trackingId,
                             ]
                         ],
                         [
                             'range' => [
                                 'time' => [
-                                    'gte' => 'now-1d'
+                                    'gte' => 'now-1h'
                                 ],
                             ],
                         ],

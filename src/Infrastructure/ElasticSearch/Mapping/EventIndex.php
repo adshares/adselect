@@ -14,6 +14,7 @@ class EventIndex extends AbstractIndex implements Index
             'case_id' => ['type' => 'keyword'],
             'publisher_id' => ['type' => 'keyword'],
             'user_id' => ['type' => 'keyword'],
+            'tracking_id' => [ 'type' => 'keyword' ],
             'zone_id' => ['type' => 'keyword'],
             'campaign_id' => ['type' => 'keyword'],
             'banner_id' => ['type' => 'keyword'],

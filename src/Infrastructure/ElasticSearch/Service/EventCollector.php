@@ -49,6 +49,7 @@ class EventCollector implements EventCollectorInterface
             $mappedUnpaidEvent = EventMapper::map($event, EventIndex::name());
             $mappedUserHistory = UserHistoryMapper::map(
                 $event->getUserId(),
+                $event->getTrackingId(),
                 $event->getCampaignId(),
                 $event->getBannerId(),
                 $event->getTime(),

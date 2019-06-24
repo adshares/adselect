@@ -102,21 +102,13 @@ class EventController
         }
 
         if (count($dto->failedEvents()) > 0) {
-//            $response = [
-//                'code' => Response::HTTP_BAD_REQUEST,
-//                'message' => 'Some events could not be proceed',
-//                'failed_events' => $dto->failedEvents(),
-//            ];
-
-            $this->logger->debug(
+            $this->logger->notice(
                 sprintf(
                     '[%s] Some events have not been proceed (%s)',
                     'COLLECT_PAID_EVENTS',
                     json_encode($dto->failedEvents())
                 )
             );
-
-//            return new JsonResponse($response, Response::HTTP_BAD_REQUEST);
         }
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);

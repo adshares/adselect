@@ -6,52 +6,18 @@ namespace Adshares\AdSelect\Application\Dto;
 
 class PaidEvents extends Events
 {
-    protected function isValid(array $event): bool
-    {
-        if (!isset($event['id'])) {
-            return false;
-        }
-
-        if (!isset($event['case_id'])) {
-            return false;
-        }
-
-        if (!isset($event['publisher_id'])) {
-            return false;
-        }
-
-        if (!isset($event['user_id'])) {
-            return false;
-        }
-
-        if (!isset($event['zone_id'])) {
-            return false;
-        }
-
-        if (!isset($event['campaign_id'])) {
-            return false;
-        }
-
-        if (!isset($event['banner_id'])) {
-            return false;
-        }
-
-        if (!isset($event['time'])) {
-            return false;
-        }
-
-        if (!isset($event['paid_amount'])) {
-            return false;
-        }
-
-        if (!isset($event['type'])) {
-            return false;
-        }
-
-        if (!isset($event['payment_id'])) {
-            return false;
-        }
-
-        return true;
-    }
+    protected const REQUIRED_FIELDS = [
+        'id',
+        'case_id',
+        'publisher_id',
+        'user_id',
+        'tracking_id',
+        'zone_id',
+        'campaign_id',
+        'banner_id',
+        'time',
+        'paid_amount',
+        'type',
+        'payment_id',
+    ];
 }

@@ -23,11 +23,20 @@ final class QueryDto
     private $excludeFilters;
     /** @var array */
     private $keywords;
+    /** @var Id */
+    private $trackingId;
 
-    public function __construct(Id $publisherId, Id $userId, Size $size, array $filters = [], array $keywords = [])
-    {
+    public function __construct(
+        Id $publisherId,
+        Id $userId,
+        Id $trackingId,
+        Size $size,
+        array $filters = [],
+        array $keywords = []
+    ) {
         $this->publisherId = $publisherId;
         $this->userId = $userId;
+        $this->trackingId = $trackingId;
         $this->size = $size;
         $this->requireFilters = $filters['require'] ?? [];
         $this->excludeFilters = $filters['exclude'] ?? [];
@@ -54,6 +63,11 @@ final class QueryDto
         return $this->userId->toString();
     }
 
+    public function getTrackingId(): string
+    {
+        return $this->trackingId->toString();
+    }
+
     public function getSize(): string
     {
         return $this->size->toString();
@@ -65,8 +79,12 @@ final class QueryDto
             throw new ValidationDtoException('Field `publisher_id` is required.');
         }
 
-        if (!isset($input['user_id'])) {
+        if (!isset($input['user_id']) || empty($input['user_id'])) {
             throw new ValidationDtoException('Field `user_id` is required.');
+        }
+
+        if (!isset($input['tracking_id']) || empty($input['tracking_id'])) {
+            throw new ValidationDtoException('Field `tracking_id` is required.');
         }
 
         if (!isset($input['banner_size'])) {
@@ -85,6 +103,7 @@ final class QueryDto
             return new self(
                 new Id($input['publisher_id']),
                 new Id($input['user_id']),
+                new Id($input['tracking_id']),
                 Size::fromString($input['banner_size']),
                 $input['banner_filters'],
                 $input['keywords']

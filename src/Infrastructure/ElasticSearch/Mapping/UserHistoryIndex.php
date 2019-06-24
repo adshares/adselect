@@ -11,6 +11,7 @@ class UserHistoryIndex extends AbstractIndex implements Index
     public const MAPPINGS = [
         'properties' => [
             'user_id' => [ 'type' => 'keyword' ],
+            'tracking_id' => [ 'type' => 'keyword' ],
             'campaign_id' => [ 'type' => 'keyword' ],
             'banner_id' => [ 'type' => 'keyword' ],
             'time' => [
