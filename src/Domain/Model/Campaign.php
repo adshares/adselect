@@ -21,6 +21,8 @@ final class Campaign
     private $banners;
     /** @var array */
     private $keywords;
+    /** @var array */
+    private $filters;
     /** @var Budget */
     private $budget;
 
