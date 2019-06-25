@@ -14,6 +14,9 @@ class CampaignIndex extends AbstractIndex implements Index
         'properties' => [
             'banners' =>    [ 'type' => 'nested' ],
             'time_range' =>    [ 'type' => 'long_range' ],
+            'budget' => ['type' => 'long'],
+            'max_cpc' => ['type' => 'long'],
+            'max_cpm' => ['type' => 'long'],
             'stats_views' => ['type' => 'long'],
             'stats_clicks' => ['type' => 'long'],
             'stats_exp_count' => ['type' => 'long'],

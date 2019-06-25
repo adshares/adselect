@@ -41,6 +41,9 @@ class CampaignMapper
                 'time_range' => Helper::range($campaign->getTimeStart(), $campaign->getTimeEnd()),
                 'banners' => $banners,
                 'searchable' => true,
+                'budget' => $campaign->getBudget(),
+                'max_cpc' => $campaign->getMaxCpc(),
+                'max_cpm' => $campaign->getMaxCpm(),
             ],
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)

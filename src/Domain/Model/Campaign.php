@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Domain\Model;
 
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+use Adshares\AdSelect\Domain\ValueObject\Budget;
 use Adshares\Adselect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\DateTimeInterface;
 
@@ -20,8 +21,8 @@ final class Campaign
     private $banners;
     /** @var array */
     private $keywords;
-    /** @var array */
-    private $filters;
+    /** @var Budget */
+    private $budget;
 
     public function __construct(
         Id $campaignId,
@@ -29,7 +30,8 @@ final class Campaign
         ?DateTimeInterface $timeEnd,
         BannerCollection $banners,
         array $keywords,
-        array $filters
+        array $filters,
+        Budget $budget
     ) {
         if ($timeEnd && $timeStart > $timeEnd) {
             throw new AdSelectRuntimeException(sprintf(
@@ -48,6 +50,7 @@ final class Campaign
             'exclude' => $filters['exclude'] ?? [],
             'require' => $filters['require'] ?? [],
         ];
+        $this->budget = $budget;
     }
 
     public function getId(): string
@@ -87,5 +90,20 @@ final class Campaign
     public function getRequireFilters(): array
     {
         return $this->filters['require'];
+    }
+
+    public function getBudget(): int
+    {
+        return $this->budget->getBudget();
+    }
+
+    public function getMaxCpc(): ?int
+    {
+        return $this->budget->getMaxCpc();
+    }
+
+    public function getMaxCpm(): ?int
+    {
+        return $this->budget->getMaxCpm();
     }
 }
