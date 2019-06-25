@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2019-06-25
+### Added
+- Campaign soft delete
+- Remove documents from User history and Events indexes
+- Slow log configuration
+- Add tracking_id to User history and based on it during fetching banners
+- Add budget information to a campaign index
+
 ## [0.2.0] - 2019-06-12
 ### Changed
 - Implementation from python to PHP
@@ -16,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-19
 Last python version
 
-[Unreleased]: https://github.com/adshares/adselect/compare/v0.2...develop
+[Unreleased]: https://github.com/adshares/adselect/compare/v0.2.1...develop
+[0.2.1]: https://github.com/adshares/adselect/compare/v0.2...v0.2.1
 [0.2.0]: https://github.com/adshares/adselect/compare/v0.1...v0.2
 [0.1.0]: https://github.com/adshares/adselect/releases/tag/v0.1
