@@ -6,6 +6,7 @@ namespace Adshares\AdSelect\Tests\Domain\Model;
 
 use Adshares\AdSelect\Domain\Model\BannerCollection;
 use Adshares\AdSelect\Domain\Model\Campaign;
+use Adshares\AdSelect\Domain\ValueObject\Budget;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +22,8 @@ final class CampaignTest extends TestCase
             new ExtendedDateTime(),
             new BannerCollection(),
             [],
-            []
+            [],
+            new Budget(1000000)
         );
 
         $this->assertInstanceOf(Campaign::class, $campaign);

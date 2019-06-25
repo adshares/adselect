@@ -10,6 +10,7 @@ use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\BannerCollection;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
+use Adshares\AdSelect\Domain\ValueObject\Budget;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
@@ -37,6 +38,11 @@ final class CampaignUpdateDto
         try {
             $campaignId = new Id($campaignData['campaign_id']);
             $banners = $this->prepareBannerCollection($campaignId, $campaignData['banners']);
+            $budget = new Budget(
+                $campaignData['budget'],
+                $campaignData['max_cpc'] ?? null,
+                $campaignData['max_cpm'] ?? null
+            );
 
             return new Campaign(
                 $campaignId,
@@ -44,7 +50,8 @@ final class CampaignUpdateDto
                 $campaignData['time_end'] ? ExtendedDateTime::createFromTimestamp($campaignData['time_end']) : null,
                 $banners,
                 $campaignData['keywords'],
-                $campaignData['filters']
+                $campaignData['filters'],
+                $budget
             );
         } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
             throw new ValidationDtoException($exception->getMessage());
@@ -76,6 +83,10 @@ final class CampaignUpdateDto
 
             if (!isset($campaign['filters']['exclude'])) {
                 throw new ValidationDtoException('Field `filters[exclude]` is required.');
+            }
+
+            if (!isset($campaign['budget'])) {
+                throw new ValidationDtoException('Field `budget` is required.');
             }
 
             $this->validateBanners($campaign['banners']);
