@@ -49,7 +49,10 @@ class CleanEvents extends Command
             return;
         }
 
-        $output->writeln(sprintf('Start removing documents (events) from %s', $fromDate->format('Y-m-d H:i:s')));
+        $output->writeln(sprintf(
+            'Start removing documents (events) older than %s',
+            $fromDate->format('Y-m-d H:i:s')
+        ));
 
         $this->dataCleaner->cleanEvents($fromDate);
 

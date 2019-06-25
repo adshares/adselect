@@ -18,6 +18,24 @@ abstract class AbstractIndex
         'number_of_replicas' => 0,
     ];
 
+    public const SLOW_LOG_SETTINGS = [
+        'index.search.slowlog.threshold.query.warn' => '10s',
+        'index.search.slowlog.threshold.query.info' => '5s',
+        'index.search.slowlog.threshold.query.debug' => '2s',
+        'index.search.slowlog.threshold.query.trace' => '500ms',
+        'index.search.slowlog.threshold.fetch.warn' => '1s',
+        'index.search.slowlog.threshold.fetch.info' => '800ms',
+        'index.search.slowlog.threshold.fetch.debug' => '500ms',
+        'index.search.slowlog.threshold.fetch.trace' => '200ms',
+        'index.search.slowlog.level' => 'info',
+        'index.indexing.slowlog.threshold.index.warn' => '10s',
+        'index.indexing.slowlog.threshold.index.info' => '5s',
+        'index.indexing.slowlog.threshold.index.debug' => '2s',
+        'index.indexing.slowlog.threshold.index.trace' => '500ms',
+        'index.indexing.slowlog.level' => 'info',
+        'index.indexing.slowlog.source' => '1000',
+    ];
+
     public static function mappings(): array
     {
         if (static::INDEX === '') {
@@ -29,14 +47,21 @@ abstract class AbstractIndex
         }
 
         $namespace = getenv('ES_NAMESPACE');
+        $isSlowLogEnabled = (bool)getenv('ES_SLOWLOG_ENABLED');
 
         $indexName = $namespace ? $namespace . '_' . static::INDEX : static::INDEX;
+
+        $settings = static::SETTINGS;
+
+        if ($isSlowLogEnabled) {
+            $settings = array_merge($settings, static::SLOW_LOG_SETTINGS);
+        }
 
         return [
             'index' => $indexName,
             'body' => [
                 'mappings' => static::MAPPINGS,
-                'settings' => static::SETTINGS,
+                'settings' => $settings,
             ],
         ];
     }

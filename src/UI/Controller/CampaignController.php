@@ -91,7 +91,10 @@ class CampaignController
             } catch (ValidationDtoException $exception) {
                 $results[$requestId] = [];
 
-                $this->logger->info('[Find] Invalid input data.', $query);
+                $this->logger->info(
+                    sprintf('[Find] Invalid input data (%s).', $exception->getMessage()),
+                    $query
+                );
                 // think about adding a referer and more data related to a server which asks
             }
         }

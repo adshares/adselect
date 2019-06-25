@@ -7,6 +7,7 @@ namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\Mapper;
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\BannerCollection;
 use Adshares\AdSelect\Domain\Model\Campaign;
+use Adshares\AdSelect\Domain\ValueObject\Budget;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
@@ -71,7 +72,8 @@ final class CampaignMapperTest extends TestCase
                     'user:age' => [85],
                     'device:browser' => ['chrome', 'edge', 'firefox', 'safari'],
                 ],
-            ]
+            ],
+            new Budget(6666666, 10001, 10002)
         );
 
         $mapped = CampaignMapper::map($campaign, 'index-name');
@@ -171,6 +173,9 @@ final class CampaignMapperTest extends TestCase
                 3 => 'safari',
             ],
             'searchable' => true,
+            'budget' => 6666666,
+            'max_cpc' => 10001,
+            'max_cpm' => 10002,
         ];
 
         $expectedStats = [

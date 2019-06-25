@@ -109,7 +109,7 @@ class EventFinder implements EventFinderInterface
         $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($params)));
 
         $response = $this->client->search($params);
-        $data = $response['hits']['hits'][0]['_source'] ?? null;
+        $data = $response['hits']['hits'][0]['fields'] ?? null;
 
         if (!$data) {
             throw new EventNotFound('No paid events.');

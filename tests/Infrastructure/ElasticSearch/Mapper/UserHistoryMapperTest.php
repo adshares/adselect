@@ -21,6 +21,7 @@ class UserHistoryMapperTest extends TestCase
             new Id('667ea41f8fb548829ac4bb89cf00ac00'),
             new Id('667ea41f8fb548829ac4bb89cf00ac02'),
             new Id('667ea41f8fb548829ac4bb89cf00ac03'),
+            new Id('667ea41f8fb548829ac4bb89cf00ac03'),
             new Id('667ea41f8fb548829ac4bb89cf00ac04'),
             new Id('667ea41f8fb548829ac4bb89cf00ac05'),
             new Id('667ea41f8fb548829ac4bb89cf00ac06'),
@@ -34,6 +35,7 @@ class UserHistoryMapperTest extends TestCase
 
         $mapped = UserHistoryMapper::map(
             $event->getUserId(),
+            $event->getTrackingId(),
             $event->getCampaignId(),
             $event->getBannerId(),
             (new DateTime())->format('Y-m-d H:i:s'),
@@ -42,9 +44,9 @@ class UserHistoryMapperTest extends TestCase
 
         $this->assertEquals('index-name', $mapped['index']['index']['_index']);
         $this->assertEquals('667ea41f8fb548829ac4bb89cf00ac03', $mapped['data']['user_id']);
-        $this->assertEquals('667ea41f8fb548829ac4bb89cf00ac03', $mapped['data']['user_id']);
         $this->assertEquals('667ea41f8fb548829ac4bb89cf00ac05', $mapped['data']['campaign_id']);
         $this->assertEquals('667ea41f8fb548829ac4bb89cf00ac06', $mapped['data']['banner_id']);
+        $this->assertEquals('667ea41f8fb548829ac4bb89cf00ac03', $mapped['data']['tracking_id']);
         $this->assertArrayHasKey('time', $mapped['data']);
     }
 }

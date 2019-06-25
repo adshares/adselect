@@ -34,12 +34,15 @@ final class Event
     private $id;
     /** @var int */
     private $paymentId;
+    /** @var Id */
+    private $trackingId;
 
     public function __construct(
         int $id,
         Id $caseId,
         Id $publisherId,
         Id $userId,
+        Id $trackingId,
         Id $zoneId,
         Id $campaignId,
         Id $bannerId,
@@ -53,6 +56,7 @@ final class Event
         $this->caseId = $caseId;
         $this->publisherId = $publisherId;
         $this->userId = $userId;
+        $this->trackingId = $trackingId;
         $this->zoneId = $zoneId;
         $this->campaignId = $campaignId;
         $this->bannerId = $bannerId;
@@ -91,6 +95,11 @@ final class Event
     public function getUserId(): string
     {
         return $this->userId->toString();
+    }
+
+    public function getTrackingId(): string
+    {
+        return $this->trackingId->toString();
     }
 
     public function getCampaignId(): string
@@ -145,6 +154,7 @@ final class Event
             'case_id' => $this->caseId->toString(),
             'publisher_id' => $this->publisherId->toString(),
             'user_id' => $this->userId->toString(),
+            'tracking_id' => $this->trackingId->toString(),
             'zone_id' => $this->zoneId->toString(),
             'campaign_id' => $this->campaignId->toString(),
             'banner_id' => $this->bannerId->toString(),

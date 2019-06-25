@@ -6,48 +6,17 @@ namespace Adshares\AdSelect\Application\Dto;
 
 final class UnpaidEvents extends Events
 {
-    protected function isValid(array $event): bool
-    {
-        if (!isset($event['id'])) {
-            return false;
-        }
-
-        if (!isset($event['case_id'])) {
-            return false;
-        }
-
-        if (!isset($event['publisher_id'])) {
-            return false;
-        }
-
-        if (!isset($event['user_id'])) {
-            return false;
-        }
-
-        if (!isset($event['zone_id'])) {
-            return false;
-        }
-
-        if (!isset($event['campaign_id'])) {
-            return false;
-        }
-
-        if (!isset($event['banner_id'])) {
-            return false;
-        }
-
-        if (!isset($event['keywords'])) {
-            return false;
-        }
-
-        if (!isset($event['time'])) {
-            return false;
-        }
-
-        if (!isset($event['type'])) {
-            return false;
-        }
-
-        return true;
-    }
+    protected const REQUIRED_FIELDS = [
+        'id',
+        'case_id',
+        'publisher_id',
+        'user_id',
+        'tracking_id',
+        'zone_id',
+        'campaign_id',
+        'banner_id',
+        'keywords',
+        'time',
+        'type',
+    ];
 }

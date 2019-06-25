@@ -47,7 +47,10 @@ class CleanUserHistory extends Command
             return;
         }
 
-        $output->writeln(sprintf('Start removing documents (user history) from %s', $fromDate->format('Y-m-d H:i:s')));
+        $output->writeln(sprintf(
+            'Start removing documents (user history) older than %s',
+            $fromDate->format('Y-m-d H:i:s')
+        ));
 
         $this->dataCleaner->cleanUserHistory($fromDate);
 
