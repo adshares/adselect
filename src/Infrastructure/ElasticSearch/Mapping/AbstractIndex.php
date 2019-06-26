@@ -37,7 +37,7 @@ abstract class AbstractIndex
     ];
 
     public const INDEX_SETTINGS = [
-        'index.refresh_interval' => '60s',
+        'index.refresh_interval' => '30s',
     ];
 
     public static function mappings(): array

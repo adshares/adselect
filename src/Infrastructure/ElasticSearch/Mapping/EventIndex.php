@@ -8,10 +8,6 @@ class EventIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'events';
 
-    public const INDEX_SETTINGS = [
-        'index.refresh_interval' => '30s',
-    ];
-
     public const MAPPINGS = [
         'properties' => [
             'id' => ['type' => 'long'],
