@@ -8,6 +8,10 @@ class UserHistoryIndex extends AbstractIndex implements Index
 {
     public const INDEX = 'user_history';
 
+    public const INDEX_SETTINGS = [
+        'index.refresh_interval' => '10s',
+    ];
+
     public const MAPPINGS = [
         'properties' => [
             'user_id' => [ 'type' => 'keyword' ],

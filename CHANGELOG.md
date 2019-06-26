@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2019-06-26
+### Added
+- Index refresh interval setting
+
 ## [0.2.1] - 2019-06-25
 ### Added
 - Campaign soft delete
@@ -24,7 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-19
 Last python version
 
-[Unreleased]: https://github.com/adshares/adselect/compare/v0.2.1...develop
+[Unreleased]: https://github.com/adshares/adselect/compare/v0.2.2...develop
+[0.2.2]: https://github.com/adshares/adselect/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/adshares/adselect/compare/v0.2...v0.2.1
 [0.2.0]: https://github.com/adshares/adselect/compare/v0.1...v0.2
 [0.1.0]: https://github.com/adshares/adselect/releases/tag/v0.1
