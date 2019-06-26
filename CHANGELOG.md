@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Index refresh interval setting
 
+## [0.2.2] - 2019-06-26
+### Added
+- Index refresh interval setting
+
 ## [0.2.1] - 2019-06-25
 ### Added
 - Campaign soft delete
