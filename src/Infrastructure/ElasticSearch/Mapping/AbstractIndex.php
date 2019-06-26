@@ -36,6 +36,10 @@ abstract class AbstractIndex
         'index.indexing.slowlog.source' => '1000',
     ];
 
+    public const INDEX_SETTINGS = [
+        'index.refresh_interval' => '60s',
+    ];
+
     public static function mappings(): array
     {
         if (static::INDEX === '') {
@@ -54,7 +58,7 @@ abstract class AbstractIndex
         $settings = static::SETTINGS;
 
         if ($isSlowLogEnabled) {
-            $settings = array_merge($settings, static::SLOW_LOG_SETTINGS);
+            $settings = array_merge($settings, static::SLOW_LOG_SETTINGS, static::INDEX_SETTINGS);
         }
 
         return [
