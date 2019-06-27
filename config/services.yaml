@@ -57,6 +57,7 @@ services:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $expInterval: 10
             $expThreshold: 50
+            $scoreThreshold: '%env(ES_SCORE_THRESHOLD)%'
             $logger: '@logger'
 
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:

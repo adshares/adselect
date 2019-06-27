@@ -32,13 +32,21 @@ class BannerFinder implements BannerFinderInterface
     private $expInterval;
     /** @var int */
     private $expThreshold;
+    /** @var int */
+    private $scoreThreshold;
 
-    public function __construct(Client $client, int $expInterval, int $expThreshold, LoggerInterface $logger)
-    {
+    public function __construct(
+        Client $client,
+        int $expInterval,
+        int $expThreshold,
+        int $scoreThreshold,
+        LoggerInterface $logger
+    ) {
         $this->client = $client;
         $this->logger = $logger;
         $this->expInterval = $expInterval;
         $this->expThreshold = $expThreshold;
+        $this->scoreThreshold = $scoreThreshold;
     }
 
     public function find(QueryDto $queryDto, int $size): FoundBannersCollection
@@ -59,7 +67,7 @@ class BannerFinder implements BannerFinderInterface
         if ($second % $this->expInterval === 0) {
             $queryBuilder = new ExpQueryBuilder($query, $this->expThreshold);
         } else {
-            $queryBuilder = new QueryBuilder($query, $userHistory);
+            $queryBuilder = new QueryBuilder($query, $this->scoreThreshold, $userHistory);
         }
 
 //        $params['body']['explain'] = true;
