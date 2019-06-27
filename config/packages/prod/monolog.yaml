@@ -1,10 +1,9 @@
 monolog:
     handlers:
         main:
-            type:  rotating_file
+            type:  stream
             path:  '%env(LOG_FILE_PATH)%'
             level: notice
-            max_files: 10
         console:
             type: console
             process_psr_3_messages: false
