@@ -35,8 +35,6 @@ PAINLESS;
                 'boost_mode' => 'replace',
                 'query' => $this->query->build(),
                 'script_score' => [
-
-
                     'script' => [
                         'lang' => 'painless',
                         'source' => $scriptScore,
