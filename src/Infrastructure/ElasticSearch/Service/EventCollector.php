@@ -55,16 +55,11 @@ class EventCollector implements EventCollectorInterface
                 $event->getTime(),
                 UserHistoryIndex::name()
             );
-            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::name());
-
             $mappedEvents[] = $mappedUnpaidEvent['index'];
             $mappedEvents[] = $mappedUnpaidEvent['data'];
 
             $mappedEvents[] = $mappedUserHistory['index'];
             $mappedEvents[] = $mappedUserHistory['data'];
-
-            $mappedEvents[] = $mappedCampaignStats['index'];
-            $mappedEvents[] = $mappedCampaignStats['data'];
 
             if (count($mappedEvents) >= $this->bulkLimit) {
                 $this->client->bulk($mappedEvents, self::ES_TYPE);
