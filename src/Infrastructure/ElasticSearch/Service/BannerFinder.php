@@ -59,6 +59,10 @@ class BannerFinder implements BannerFinderInterface
         $params = [
             'index' => CampaignIndex::name(),
             'size' => $size,
+            'client' => [
+                'timeout' => 0.5,
+                'connect_timeout' => 0.2
+            ],
             'body' => [
                 '_source' => false,
             ],
