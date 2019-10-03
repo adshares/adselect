@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
@@ -10,6 +10,13 @@ use function array_merge;
 
 class CampaignMapper
 {
+    const UPDATE_SCRIPT = <<<EOF
+                ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
+                for (String key : params.keySet()) {
+                    ctx._source[key] = params[key];
+                }
+EOF;
+
     public static function map(Campaign $campaign, string $index): array
     {
         $mapped['index'] = [
@@ -57,8 +64,13 @@ class CampaignMapper
         ];
 
         $mapped['data'] = [
-            'doc' => $data,
-            'upsert' => array_merge($data, $stats),
+            "script" => [
+                'source' => self::UPDATE_SCRIPT,
+                'lang' => 'painless',
+                "params" => $data,
+            ],
+            'scripted_upsert' => true, //exec script also if new campaign
+            'upsert' => $stats,
         ];
 
         return $mapped;
