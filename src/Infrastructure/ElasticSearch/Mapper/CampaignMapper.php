@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
@@ -57,8 +57,19 @@ class CampaignMapper
         ];
 
         $mapped['data'] = [
-            'doc' => $data,
-            'upsert' => array_merge($data, $stats),
+            "script" => [
+                'source' => <<<EOF
+                ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
+                for (String key : params.keySet()) {
+                    ctx._source[key] = params[key];
+                }
+EOF
+                ,
+                'lang' => 'painless',
+                "params" => $data,
+            ],
+            'scripted_upsert' => true, //exec script also if new campaign
+            'upsert' => $stats,
         ];
 
         return $mapped;
