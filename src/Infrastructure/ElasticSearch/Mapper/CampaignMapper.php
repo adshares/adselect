@@ -10,6 +10,13 @@ use function array_merge;
 
 class CampaignMapper
 {
+    const UPDATE_SCRIPT = <<<EOF
+                ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
+                for (String key : params.keySet()) {
+                    ctx._source[key] = params[key];
+                }
+EOF;
+
     public static function map(Campaign $campaign, string $index): array
     {
         $mapped['index'] = [
@@ -58,13 +65,7 @@ class CampaignMapper
 
         $mapped['data'] = [
             "script" => [
-                'source' => <<<EOF
-                ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
-                for (String key : params.keySet()) {
-                    ctx._source[key] = params[key];
-                }
-EOF
-                ,
+                'source' => self::UPDATE_SCRIPT,
                 'lang' => 'painless',
                 "params" => $data,
             ],

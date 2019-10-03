@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\Mapper;
 
@@ -81,101 +81,105 @@ final class CampaignMapperTest extends TestCase
         $data = $mapped['data'];
 
         $expected = [
-            'time_range' =>
-                [
-                    'gte' => $start->getTimestamp(),
-                    'lte' => $end->getTimestamp(),
+            'source' => CampaignMapper::UPDATE_SCRIPT,
+            'lang' => 'painless',
+            'params' => [
+                'time_range' =>
+                    [
+                        'gte' => $start->getTimestamp(),
+                        'lte' => $end->getTimestamp(),
+                    ],
+                'banners' =>
+                    [
+                        0 => [
+                            'id' => '43c567e1396b4cadb52223a51796fd01',
+                            'size' => '90x25',
+                            'width' => 90,
+                            'height' => 25,
+                            'keywords:source_host' => [
+                                0 => 'adshares.net',
+                            ],
+                            'keywords:adshares_address' => [
+                                0 => '0001-00000005-CBCA',
+                            ],
+                            'keywords:type' => [
+                                0 => 'image',
+                            ],
+                            'keywords:adult_score' => [
+                                0 => 90,
+                            ],
+                            'keywords:classification' => [
+                                0 => 'classify:49:0',
+                            ],
+                        ],
+                        1 => [
+                            'id' => '43c567e1396b4cadb52223a51796fd02',
+                            'size' => '180x90',
+                            'width' => 180,
+                            'height' => 90,
+                            'keywords:source_host' => [
+                                0 => 'adshares.net',
+                            ],
+                            'keywords:adshares_address' => [
+                                0 => '0001-00000005-CBCA',
+                            ],
+                            'keywords:type' => [
+                                0 => 'image',
+                            ],
+                            'keywords:adult_score' => [
+                                0 => 50,
+                            ],
+                            'keywords:classification' => [
+                            ],
+                        ],
+                        2 => [
+                            'id' => '43c567e1396b4cadb52223a51796fd03',
+                            'size' => '333x111',
+                            'width' => 333,
+                            'height' => 111,
+                            'keywords:source_host' => [
+                                0 => 'adshares.net',
+                            ],
+                            'keywords:adshares_address' => [
+                                0 => '0001-00000005-CBCA',
+                            ],
+                        ],
+                    ],
+                'filters:exclude:user:country' => [
+                    0 => '99',
+                    1 => 'af',
+                    2 => 'bd',
                 ],
-            'banners' =>
-                [
+                'filters:exclude:user:age' => [
                     0 => [
-                        'id' => '43c567e1396b4cadb52223a51796fd01',
-                        'size' => '90x25',
-                        'width' => 90,
-                        'height' => 25,
-                        'keywords:source_host' => [
-                            0 => 'adshares.net',
-                        ],
-                        'keywords:adshares_address' => [
-                            0 => '0001-00000005-CBCA',
-                        ],
-                        'keywords:type' => [
-                            0 => 'image',
-                        ],
-                        'keywords:adult_score' => [
-                            0 => 90,
-                        ],
-                        'keywords:classification' => [
-                            0 => 'classify:49:0',
-                        ],
+                        'gte' => 12,
+                        'lte' => 12,
                     ],
                     1 => [
-                        'id' => '43c567e1396b4cadb52223a51796fd02',
-                        'size' => '180x90',
-                        'width' => 180,
-                        'height' => 90,
-                        'keywords:source_host' => [
-                            0 => 'adshares.net',
-                        ],
-                        'keywords:adshares_address' => [
-                            0 => '0001-00000005-CBCA',
-                        ],
-                        'keywords:type' => [
-                            0 => 'image',
-                        ],
-                        'keywords:adult_score' => [
-                            0 => 50,
-                        ],
-                        'keywords:classification' => [
-                        ],
-                    ],
-                    2 => [
-                        'id' => '43c567e1396b4cadb52223a51796fd03',
-                        'size' => '333x111',
-                        'width' => 333,
-                        'height' => 111,
-                        'keywords:source_host' => [
-                            0 => 'adshares.net',
-                        ],
-                        'keywords:adshares_address' => [
-                            0 => '0001-00000005-CBCA',
-                        ],
+                        'gte' => 20,
+                        'lte' => 35,
                     ],
                 ],
-            'filters:exclude:user:country' => [
-                0 => '99',
-                1 => 'af',
-                2 => 'bd',
-            ],
-            'filters:exclude:user:age' => [
-                0 => [
-                    'gte' => 12,
-                    'lte' => 12,
+                'filters:require:user:language' => [
+                    0 => 'en',
                 ],
-                1 => [
-                    'gte' => 20,
-                    'lte' => 35,
+                'filters:require:user:age' => [
+                    0 => [
+                        'gte' => 85,
+                        'lte' => 85,
+                    ],
                 ],
-            ],
-            'filters:require:user:language' => [
-                0 => 'en',
-            ],
-            'filters:require:user:age' => [
-                0 => [
-                    'gte' => 85,
-                    'lte' => 85,
+                'filters:require:device:browser' => [
+                    0 => 'chrome',
+                    1 => 'edge',
+                    2 => 'firefox',
+                    3 => 'safari',
                 ],
-            ],
-            'filters:require:device:browser' => [
-                0 => 'chrome',
-                1 => 'edge',
-                2 => 'firefox',
-                3 => 'safari',
-            ],
-            'searchable' => true,
-            'budget' => 6666666,
-            'max_cpc' => 10001,
-            'max_cpm' => 10002,
+                'searchable' => true,
+                'budget' => 6666666,
+                'max_cpc' => 10001,
+                'max_cpm' => 10002,
+            ]
         ];
 
         $expectedStats = [
@@ -187,6 +191,6 @@ final class CampaignMapperTest extends TestCase
 
         $this->assertCount(2, $mapped);
         $this->assertEquals($campaignId, $index['update']['_id']);
-        $this->assertEquals(['doc' => $expected, 'upsert' => array_merge($expected, $expectedStats)], $data);
+        $this->assertEquals(['script' => $expected, 'upsert' => $expectedStats, 'scripted_upsert' => true], $data);
     }
 }
