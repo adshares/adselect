@@ -102,7 +102,7 @@ class BannerFinder implements BannerFinderInterface
 
         $this->updateHistory($queryDto, $collection);
 
-        return $collection->limit(self::BANNER_SIZE_RETURNED);
+        return $collection->random(self::BANNER_SIZE_RETURNED);
     }
 
     private function fetchUserHistory(QueryDto $queryDto): array

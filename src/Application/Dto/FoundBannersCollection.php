@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Application\Dto;
 
@@ -13,17 +13,13 @@ final class FoundBannersCollection extends ArrayCollection
     public function random(int $size = 1): self
     {
         $data = $this->toArray();
-        $count = min($size, count($data) - 1);
+        $count = min($size, count($data));
         $random = [];
-        $randKeys = array_keys($data);
-        for ($i = 0; $i <= $count; $i++) {
-            $key = array_rand($randKeys);
+        $randKeys = (array)array_rand($data, $count);
+        foreach ($randKeys as $key) {
             $random[] = $data[$key];
-
-            unset($randKeys[$key]);
         }
-
-
+        
         return new self($random);
     }
 
