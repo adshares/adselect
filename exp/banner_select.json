@@ -11,9 +11,11 @@
       "human_score": [0.9]
     },
     "banner_size": "160x600",
-    "publisher_id": "85f115636b384744949300571aad2a4f",
+    "publisher_id": "00000000000000000000000000000001",
+    "site_id":"10000000000000000000000000000001",
+    "zone_id":"20000000000000000000000000000001",
     "request_id": 0,
-    "user_id": "08a29c7f5073603537721878f9f25843",
+    "user_id": "x08a29c7f5073603537721878f9f25843",
     "banner_filters": {
       "require": {
         "classification": ["classify:49:1"]

@@ -3,6 +3,7 @@
     "license": "proprietary",
     "require": {
         "php": "^7.2",
+        "ext-apcu": "*",
         "ext-ctype": "*",
         "ext-apcu": "*",
         "ext-iconv": "*",
