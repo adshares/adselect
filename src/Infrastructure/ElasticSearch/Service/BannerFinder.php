@@ -47,8 +47,7 @@ class BannerFinder implements BannerFinderInterface
         int $expThreshold,
         int $scoreThreshold,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->client = $client;
         $this->logger = $logger;
         $this->expInterval = $expInterval;
