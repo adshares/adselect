@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
@@ -23,6 +23,12 @@ use function json_encode;
 class BannerFinder implements BannerFinderInterface
 {
     private const BANNER_SIZE_RETURNED = 1;
+
+    private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
+    private const HISTORY_ENTRY_TIME = 0;
+    private const HISTORY_ENTRY_CAMPAIGN_ID = 1;
+    private const HISTORY_MAXAGE = 3600;
+    private const HISTORY_MAXENTRIES = 50;
 
     /** @var Client */
     private $client;
@@ -107,26 +113,19 @@ class BannerFinder implements BannerFinderInterface
 
     private function fetchUserHistory(QueryDto $queryDto): array
     {
-        /**
-         * @todo think about aggregations
-         * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html
-         */
-        $params = [
-            'size' => 1000,
-            'index' => UserHistoryIndex::name(),
-            'body' => UserHistory::build($queryDto->getUserId(), $queryDto->getTrackingId()),
-        ];
+        $key = self::getHistoryKey($queryDto);
 
+        $history = (array)apcu_fetch($key);
+        self::clearStaleEntries($history);
+        file_put_contents("/tmp/history.txt", print_r($history, true));
         $seen = [];
 
-        $response = $this->client->search($params);
-
-        foreach ($response['hits']['hits'] as $hit) {
-            if (!isset($seen[$hit['fields']['campaign_id'][0]])) {
-                $seen[$hit['fields']['campaign_id'][0]] = 0;
+        foreach ($history as $entry) {
+            if (isset($seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]])) {
+                $seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]]++;
+            } else {
+                $seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]] = 1;
             }
-
-            $seen[$hit['fields']['campaign_id'][0]]++;
         }
 
         return $seen;
@@ -147,22 +146,39 @@ class BannerFinder implements BannerFinderInterface
         return $required;
     }
 
+    private static function getHistoryKey(QueryDto $queryDto)
+    {
+        return self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
+    }
+
+    private static function clearStaleEntries(array &$history)
+    {
+        $history = array_slice($history, -self::HISTORY_MAXENTRIES);
+        $maxage = time() - self::HISTORY_MAXAGE;
+        for ($i = 0, $n = count($history); $i < $n; $i++) {
+            if ($history[$i][self::HISTORY_ENTRY_TIME] >= $maxage) {
+                break;
+            }
+        }
+        $history = array_slice($history, $i);
+    }
+
     private function updateHistory(QueryDto $queryDto, FoundBannersCollection $collection): void
     {
         // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
         if ($collection->count() > 0) {
-            $userEvent = UserHistoryMapper::map(
-                $queryDto->getUserId(),
-                $queryDto->getTrackingId(),
-                $collection[0]->getCampaignId(),
-                $collection[0]->getBannerId(),
-                (new DateTime())->format('Y-m-d H:i:s'),
-                UserHistoryIndex::name()
-            );
+            $key = self::getHistoryKey($queryDto);
 
-            $index = $userEvent['index'];
-            $data = $userEvent['data'];
-            $this->client->bulk([$index, $data], 'VIEW_HISTORY_UPDATE');
+            $history = (array)apcu_fetch($key);
+
+            $history[] = [
+                self::HISTORY_ENTRY_TIME => time(),
+                self::HISTORY_ENTRY_CAMPAIGN_ID => $collection[0]->getCampaignId(),
+            ];
+
+            self::clearStaleEntries($history);
+
+            apcu_store($key, $history, self::HISTORY_MAXAGE);
         }
     }
 }
