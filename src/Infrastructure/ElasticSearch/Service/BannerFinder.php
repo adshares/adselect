@@ -26,7 +26,7 @@ class BannerFinder implements BannerFinderInterface
 
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
-    private const HISTORY_ENTRY_CAMPAIGN_ID = 1;
+    const HISTORY_ENTRY_CAMPAIGN_ID = 1;
     private const HISTORY_MAXAGE = 3600;
     private const HISTORY_MAXENTRIES = 50;
 
@@ -57,7 +57,7 @@ class BannerFinder implements BannerFinderInterface
 
     public function find(QueryDto $queryDto, int $size): FoundBannersCollection
     {
-        $userHistory = $this->fetchUserHistory($queryDto);
+        $userHistory = $this->loadUserHistory($queryDto);
         $defined = $this->getDefinedRequireKeywords();
         $second = date('s');
         $query = new BaseQuery($queryDto, $defined);
@@ -77,7 +77,7 @@ class BannerFinder implements BannerFinderInterface
         if ($second % $this->expInterval === 0) {
             $queryBuilder = new ExpQueryBuilder($query, $this->expThreshold);
         } else {
-            $queryBuilder = new QueryBuilder($query, $this->scoreThreshold, $userHistory);
+            $queryBuilder = new QueryBuilder($query, $this->scoreThreshold, self::getSeenFrequencies($userHistory));
         }
 
 //        $params['body']['explain'] = true;
@@ -106,21 +106,17 @@ class BannerFinder implements BannerFinderInterface
             }
         }
 
-        $this->updateHistory($queryDto, $collection);
+        $this->updateUserHistory($userHistory, $collection);
+        $this->saveUserHistory($queryDto, $userHistory);
 
         return $collection->random(self::BANNER_SIZE_RETURNED);
     }
 
-    private function fetchUserHistory(QueryDto $queryDto): array
+    private static function getSeenFrequencies(array $userHistory): array
     {
-        $key = self::getHistoryKey($queryDto);
-
-        $history = (array)apcu_fetch($key);
-        self::clearStaleEntries($history);
-        file_put_contents("/tmp/history.txt", print_r($history, true));
         $seen = [];
 
-        foreach ($history as $entry) {
+        foreach ($userHistory as $entry) {
             if (isset($seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]])) {
                 $seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]]++;
             } else {
@@ -146,12 +142,22 @@ class BannerFinder implements BannerFinderInterface
         return $required;
     }
 
-    private static function getHistoryKey(QueryDto $queryDto)
+    private static function loadUserHistory(QueryDto $queryDto): array
     {
-        return self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
+        $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
+        $history = (array)apcu_fetch($key);
+        self::clearStaleEntries($history);
+        return $history;
     }
 
-    private static function clearStaleEntries(array &$history)
+    private static function saveUserHistory(QueryDto $queryDto, array $history): void
+    {
+        $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
+        self::clearStaleEntries($history);
+        apc_store($key, $history, self::HISTORY_MAXAGE);
+    }
+
+    private static function clearStaleEntries(array &$history): void
     {
         $history = array_slice($history, -self::HISTORY_MAXENTRIES);
         $maxage = time() - self::HISTORY_MAXAGE;
@@ -163,22 +169,14 @@ class BannerFinder implements BannerFinderInterface
         $history = array_slice($history, $i);
     }
 
-    private function updateHistory(QueryDto $queryDto, FoundBannersCollection $collection): void
+    private function updateUserHistory(array &$history, FoundBannersCollection $collection): void
     {
         // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
         if ($collection->count() > 0) {
-            $key = self::getHistoryKey($queryDto);
-
-            $history = (array)apcu_fetch($key);
-
             $history[] = [
                 self::HISTORY_ENTRY_TIME => time(),
                 self::HISTORY_ENTRY_CAMPAIGN_ID => $collection[0]->getCampaignId(),
             ];
-
-            self::clearStaleEntries($history);
-
-            apcu_store($key, $history, self::HISTORY_MAXAGE);
         }
     }
 }
