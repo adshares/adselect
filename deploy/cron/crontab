@@ -1,2 +1,0 @@
-19 4 * * * /opt/adshares/adselect/bin/console ops:es:clean-user-history
-19 3 * * * /opt/adshares/adselect/bin/console ops:es:clean-events

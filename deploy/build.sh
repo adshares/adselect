@@ -3,7 +3,5 @@
 [[ -z ${1:-""} ]] && set -eu || source ${1}/_functions.sh --vendor
 cd ${2:-"."}
 
-composer install --no-dev
-
-./bin/console cache:clear
+composer install --no-dev --optimize-autoloader
 ./bin/console ops:es:create-index

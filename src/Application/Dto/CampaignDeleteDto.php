@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Application\Dto;
 
@@ -11,7 +11,7 @@ use Adshares\AdSelect\Domain\ValueObject\Id;
 
 final class CampaignDeleteDto
 {
-    /** @var IdCollection  */
+    /** @var IdCollection */
     private $ids;
 
     public function __construct(array $data)
