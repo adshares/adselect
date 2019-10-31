@@ -4,4 +4,4 @@
 cd ${2:-"."}
 
 composer install --no-dev --optimize-autoloader
-./bin/console ops:es:create-index
+php bin/console ops:es:create-index
