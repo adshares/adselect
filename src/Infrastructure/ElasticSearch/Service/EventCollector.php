@@ -1,24 +1,28 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
 use Adshares\AdSelect\Application\Service\EventCollector as EventCollectorInterface;
+use Adshares\AdSelect\Domain\Model\Click;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignStatsMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\ClickMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaidEventMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaymentMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use Adshares\Common\Exception\RuntimeException;
 use function array_filter;
 use function array_keys;
 
@@ -38,41 +42,6 @@ class EventCollector implements EventCollectorInterface
         $this->client = $client;
         $this->bulkLimit = $bulkLimit * 2;
         $this->keywordIntersectThreshold = $keywordIntersectThreshold;
-    }
-
-    public function collect(EventCollection $events): void
-    {
-        $mappedEvents = [];
-
-        /** @var Event $event */
-        foreach ($events as $event) {
-            $mappedUnpaidEvent = EventMapper::map($event, EventIndex::name());
-            $mappedUserHistory = UserHistoryMapper::map(
-                $event->getUserId(),
-                $event->getTrackingId(),
-                $event->getCampaignId(),
-                $event->getBannerId(),
-                $event->getTime(),
-                UserHistoryIndex::name()
-            );
-            $mappedEvents[] = $mappedUnpaidEvent['index'];
-            $mappedEvents[] = $mappedUnpaidEvent['data'];
-
-            $mappedEvents[] = $mappedUserHistory['index'];
-            $mappedEvents[] = $mappedUserHistory['data'];
-
-            if (count($mappedEvents) >= $this->bulkLimit) {
-                $this->client->bulk($mappedEvents, self::ES_TYPE);
-
-                $mappedEvents = [];
-            }
-        }
-
-        if ($mappedEvents) {
-            $this->client->bulk($mappedEvents, self::ES_TYPE);
-        }
-
-//        $this->updateKeywords($events);
     }
 
     private function updateKeywords(EventCollection $events): void
@@ -137,30 +106,100 @@ class EventCollector implements EventCollectorInterface
         }
     }
 
-    public function collectPaidEvents(EventCollection $events): void
+    public function collectCases(EventCollection $events): void
     {
         $mappedEvents = [];
 
         /** @var Event $event */
         foreach ($events as $event) {
-            $mappedPaidEvent = PaidEventMapper::map($event, EventIndex::name());
-            $mappedCampaignStats = CampaignStatsMapper::map($event, CampaignIndex::name());
-
-            $mappedEvents[] = $mappedPaidEvent['index'];
-            $mappedEvents[] = $mappedPaidEvent['data'];
-
-            $mappedEvents[] = $mappedCampaignStats['index'];
-            $mappedEvents[] = $mappedCampaignStats['data'];
+            $mappedUnpaidEvent = EventMapper::map($event, EventIndex::name());
+            $mappedEvents[] = $mappedUnpaidEvent['index'];
+            $mappedEvents[] = $mappedUnpaidEvent['data'];
 
             if (count($mappedEvents) >= $this->bulkLimit) {
-                $this->client->bulk($mappedEvents, self::ES_TYPE);
+                $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
+                if($response['errors']) {
+                    throw new ElasticSearchRuntime('Could not insert all cases');
+                }
+                $mappedEvents = [];
+            }
+        }
+
+        if ($mappedEvents) {
+            $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
+            if($response['errors']) {
+                throw new ElasticSearchRuntime('Could not insert all cases');
+            }
+        }
+
+        if ($events->count() > 0) {
+            $key = 'Adselect.EventFinder.LastCase';
+            apcu_store($key, $events->last()->getId(), 300);
+        }
+    }
+
+    public function collectClicks(EventCollection $events): void
+    {
+        $mappedEvents = [];
+
+        /** @var Click $event */
+        foreach ($events as $event) {
+            $mappedUnpaidEvent = ClickMapper::map($event, EventIndex::name());
+            $mappedEvents[] = $mappedUnpaidEvent['index'];
+            $mappedEvents[] = $mappedUnpaidEvent['data'];
+
+            if (count($mappedEvents) >= $this->bulkLimit) {
+                $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
+                if($response['errors']) {
+                    throw new ElasticSearchRuntime('Could not update all clicks');
+                }
+                $mappedEvents = [];
+            }
+        }
+
+        if ($mappedEvents) {
+            $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
+            if($response['errors']) {
+                throw new ElasticSearchRuntime('Could not update all clicks');
+            }
+        }
+
+        if ($events->count() > 0) {
+            $key = 'Adselect.EventFinder.LastClick';
+            apcu_store($key, $events->last()->getId(), 300);
+        }
+    }
+
+    public function collectPayments(EventCollection $events): void
+    {
+        $mappedEvents = [];
+
+        /** @var Click $event */
+        foreach ($events as $event) {
+            $mappedUnpaidEvent = PaymentMapper::map($event, EventIndex::name());
+            $mappedEvents[] = $mappedUnpaidEvent['index'];
+            $mappedEvents[] = $mappedUnpaidEvent['data'];
+
+            if (count($mappedEvents) >= $this->bulkLimit) {
+                $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
+                if($response['errors']) {
+                    throw new ElasticSearchRuntime('Could not update all payments');
+                }
 
                 $mappedEvents = [];
             }
         }
 
         if ($mappedEvents) {
-            $this->client->bulk($mappedEvents, self::ES_TYPE);
+            $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
+            if($response['errors']) {
+                throw new ElasticSearchRuntime('Could not update all payments');
+            }
+        }
+
+        if ($events->count() > 0) {
+            $key = 'Adselect.EventFinder.LastPayment';
+            apcu_store($key, $events->last()->getId(), 300);
         }
     }
 }

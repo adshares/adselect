@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
@@ -14,16 +14,16 @@ class EventMapper
             'index' => [
                 '_index' => $index,
                 '_type' => '_doc',
-                '_id' => $event->getCaseId(),
+                '_id' => $event->getId(),
             ],
         ];
 
         $data = $event->toArray();
         $data['keywords_flat'] = $event->flatKeywords();
 
-        if ($data['payment_id'] === null) {
-            unset($data['payment_id']);
-        }
+        $data = array_filter($data, function ($x) {
+            return $x !== null;
+        });
 
         $mapped['data'] = $data;
 

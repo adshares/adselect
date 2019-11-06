@@ -109,17 +109,17 @@ class Client
         try {
             $response = $this->client->bulk(['body' => $mapped]);
 
-            if ($response['errors'] === true) {
-                $errors = json_encode(array_map(
+            if ($response['errors']) {
+                $errors = array_map(
                     static function ($item) {
                         return $item;
                     },
                     $response['items']
-                ));
+                );
 
-                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s', $type, $errors));
+                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s QUERY: %s', $type, json_encode($errors), json_encode($mapped)));
 
-                return [];
+                return $response;
             }
 
             return $response;

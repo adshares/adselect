@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Tests\Application\Dto;
 
-use Adshares\AdSelect\Application\Dto\UnpaidEvents;
+use Adshares\AdSelect\Application\Dto\UnpaidCases;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ final class UnpaidEventsTest extends TestCase
      */
     public function testIfDtoIsValid(array $data, int $successEvents, int $failuredEvents): void
     {
-        $events = new UnpaidEvents([$data]);
+        $events = new UnpaidCases([$data]);
 
         $this->assertCount($successEvents, $events->events());
         $this->assertCount($failuredEvents, $events->failedEvents());

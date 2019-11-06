@@ -24,6 +24,7 @@ EOF;
                 '_index' => $index,
                 '_type' => '_doc',
                 '_id' => $campaign->getId(),
+                'routing' => $campaign->getId(),
             ],
         ];
 
@@ -45,6 +46,7 @@ EOF;
 
         $data = array_merge(
             [
+                'join' => 'campaign',
                 'time_range' => Helper::range($campaign->getTimeStart(), $campaign->getTimeEnd()),
                 'banners' => $banners,
                 'searchable' => true,
@@ -56,13 +58,6 @@ EOF;
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)
         );
 
-        $stats = [
-            'stats_views' => 0,
-            'stats_clicks' => 0,
-            'stats_exp' => 0,
-            'stats_paid_amount' => 0,
-        ];
-
         $mapped['data'] = [
             "script" => [
                 'source' => self::UPDATE_SCRIPT,
@@ -70,9 +65,46 @@ EOF;
                 "params" => $data,
             ],
             'scripted_upsert' => true, //exec script also if new campaign
-            'upsert' => $stats,
+            'upsert' => (object)[]
         ];
 
+        return $mapped;
+    }
+
+    public static function mapStats(
+        Campaign $campaign,
+        string $index,
+        float $rpm,
+        string $publisher_id = null,
+        ?string $site_id = null,
+        ?string $zone_id = null
+    ) {
+        $id = sha1(implode(":", [$campaign->getId(), $publisher_id, $site_id, $zone_id]));
+        $mapped = [];
+        $mapped['index'] = [
+            'update' => [
+                '_index' => $index,
+                '_type' => '_doc',
+                '_id' => $id,
+                'routing' => $campaign->getId(),
+            ],
+        ];
+
+        $mapped['data'] = [
+            'doc' => [
+                'join' => [
+                    'name' => 'stats',
+                    'parent' => $campaign->getId(),
+                ],
+                'stats' => [
+                    'publisher_id' => $publisher_id,
+                    'site_id' => $site_id,
+                    'zone_id' => $zone_id,
+                    'rpm' => $rpm,
+                ]
+            ],
+            'doc_as_upsert' => true,
+        ];
         return $mapped;
     }
 }

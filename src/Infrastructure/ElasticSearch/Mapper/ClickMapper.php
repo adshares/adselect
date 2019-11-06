@@ -4,11 +4,12 @@ declare(strict_types = 1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
+use Adshares\AdSelect\Domain\Model\Click;
 use Adshares\AdSelect\Domain\Model\Event;
 
-class PaidEventMapper
+class ClickMapper
 {
-    public static function map(Event $event, string $index): array
+    public static function map(Click $event, string $index): array
     {
         $mapped['index'] = [
             'update' => [
@@ -20,14 +21,9 @@ class PaidEventMapper
         ];
 
         $mapped['data'] = [
-            '_source' => 'paid_amount',
-            'script' => [
-                'source' => 'ctx._source.paid_amount+=params.paid_amount;ctx._source.payment_id=params.payment_id',
-                'params' => [
-                    'paid_amount' => $event->getPaidAmount(),
-                    'payment_id' => $event->getPaymentId(),
-                ],
-                'lang' => 'painless',
+            'doc' => [
+                'click_id' => $event->getId(),
+                'click_time' => $event->getTime(),
             ],
         ];
 
