@@ -77,10 +77,9 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         $mappedCampaigns = [];
         /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
         foreach ($campaigns as $campaign) {
-            $mapped = CampaignMapper::mapStats($campaign, CampaignIndex::name(), 1.0);
+            $mapped = CampaignMapper::mapStats($campaign->getId(), CampaignIndex::name(), 0.00);
             $mappedCampaigns[] = $mapped['index'];
             $mappedCampaigns[] = $mapped['data'];
-            break;
         }
         if ($mappedCampaigns) {
             $this->client->bulk($mappedCampaigns, self::ES_INITIALIZE_STATS_TYPE);

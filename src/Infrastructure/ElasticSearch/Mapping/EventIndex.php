@@ -16,6 +16,7 @@ class EventIndex extends AbstractIndex implements Index
                 'format' => 'yyyy-MM-dd HH:mm:ss',
             ],
             'publisher_id' => ['type' => 'keyword'],
+            'site_id' => ['type' => 'keyword'],
             'zone_id' => ['type' => 'keyword'],
             'campaign_id' => ['type' => 'keyword'],
             'banner_id' => ['type' => 'keyword'],

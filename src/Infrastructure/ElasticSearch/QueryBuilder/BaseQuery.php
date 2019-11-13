@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
@@ -56,6 +56,7 @@ class BaseQuery implements QueryInterface
                             'bool' => [
                                 'should' => $requires,
                                 'minimum_should_match' => count($this->definedRequireFilters),
+                                "boost" => 0.0,
                             ],
                         ],
                         [
@@ -82,6 +83,62 @@ class BaseQuery implements QueryInterface
 
                             ],
                         ],
+                    ],
+                    [
+                        "bool" => [
+                            "should" => [
+                                [
+                                    "has_child" => [
+                                        "type" => "stats",
+                                        "query" => [
+                                            'function_score' => [
+                                                "query" => [
+                                                    'bool' => [
+                                                        'filter' => [
+                                                            [
+                                                                'terms' => [
+                                                                    'stats.publisher_id' => [
+                                                                        '',
+                                                                        $this->bannerFinderDto->getPublisherId()->toString()
+                                                                    ],
+                                                                ]
+                                                            ],
+                                                            [
+                                                                'terms' => [
+                                                                    'stats.site_id' => ['', $this->bannerFinderDto->getSiteId()->toString()],
+                                                                ]
+                                                            ],
+                                                            [
+                                                                'terms' => [
+                                                                    'stats.zone_id' => ['', $this->bannerFinderDto->getZoneId()->toString()],
+                                                                ]
+                                                            ],
+                                                        ],
+                                                    ]
+                                                ],
+                                                "script_score" => [
+                                                    "script" => [
+                                                        "params" => [
+                                                            'publisher_id' => $this->bannerFinderDto->getPublisherId()->toString(),
+                                                            'site_id' => $this->bannerFinderDto->getSiteId()->toString(),
+                                                            'zone_id' => $this->bannerFinderDto->getZoneId()->toString(),
+                                                        ],
+                                                        "source" => <<<PAINLESS
+double rpm = Math.min(99.9, doc['stats.rpm'].value);                                              
+return rpm + (doc['stats.publisher_id'].value == params['publisher_id'] ? 100.0 : 0.0) + (doc['stats.site_id'].value == params['site_id'] ? 100.0 : 0.0) + (doc['stats.zone_id'].value == params['zone_id'] ? 100.0 : 0.0);
+PAINLESS
+                                                    ]
+                                                ],
+                                                "boost_mode" => "replace",
+                                                //"score_mode" => "max",
+                                            ],
+                                        ],
+                                        "score_mode" => "max",
+                                    ]
+                                ],
+                            ],
+                        ]
+
                     ],
                 ],
             ],

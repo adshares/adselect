@@ -36,6 +36,11 @@ services:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
 
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+            $bulkLimit: 500
+
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
@@ -55,9 +60,7 @@ services:
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-            $expInterval: 10
-            $expThreshold: 50
-            $scoreThreshold: '%env(ES_SCORE_THRESHOLD)%'
+            $experimentChance: '%env(ES_EXPERIMENT_CHANCE)%'
             $logger: '@logger'
 
     Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:

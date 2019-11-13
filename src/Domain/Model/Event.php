@@ -16,6 +16,8 @@ final class Event
     /** @var Id */
     private $publisherId;
     /** @var Id */
+    private $siteId;
+    /** @var Id */
     private $zoneId;
     /** @var Id */
     private $campaignId;
@@ -46,6 +48,7 @@ final class Event
         int $id,
         DateTimeInterface $createdAt,
         Id $publisherId,
+        Id $siteId,
         Id $zoneId,
         Id $campaignId,
         Id $bannerId,
@@ -57,6 +60,7 @@ final class Event
         $this->id = $id;
         $this->createdAt = $createdAt;
         $this->publisherId = $publisherId;
+        $this->siteId = $siteId;
         $this->zoneId = $zoneId;
         $this->campaignId = $campaignId;
         $this->bannerId = $bannerId;
@@ -150,10 +154,11 @@ final class Event
             'id' => $this->id,
             'time' => $this->getTime(),
             'publisher_id' => $this->publisherId->toString(),
+            'site_id' => $this->siteId->toString(),
+            'zone_id' => $this->zoneId->toString(),
             'user_id' => $this->userId->toString(),
             'tracking_id' => $this->trackingId->toString(),
             'impression_id' => $this->impressionId->toString(),
-            'zone_id' => $this->zoneId->toString(),
             'campaign_id' => $this->campaignId->toString(),
             'banner_id' => $this->bannerId->toString(),
             'paid_amount' => $this->paidAmount,

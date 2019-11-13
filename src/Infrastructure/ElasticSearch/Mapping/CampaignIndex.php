@@ -2,7 +2,7 @@
 /**
  * @phpcs:disable Generic.Files.LineLength.TooLong
  */
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
@@ -12,10 +12,21 @@ class CampaignIndex extends AbstractIndex implements Index
 
     public const MAPPINGS = [
         'properties' => [
-            'banners' =>    [ 'type' => 'nested' ],
-            'time_range' =>    [ 'type' => 'long_range' ],
+            'banners' => ['type' => 'nested'],
+            'time_range' => ['type' => 'long_range'],
             'join' => ['type' => 'join', 'relations' => ['campaign' => 'stats']],
-            'stats.rpm' => ['type' => 'double'],
+            'stats' => [
+                'properties' => [
+                    'publisher_id' => ['type' => 'keyword'],
+                    'site_id' => ['type' => 'keyword'],
+                    'zone_id' => ['type' => 'keyword'],
+                    'rpm' => ['type' => 'double'],
+                    'last_update' => [
+                        'type' => 'date',
+                        'format' => 'yyyy-MM-dd HH:mm:ss',
+                    ],
+                ]
+            ],
             'budget' => ['type' => 'long'],
             'max_cpc' => ['type' => 'long'],
             'max_cpm' => ['type' => 'long'],
@@ -34,7 +45,7 @@ class CampaignIndex extends AbstractIndex implements Index
             ],
             [
                 'objects_ranges' => [
-                    'match'=> 'filters:*',
+                    'match' => 'filters:*',
                     'match_mapping_type' => 'object',
                     'mapping' => [
                         'type' => 'long_range'
@@ -43,7 +54,7 @@ class CampaignIndex extends AbstractIndex implements Index
             ],
             [
                 'long_ranges' => [
-                    'match'=> 'filters:*',
+                    'match' => 'filters:*',
                     'match_mapping_type' => 'long',
                     'mapping' => [
                         'type' => 'long_range'
@@ -52,7 +63,7 @@ class CampaignIndex extends AbstractIndex implements Index
             ],
             [
                 'double_ranges' => [
-                    'match'=> 'filters:*',
+                    'match' => 'filters:*',
                     'match_mapping_type' => 'double',
                     'mapping' => [
                         'type' => 'double_range'

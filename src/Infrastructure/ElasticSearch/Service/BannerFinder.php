@@ -10,6 +10,7 @@ use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
@@ -24,6 +25,8 @@ class BannerFinder implements BannerFinderInterface
 {
     private const BANNER_SIZE_RETURNED = 1;
 
+    private const SOURCE_WEIGHTS_APC_KEY = 'Adselect.SourceWeights';
+
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
     const HISTORY_ENTRY_CAMPAIGN_ID = 1;
@@ -34,25 +37,17 @@ class BannerFinder implements BannerFinderInterface
     private $client;
     /** @var LoggerInterface */
     private $logger;
-    /** @var int */
-    private $expInterval;
-    /** @var int */
-    private $expThreshold;
-    /** @var int */
-    private $scoreThreshold;
+    /** @var float */
+    private $experimentChance;
 
     public function __construct(
         Client $client,
-        int $expInterval,
-        int $expThreshold,
-        int $scoreThreshold,
+        float $experimentChance,
         LoggerInterface $logger
     ) {
         $this->client = $client;
         $this->logger = $logger;
-        $this->expInterval = $expInterval;
-        $this->expThreshold = $expThreshold;
-        $this->scoreThreshold = $scoreThreshold;
+        $this->experimentChance = $experimentChance;
     }
 
     public function find(QueryDto $queryDto, int $size): FoundBannersCollection
@@ -74,18 +69,24 @@ class BannerFinder implements BannerFinderInterface
             ],
         ];
 
-        if ($second % $this->expInterval === 0) {
-            $queryBuilder = new ExpQueryBuilder($query, $this->expThreshold);
+        $chance = (mt_rand(0, 999) / 1000);
+
+        if ($chance < $this->experimentChance) {
+            $queryBuilder = new ExpQueryBuilder($query, $this->getSourceServerWeights());
         } else {
-            $queryBuilder = new QueryBuilder($query, $this->scoreThreshold, self::getSeenFrequencies($userHistory));
+            $queryBuilder = new QueryBuilder($query, self::getSeenFrequencies($userHistory));
         }
 
 //        $params['body']['explain'] = true;
         $params['body']['query'] = $queryBuilder->build();
 
-        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s', json_encode($params)));
+        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s %s %s', $chance, $this->experimentChance,
+            json_encode($params)));
 
         $response = $this->client->search($params);
+
+        $this->logger->debug(sprintf('[BANNER FINDER] response: %s', json_encode($response)));
+
         $collection = new FoundBannersCollection();
 
         if ($response['hits']['total']['value'] === 0) {
@@ -101,7 +102,8 @@ class BannerFinder implements BannerFinderInterface
                 $collection->add(new FoundBanner(
                     $hit['_id'],
                     $bannerHit['fields']['banners.id'][0],
-                    $bannerHit['fields']['banners.size'][0]
+                    $bannerHit['fields']['banners.size'][0],
+                    ($hit['_score'] - floor($hit['_score'] / 10000) * 10000) / 100
                 ));
             }
         }
@@ -109,7 +111,40 @@ class BannerFinder implements BannerFinderInterface
         $this->updateUserHistory($userHistory, $collection);
         $this->saveUserHistory($queryDto, $userHistory);
 
-        return $collection->random(self::BANNER_SIZE_RETURNED);
+        $result = $collection->random(self::BANNER_SIZE_RETURNED);
+
+        $this->logger->debug(sprintf('[BANNER FINDER] response: %s', json_encode($result[0]->toArray())));
+
+        return $result;
+    }
+
+    private function getSourceServerWeights(): array
+    {
+        $key = self::SOURCE_WEIGHTS_APC_KEY;
+        $weights = apcu_fetch($key);
+
+        if (!$weights) {
+            $mapped = [
+                'index' => [
+                    '_index' => AdserverIndex::name(),
+                ],
+                'body' => [
+                    'query' => [
+                        'match_all' => (object)[],
+                    ],
+                ],
+            ];
+            $response = $this->client->search($mapped);
+
+            $weights = [];
+            foreach ($response['hits']['hits'] as $adserver) {
+                $weights[$adserver['_source']['source_address']] = $adserver['_source']['weight'];
+            }
+
+            apcu_store($key, $weights, 60);
+        }
+
+        return $weights;
     }
 
     private static function getSeenFrequencies(array $userHistory): array

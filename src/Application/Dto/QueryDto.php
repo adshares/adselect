@@ -14,6 +14,10 @@ final class QueryDto
     /** @var Id */
     private $publisherId;
     /** @var Id */
+    private $siteId;
+    /** @var Id */
+    private $zoneId;
+    /** @var Id */
     private $userId;
     /** @var Size */
     private $size;
@@ -28,6 +32,8 @@ final class QueryDto
 
     public function __construct(
         Id $publisherId,
+        Id $siteId,
+        Id $zoneId,
         Id $userId,
         Id $trackingId,
         Size $size,
@@ -35,12 +41,38 @@ final class QueryDto
         array $keywords = []
     ) {
         $this->publisherId = $publisherId;
+        $this->siteId = $siteId;
+        $this->zoneId = $zoneId;
         $this->userId = $userId;
         $this->trackingId = $trackingId;
         $this->size = $size;
         $this->requireFilters = $filters['require'] ?? [];
         $this->excludeFilters = $filters['exclude'] ?? [];
         $this->keywords = $keywords;
+    }
+
+    /**
+     * @return Id
+     */
+    public function getPublisherId(): Id
+    {
+        return $this->publisherId;
+    }
+
+    /**
+     * @return Id
+     */
+    public function getSiteId(): Id
+    {
+        return $this->siteId;
+    }
+
+    /**
+     * @return Id
+     */
+    public function getZoneId(): Id
+    {
+        return $this->zoneId;
     }
 
     public function getKeywords(): array
@@ -79,6 +111,14 @@ final class QueryDto
             throw new ValidationDtoException('Field `publisher_id` is required.');
         }
 
+        if (!isset($input['site_id'])) {
+            throw new ValidationDtoException('Field `site_id` is required.');
+        }
+
+        if (!isset($input['zone_id'])) {
+            throw new ValidationDtoException('Field `zone_id` is required.');
+        }
+
         if (!isset($input['user_id']) || empty($input['user_id'])) {
             throw new ValidationDtoException('Field `user_id` is required.');
         }
@@ -102,6 +142,8 @@ final class QueryDto
         try {
             return new self(
                 new Id($input['publisher_id']),
+                new Id($input['site_id']),
+                new Id($input['zone_id']),
                 new Id($input['user_id']),
                 new Id($input['tracking_id']),
                 Size::fromString($input['banner_size']),

@@ -7,6 +7,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use function array_merge;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 
 class CampaignMapper
 {
@@ -46,13 +47,11 @@ EOF;
 
         $data = array_merge(
             [
-                'join' => 'campaign',
+                'join' => ['name' => 'campaign'],
                 'time_range' => Helper::range($campaign->getTimeStart(), $campaign->getTimeEnd()),
                 'banners' => $banners,
                 'searchable' => true,
-                'budget' => $campaign->getBudget(),
-                'max_cpc' => $campaign->getMaxCpc(),
-                'max_cpm' => $campaign->getMaxCpm(),
+                'source_address' => $campaign->getSourceAddress(),
             ],
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)
@@ -72,21 +71,21 @@ EOF;
     }
 
     public static function mapStats(
-        Campaign $campaign,
+        $campaignId,
         string $index,
         float $rpm,
-        string $publisher_id = null,
-        ?string $site_id = null,
-        ?string $zone_id = null
+        string $publisher_id = '',
+        ?string $site_id = '',
+        ?string $zone_id = ''
     ) {
-        $id = sha1(implode(":", [$campaign->getId(), $publisher_id, $site_id, $zone_id]));
+        $id = sha1(implode(":", [$campaignId, $publisher_id, $site_id, $zone_id]));
         $mapped = [];
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
                 '_type' => '_doc',
                 '_id' => $id,
-                'routing' => $campaign->getId(),
+                'routing' => $campaignId,
             ],
         ];
 
@@ -94,13 +93,14 @@ EOF;
             'doc' => [
                 'join' => [
                     'name' => 'stats',
-                    'parent' => $campaign->getId(),
+                    'parent' => $campaignId,
                 ],
                 'stats' => [
                     'publisher_id' => $publisher_id,
                     'site_id' => $site_id,
                     'zone_id' => $zone_id,
                     'rpm' => $rpm,
+                    'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
                 ]
             ],
             'doc_as_upsert' => true,

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
@@ -77,17 +78,11 @@ class Client
             return EventIndex::mappings();
         }
 
-        if ($indexName === UserHistoryIndex::INDEX) {
-            return UserHistoryIndex::mappings();
+        if ($indexName === AdserverIndex::INDEX) {
+            return AdserverIndex::mappings();
         }
 
-        if ($indexName === KeywordIndex::INDEX) {
-            return KeywordIndex::mappings();
-        }
 
-        if ($indexName === KeywordIntersectIndex::INDEX) {
-            return KeywordIntersectIndex::mappings();
-        }
 
         throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
     }
@@ -96,7 +91,7 @@ class Client
     {
         $this->createIndex(CampaignIndex::INDEX, $force);
         $this->createIndex(EventIndex::INDEX, $force);
-        $this->createIndex(UserHistoryIndex::INDEX, $force);
+        $this->createIndex(AdserverIndex::INDEX, $force);
     }
 
     public function indexExists(string $indexName): bool
@@ -164,7 +159,6 @@ class Client
 
         try {
             $result = $this->client->deleteByQuery($params);
-
             $this->logger->debug(sprintf(
                 '%s documents has been removed from index %s',
                 $result['deleted'],

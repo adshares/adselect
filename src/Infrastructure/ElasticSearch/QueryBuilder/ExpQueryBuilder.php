@@ -8,16 +8,16 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 class ExpQueryBuilder
 {
-    /** @var int */
-    private $threshold;
-
     /** @var QueryInterface */
     private $query;
 
-    public function __construct(QueryInterface $query, int $threshold = 3)
+    /** @var array */
+    private $sourceWeights;
+
+    public function __construct(QueryInterface $query, $sourceWeights)
     {
-        $this->threshold = $threshold;
         $this->query = $query;
+        $this->sourceWeights = $sourceWeights;
     }
 
     public function build(): array
@@ -29,24 +29,20 @@ class ExpQueryBuilder
                 'script_score' => [
                     'script' => [
                         'lang' => 'painless',
-                        'source' => <<<PAINLESS
-                            int paidAmount = (int) doc['stats_paid_amount'].value;
-                            
-                            if (doc['stats_views'].value < params.threshold && paidAmount === 0) {
-                                return (Math.random() + 0.5) / (doc['stats_views'].value + doc['stats_clicks'].value + 1.0)
-                            }
-                        
-                            if (paidAmount > 0) {
-                                return ((Math.random() + 0.5) + (0.01 * paidAmount)) / ((doc['stats_clicks'].value + doc['stats_views'].value + 1.0));
-
-                            }
-                            
-                            return (Math.random() + 0.5) / ((doc['stats_clicks'].value / (doc['stats_views'].value + 0.1)) + 1.0);
-PAINLESS
-                        ,
-                        'params' => [
-                            'threshold' => $this->threshold,
+                        "params" => [
+                            "source_weights" => (object)$this->sourceWeights,
                         ],
+                        'source' => <<<PAINLESS
+                            // there is data available on zone_id level
+                            if(_score >= 300.0) {
+                                return 0.0;
+                            }
+                            if (!params.source_weights.containsKey(doc['source_address'].value)) {
+                                return 0.1;
+                            }
+                            // see: Weighted Random Sampling (2005; Efraimidis, Spirakis) http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
+                            return Math.pow(Math.random(), 1.0 / params.source_weights[doc['source_address'].value]);
+PAINLESS
                     ],
                 ],
             ],
