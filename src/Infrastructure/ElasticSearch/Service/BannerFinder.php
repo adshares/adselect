@@ -50,8 +50,10 @@ class BannerFinder implements BannerFinderInterface
         $this->experimentChance = $experimentChance;
     }
 
-    public function find(QueryDto $queryDto, int $size): FoundBannersCollection
-    {
+    public function find(
+        QueryDto $queryDto,
+        int $size
+    ): FoundBannersCollection {
         $userHistory = $this->loadUserHistory($queryDto);
         $defined = $this->getDefinedRequireKeywords();
         $second = date('s');
@@ -80,10 +82,14 @@ class BannerFinder implements BannerFinderInterface
 //        $params['body']['explain'] = true;
         $params['body']['query'] = $queryBuilder->build();
 
-        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s %s %s',
-            $chance,
-            $this->experimentChance,
-            json_encode($params)));
+        $this->logger->debug(
+            sprintf(
+                '[BANNER FINDER] sending a query: %s %s %s',
+                $chance,
+                $this->experimentChance,
+                json_encode($params)
+            )
+        );
 
         $response = $this->client->search($params);
 
@@ -101,16 +107,18 @@ class BannerFinder implements BannerFinderInterface
             }
 
             foreach ($hit['inner_hits']['banners']['hits']['hits'] as $bannerHit) {
-                $collection->add(new FoundBanner(
-                    $hit['_id'],
-                    $bannerHit['fields']['banners.id'][0],
-                    $bannerHit['fields']['banners.size'][0],
-                    $chance < $this->experimentChance
-                        ?
-                        null
-                        :
-                        (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
-                ));
+                $collection->add(
+                    new FoundBanner(
+                        $hit['_id'],
+                        $bannerHit['fields']['banners.id'][0],
+                        $bannerHit['fields']['banners.size'][0],
+                        $chance < $this->experimentChance
+                            ?
+                            null
+                            :
+                            (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
+                    )
+                );
             }
         }
 
@@ -191,8 +199,10 @@ class BannerFinder implements BannerFinderInterface
         return $history;
     }
 
-    private static function saveUserHistory(QueryDto $queryDto, array $history): void
-    {
+    private static function saveUserHistory(
+        QueryDto $queryDto,
+        array $history
+    ): void {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
         self::clearStaleEntries($history);
         apcu_store($key, $history, self::HISTORY_MAXAGE);
@@ -210,8 +220,10 @@ class BannerFinder implements BannerFinderInterface
         $history = array_slice($history, $i);
     }
 
-    private function updateUserHistory(array &$history, FoundBannersCollection $collection): void
-    {
+    private function updateUserHistory(
+        array &$history,
+        FoundBannersCollection $collection
+    ): void {
         // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [

@@ -116,8 +116,14 @@ class Client
                     $response['items']
                 );
 
-                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s QUERY: %s', $type,
-                    json_encode($errors), json_encode($mapped)));
+                $this->logger->notice(
+                    sprintf(
+                        '[%s] Update data to ES failed. ES ERROR: %s QUERY: %s',
+                        $type,
+                        json_encode($errors),
+                        json_encode($mapped)
+                    )
+                );
 
                 return $response;
             }
@@ -164,17 +170,21 @@ class Client
 
         try {
             $result = $this->client->deleteByQuery($params);
-            $this->logger->debug(sprintf(
-                '%s documents has been removed from index %s',
-                $result['deleted'],
-                $indexName
-            ));
+            $this->logger->debug(
+                sprintf(
+                    '%s documents has been removed from index %s',
+                    $result['deleted'],
+                    $indexName
+                )
+            );
         } catch (BadRequest400Exception $exception) {
-            $this->logger->error(sprintf(
-                'Documents from index %s could not be removed (%s)',
-                $indexName,
-                $exception->getMessage()
-            ));
+            $this->logger->error(
+                sprintf(
+                    'Documents from index %s could not be removed (%s)',
+                    $indexName,
+                    $exception->getMessage()
+                )
+            );
         }
     }
 }

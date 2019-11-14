@@ -38,12 +38,22 @@ class UpdateStats extends Command
         $to = $from->modify('-14 days');
 
         $this->updater->recalculateRPMStats($from, $to);
-        $output->writeln(sprintf('Finished calculating zone RPM stats using events between %s and %s',
-            $from->format(DATE_ISO8601), $to->format(DATE_ISO8601)));
+        $output->writeln(
+            sprintf(
+                'Finished calculating zone RPM stats using events between %s and %s',
+                $from->format(DATE_ISO8601),
+                $to->format(DATE_ISO8601)
+            )
+        );
 
         $this->updater->recalculateAdserverStats($from, $to);
-        $output->writeln(sprintf('Finished calculating Adserver stats using events between %s and %s',
-            $from->format(DATE_ISO8601), $to->format(DATE_ISO8601)));
+        $output->writeln(
+            sprintf(
+                'Finished calculating Adserver stats using events between %s and %s',
+                $from->format(DATE_ISO8601),
+                $to->format(DATE_ISO8601)
+            )
+        );
 
     }
 }

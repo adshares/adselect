@@ -207,8 +207,13 @@ class StatsUpdater
         $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
         echo "saving site ", json_encode($stats), " => $rpm\n";
 
-        $mapped = CampaignMapper::mapStats($stats['campaign_id'], CampaignIndex::name(), $rpm, $stats['publisher_id'],
-            $stats['site_id']);
+        $mapped = CampaignMapper::mapStats(
+            $stats['campaign_id'],
+            CampaignIndex::name(),
+            $rpm,
+            $stats['publisher_id'],
+            $stats['site_id']
+        );
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];
@@ -225,8 +230,14 @@ class StatsUpdater
         }
         echo "saving zone ", json_encode($key), " => $rpm; count=$count\n";
 
-        $mapped = CampaignMapper::mapStats($key['campaign_id'], CampaignIndex::name(), $rpm, $key['publisher_id'],
-            $key['site_id'], $key['zone_id']);
+        $mapped = CampaignMapper::mapStats(
+            $key['campaign_id'],
+            CampaignIndex::name(),
+            $rpm,
+            $key['publisher_id'],
+            $key['site_id'],
+            $key['zone_id']
+        );
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];
@@ -332,12 +343,20 @@ class StatsUpdater
             $adserverList[] = $currentAdserver;
         }
 
-        $sumRevenue = array_reduce($adserverList, function ($carry, $item) {
-            return $carry + $item['revenue'];
-        }, 0);
-        $sumCount = array_reduce($adserverList, function ($carry, $item) {
-            return $carry + $item['count'];
-        }, 0);
+        $sumRevenue = array_reduce(
+            $adserverList,
+            function ($carry, $item) {
+                return $carry + $item['revenue'];
+            },
+            0
+        );
+        $sumCount = array_reduce(
+            $adserverList,
+            function ($carry, $item) {
+                return $carry + $item['count'];
+            },
+            0
+        );
 
         foreach ($adserverList as $adserver) {
             $adserver['revenue_weight'] = $sumRevenue ? $adserver['revenue'] / $sumRevenue : 0;
@@ -358,8 +377,15 @@ class StatsUpdater
             return;
         }
         echo "saving adserver ", json_encode($stats), "\n";
-        $mapped = AdserverMapper::map($stats['address'], AdserverIndex::name(), $stats['revenue'], $stats['count'],
-            $stats['revenue_weight'], $stats['count_weight'], $stats['weight']);
+        $mapped = AdserverMapper::map(
+            $stats['address'],
+            AdserverIndex::name(),
+            $stats['revenue'],
+            $stats['count'],
+            $stats['revenue_weight'],
+            $stats['count_weight'],
+            $stats['weight']
+        );
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];

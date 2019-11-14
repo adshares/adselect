@@ -58,8 +58,7 @@ class EventCollector implements EventCollectorInterface
             }
 
             $flatKeywords = $event->flatKeywords();
-            $mappedKeywords = KeywordMapper::map($flatKeywords,
-                KeywordIndex::name());
+            $mappedKeywords = KeywordMapper::map($flatKeywords, KeywordIndex::name());
 
             $response = $this->client->bulk($mappedKeywords, self::ES_TYPE);
 
@@ -82,12 +81,14 @@ class EventCollector implements EventCollectorInterface
 
             if ($actualKeywordsCount) {
                 $threshold = $this->keywordIntersectThreshold;
-                $keywords = array_keys(array_filter(
-                    $actualKeywordsCount,
-                    static function ($count) use ($threshold) {
-                        return $count >= $threshold;
-                    }
-                ));
+                $keywords = array_keys(
+                    array_filter(
+                        $actualKeywordsCount,
+                        static function ($count) use ($threshold) {
+                            return $count >= $threshold;
+                        }
+                    )
+                );
 
                 $this->updateKeywordsIntersect($keywords);
             }
