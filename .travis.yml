@@ -17,6 +17,7 @@ cache:
 
 before_install:
   - composer self-update
+  - echo "extension = apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
   - composer install
