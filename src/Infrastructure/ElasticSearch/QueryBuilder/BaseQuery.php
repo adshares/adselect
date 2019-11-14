@@ -50,13 +50,13 @@ class BaseQuery implements QueryInterface
                 // exclude
                 'must_not' => $excludes,
                 //require
-                'must' => [
+                'must'     => [
                     [
                         [
                             'bool' => [
-                                'should' => $requires,
+                                'should'               => $requires,
                                 'minimum_should_match' => count($this->definedRequireFilters),
-                                "boost" => 0.0,
+                                "boost"                => 0.0,
                             ],
                         ],
                         [
@@ -67,18 +67,18 @@ class BaseQuery implements QueryInterface
                     ],
                     [
                         'nested' => [
-                            'path' => 'banners',
+                            'path'       => 'banners',
                             'score_mode' => "none",
                             'inner_hits' => [
-                                '_source' => false,
+                                '_source'         => false,
                                 'docvalue_fields' => ['banners.id', 'banners.size'],
                             ],
-                            'query' => [
+                            'query'      => [
                                 'bool' => [
                                     // filter exclude
                                     'must_not' => $excludeFilter,
                                     // filter require
-                                    'must' => array_merge([$sizeFilter], $requireFilter),
+                                    'must'     => array_merge([$sizeFilter], $requireFilter),
                                 ],
 
                             ],
@@ -89,28 +89,35 @@ class BaseQuery implements QueryInterface
                             "should" => [
                                 [
                                     "has_child" => [
-                                        "type" => "stats",
-                                        "query" => [
+                                        "type"       => "stats",
+                                        "query"      => [
                                             'function_score' => [
-                                                "query" => [
+                                                "query"        => [
                                                     'bool' => [
                                                         'filter' => [
                                                             [
                                                                 'terms' => [
                                                                     'stats.publisher_id' => [
                                                                         '',
-                                                                        $this->bannerFinderDto->getPublisherId()->toString()
+                                                                        $this->bannerFinderDto->getPublisherId()
+                                                                            ->toString()
                                                                     ],
                                                                 ]
                                                             ],
                                                             [
                                                                 'terms' => [
-                                                                    'stats.site_id' => ['', $this->bannerFinderDto->getSiteId()->toString()],
+                                                                    'stats.site_id' => [
+                                                                        '',
+                                                                        $this->bannerFinderDto->getSiteId()->toString()
+                                                                    ],
                                                                 ]
                                                             ],
                                                             [
                                                                 'terms' => [
-                                                                    'stats.zone_id' => ['', $this->bannerFinderDto->getZoneId()->toString()],
+                                                                    'stats.zone_id' => [
+                                                                        '',
+                                                                        $this->bannerFinderDto->getZoneId()->toString()
+                                                                    ],
                                                                 ]
                                                             ],
                                                         ],
@@ -119,17 +126,22 @@ class BaseQuery implements QueryInterface
                                                 "script_score" => [
                                                     "script" => [
                                                         "params" => [
-                                                            'publisher_id' => $this->bannerFinderDto->getPublisherId()->toString(),
-                                                            'site_id' => $this->bannerFinderDto->getSiteId()->toString(),
-                                                            'zone_id' => $this->bannerFinderDto->getZoneId()->toString(),
+                                                            'publisher_id' => $this->bannerFinderDto->getPublisherId()
+                                                                ->toString(),
+                                                            'site_id'      => $this->bannerFinderDto->getSiteId()
+                                                                ->toString(),
+                                                            'zone_id'      => $this->bannerFinderDto->getZoneId()
+                                                                ->toString(),
                                                         ],
                                                         "source" => <<<PAINLESS
 double rpm = Math.min(99.9, doc['stats.rpm'].value);                                              
-return rpm + (doc['stats.publisher_id'].value == params['publisher_id'] ? 100.0 : 0.0) + (doc['stats.site_id'].value == params['site_id'] ? 100.0 : 0.0) + (doc['stats.zone_id'].value == params['zone_id'] ? 100.0 : 0.0);
+return rpm + (doc['stats.publisher_id'].value == params['publisher_id'] ? 100.0 : 0.0) + 
+            (doc['stats.site_id'].value == params['site_id'] ? 100.0 : 0.0) + 
+            (doc['stats.zone_id'].value == params['zone_id'] ? 100.0 : 0.0);
 PAINLESS
                                                     ]
                                                 ],
-                                                "boost_mode" => "replace",
+                                                "boost_mode"   => "replace",
                                                 //"score_mode" => "max",
                                             ],
                                         ],

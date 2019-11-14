@@ -39,22 +39,22 @@ class StatsUpdater
 
         $currentCampaign = [
             'campaign_id' => null,
-            'count' => 0,
+            'count'       => 0,
             'paid_amount' => 0,
         ];
 
         $currentPublisher = [
-            'campaign_id' => null,
+            'campaign_id'  => null,
             'publisher_id' => null,
-            'count' => 0,
-            'paid_amount' => 0,
+            'count'        => 0,
+            'paid_amount'  => 0,
         ];
         $currentSite = [
-            'campaign_id' => null,
+            'campaign_id'  => null,
             'publisher_id' => null,
-            'site_id' => null,
-            'count' => 0,
-            'paid_amount' => 0,
+            'site_id'      => null,
+            'count'        => 0,
+            'paid_amount'  => 0,
         ];
 
         do {
@@ -63,7 +63,7 @@ class StatsUpdater
                 "aggs" => [
                     "zones" => [
                         "composite" => [
-                            "size" => self::ES_BUCKET_PAGE_SIZE,
+                            "size"    => self::ES_BUCKET_PAGE_SIZE,
                             "sources" => [
                                 ["campaign_id" => ["terms" => ["field" => "campaign_id"]]],
                                 ["publisher_id" => ["terms" => ["field" => "publisher_id"]]],
@@ -71,12 +71,12 @@ class StatsUpdater
                                 ["zone_id" => ["terms" => ["field" => "zone_id"]]]
                             ]
                         ],
-                        "aggs" => [
+                        "aggs"      => [
                             "rpm" => [
                                 "avg" => [
                                     "script" => [
                                         "source" => "(double)doc['paid_amount'].value/(double)1e8",
-                                        "lang" => "painless"
+                                        "lang"   => "painless"
                                     ]
                                 ]
                             ]
@@ -93,7 +93,7 @@ class StatsUpdater
                 'index' => [
                     '_index' => EventIndex::name(),
                 ],
-                'body' => $query,
+                'body'  => $query,
             ];
 
             $result = $this->client->search($mapped);
@@ -107,33 +107,38 @@ class StatsUpdater
                     $this->saveCampaignStats($currentCampaign);
                     $currentCampaign = [
                         'campaign_id' => $bucket['key']['campaign_id'],
-                        'count' => 0,
+                        'count'       => 0,
                         'paid_amount' => 0,
                     ];
                 }
                 $currentCampaign['count'] += $bucket['doc_count'];
                 $currentCampaign['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
 
-                if ($bucket['key']['campaign_id'] != $currentPublisher['campaign_id'] || $bucket['key']['publisher_id'] != $currentPublisher['publisher_id']) {
+                if ($bucket['key']['campaign_id'] != $currentPublisher['campaign_id']
+                    || $bucket['key']['publisher_id'] != $currentPublisher['publisher_id']
+                ) {
                     $this->savePublisherStats($currentPublisher);
                     $currentPublisher = [
-                        'campaign_id' => $bucket['key']['campaign_id'],
+                        'campaign_id'  => $bucket['key']['campaign_id'],
                         'publisher_id' => $bucket['key']['publisher_id'],
-                        'count' => 0,
-                        'paid_amount' => 0,
+                        'count'        => 0,
+                        'paid_amount'  => 0,
                     ];
                 }
                 $currentPublisher['count'] += $bucket['doc_count'];
                 $currentPublisher['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
 
-                if ($bucket['key']['campaign_id'] != $currentSite['campaign_id'] || $bucket['key']['publisher_id'] != $currentSite['publisher_id'] || $bucket['key']['site_id'] != $currentSite['site_id']) {
+                if ($bucket['key']['campaign_id'] != $currentSite['campaign_id']
+                    || $bucket['key']['publisher_id'] != $currentSite['publisher_id']
+                    || $bucket['key']['site_id'] != $currentSite['site_id']
+                ) {
                     $this->saveSiteStats($currentSite);
                     $currentSite = [
-                        'campaign_id' => $bucket['key']['campaign_id'],
+                        'campaign_id'  => $bucket['key']['campaign_id'],
                         'publisher_id' => $bucket['key']['publisher_id'],
-                        'site_id' => $bucket['key']['site_id'],
-                        'count' => 0,
-                        'paid_amount' => 0,
+                        'site_id'      => $bucket['key']['site_id'],
+                        'count'        => 0,
+                        'paid_amount'  => 0,
                     ];
                 }
                 $currentSite['count'] += $bucket['doc_count'];
@@ -174,7 +179,9 @@ class StatsUpdater
 
     private function savePublisherStats(array $stats): void
     {
-        if (!$stats['campaign_id'] || !$stats['publisher_id'] || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT) {
+        if (!$stats['campaign_id'] || !$stats['publisher_id']
+            || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT
+        ) {
             return;
         }
         $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
@@ -192,7 +199,9 @@ class StatsUpdater
 
     private function saveSiteStats(array $stats): void
     {
-        if (!$stats['campaign_id'] || !$stats['publisher_id'] || !$stats['site_id'] || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT) {
+        if (!$stats['campaign_id'] || !$stats['publisher_id'] || !$stats['site_id']
+            || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT
+        ) {
             return;
         }
         $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
@@ -254,7 +263,7 @@ class StatsUpdater
 
         $currentAdserver = [
             'address' => null,
-            'count' => 0,
+            'count'   => 0,
             'revenue' => 0,
         ];
 
@@ -264,17 +273,17 @@ class StatsUpdater
                 "aggs" => [
                     "adservers" => [
                         "composite" => [
-                            "size" => self::ES_BUCKET_PAGE_SIZE,
+                            "size"    => self::ES_BUCKET_PAGE_SIZE,
                             "sources" => [
                                 ["address" => ["terms" => ["field" => "last_payer"]]],
                             ]
                         ],
-                        "aggs" => [
+                        "aggs"      => [
                             "revenue" => [
                                 "sum" => [
                                     "script" => [
                                         "source" => "doc['paid_amount'].value/1e11",
-                                        "lang" => "painless"
+                                        "lang"   => "painless"
                                     ]
                                 ]
                             ]
@@ -291,7 +300,7 @@ class StatsUpdater
                 'index' => [
                     '_index' => EventIndex::name(),
                 ],
-                'body' => $query,
+                'body'  => $query,
             ];
 
             $result = $this->client->search($mapped);
@@ -301,14 +310,13 @@ class StatsUpdater
 
 
             foreach ($result['aggregations']['adservers']['buckets'] as $bucket) {
-
                 if ($bucket['key']['address'] != $currentAdserver['address']) {
                     if ($currentAdserver['address']) {
                         $adserverList[] = $currentAdserver;
                     }
                     $currentAdserver = [
                         'address' => $bucket['key']['address'],
-                        'count' => 0,
+                        'count'   => 0,
                         'revenue' => 0,
                     ];
 

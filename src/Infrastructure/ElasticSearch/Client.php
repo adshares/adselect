@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
@@ -83,7 +83,6 @@ class Client
         }
 
 
-
         throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
     }
 
@@ -117,7 +116,8 @@ class Client
                     $response['items']
                 );
 
-                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s QUERY: %s', $type, json_encode($errors), json_encode($mapped)));
+                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s QUERY: %s', $type,
+                    json_encode($errors), json_encode($mapped)));
 
                 return $response;
             }
@@ -157,7 +157,7 @@ class Client
     {
         $params = [
             'index' => $indexName,
-            'body' => [
+            'body'  => [
                 'query' => $query,
             ],
         ];

@@ -58,13 +58,13 @@ class BannerFinder implements BannerFinderInterface
         $query = new BaseQuery($queryDto, $defined);
 
         $params = [
-            'index' => CampaignIndex::name(),
-            'size' => $size,
+            'index'  => CampaignIndex::name(),
+            'size'   => $size,
             'client' => [
-                'timeout' => 0.5,
+                'timeout'         => 0.5,
                 'connect_timeout' => 0.2
             ],
-            'body' => [
+            'body'   => [
                 '_source' => false,
             ],
         ];
@@ -80,7 +80,9 @@ class BannerFinder implements BannerFinderInterface
 //        $params['body']['explain'] = true;
         $params['body']['query'] = $queryBuilder->build();
 
-        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s %s %s', $chance, $this->experimentChance,
+        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s %s %s',
+            $chance,
+            $this->experimentChance,
             json_encode($params)));
 
         $response = $this->client->search($params);
@@ -103,7 +105,11 @@ class BannerFinder implements BannerFinderInterface
                     $hit['_id'],
                     $bannerHit['fields']['banners.id'][0],
                     $bannerHit['fields']['banners.size'][0],
-                    $chance < $this->experimentChance ? null : (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
+                    $chance < $this->experimentChance
+                        ?
+                        null
+                        :
+                        (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
                 ));
             }
         }
@@ -128,7 +134,7 @@ class BannerFinder implements BannerFinderInterface
                 'index' => [
                     '_index' => AdserverIndex::name(),
                 ],
-                'body' => [
+                'body'  => [
                     'query' => [
                         'match_all' => (object)[],
                     ],
@@ -209,7 +215,7 @@ class BannerFinder implements BannerFinderInterface
         // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [
-                self::HISTORY_ENTRY_TIME => time(),
+                self::HISTORY_ENTRY_TIME        => time(),
                 self::HISTORY_ENTRY_CAMPAIGN_ID => $collection[0]->getCampaignId(),
             ];
         }
