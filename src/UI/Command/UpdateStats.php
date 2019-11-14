@@ -54,6 +54,5 @@ class UpdateStats extends Command
                 $to->format(DATE_ISO8601)
             )
         );
-
     }
 }

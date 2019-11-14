@@ -146,7 +146,6 @@ class StatsUpdater
 
                 $this->saveZoneStats($bucket['key'], $bucket['doc_count'], $bucket['rpm']['value']);
             }
-
         } while ($after && $found > 0);
 
         $this->saveCampaignStats($currentCampaign);
@@ -330,13 +329,10 @@ class StatsUpdater
                         'count'   => 0,
                         'revenue' => 0,
                     ];
-
                 }
                 $currentAdserver['count'] += $bucket['doc_count'];
                 $currentAdserver['revenue'] += $bucket['revenue']['value'];
-
             }
-
         } while ($after && $found > 0);
 
         if ($currentAdserver['address']) {
@@ -406,5 +402,4 @@ class StatsUpdater
         ];
         $this->client->delete($query, AdserverIndex::name());
     }
-
 }

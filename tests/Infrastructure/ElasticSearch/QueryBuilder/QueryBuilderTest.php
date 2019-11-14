@@ -110,7 +110,7 @@ final class QueryBuilderTest extends TestCase
             long min = Long.min(params.score_threshold * doc.max_cpm[0], doc.budget[0]);
             ((1 - Math.random()) * min) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)
 PAINLESS;
-        
+
         $this->assertIsArray($result);
     }
 
