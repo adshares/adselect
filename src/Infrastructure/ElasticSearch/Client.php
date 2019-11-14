@@ -99,6 +99,11 @@ class Client
         return $this->client->indices()->exists(['index' => $indexName]);
     }
 
+    public function refreshIndex(string $indexName): array
+    {
+        return $this->client->indices()->refresh(['index' => $indexName]);
+    }
+
     public function bulk(array $mapped, string $type): array
     {
         try {

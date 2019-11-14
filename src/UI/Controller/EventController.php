@@ -121,7 +121,6 @@ class EventController
             throw new BadRequestHttpException('Incorrect data');
         }
 
-
         $dto = new Clicks($content['clicks']);
 
         if (count($dto->events()) > 0) {

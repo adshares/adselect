@@ -12,10 +12,10 @@ final class FoundBanner
     private $bannerId;
     /** @var string */
     private $size;
-    /** @var float */
+    /** @var ?float */
     private $rpm;
 
-    public function __construct(string $campaignId, string $bannerId, string $size, float $rpm)
+    public function __construct(string $campaignId, string $bannerId, string $size, ?float $rpm)
     {
         $this->campaignId = $campaignId;
         $this->bannerId = $bannerId;
@@ -31,6 +31,11 @@ final class FoundBanner
     public function getBannerId(): string
     {
         return $this->bannerId;
+    }
+
+    public function getRpm(): ?float
+    {
+        return $this->rpm;
     }
 
     public function toArray(): array

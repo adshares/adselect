@@ -19,8 +19,8 @@ class StatsUpdater
     /** @var Client */
     private $client;
 
-    private const ES_BUCKET_PAGE_SIZE = 1;
-    private const ES_BUCKET_MIN_SIGNIFICANT_COUNT = 10;
+    private const ES_BUCKET_PAGE_SIZE = 500;
+    private const ES_BUCKET_MIN_SIGNIFICANT_COUNT = 1000;
 
     private $updateCache = [];
     private $bulkLimit;
@@ -33,6 +33,8 @@ class StatsUpdater
 
     public function recalculateRPMStats(\DateTimeInterface $from, \DateTimeInterface $to): void
     {
+        $this->client->refreshIndex(EventIndex::name());
+
         $after = null;
 
         $currentCampaign = [
@@ -73,7 +75,7 @@ class StatsUpdater
                             "rpm" => [
                                 "avg" => [
                                     "script" => [
-                                        "source" => "doc['paid_amount'].value/1e8",
+                                        "source" => "(double)doc['paid_amount'].value/(double)1e8",
                                         "lang" => "painless"
                                     ]
                                 ]
@@ -110,7 +112,7 @@ class StatsUpdater
                     ];
                 }
                 $currentCampaign['count'] += $bucket['doc_count'];
-                $currentCampaign['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'];
+                $currentCampaign['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
 
                 if ($bucket['key']['campaign_id'] != $currentPublisher['campaign_id'] || $bucket['key']['publisher_id'] != $currentPublisher['publisher_id']) {
                     $this->savePublisherStats($currentPublisher);
@@ -122,7 +124,7 @@ class StatsUpdater
                     ];
                 }
                 $currentPublisher['count'] += $bucket['doc_count'];
-                $currentPublisher['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'];
+                $currentPublisher['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
 
                 if ($bucket['key']['campaign_id'] != $currentSite['campaign_id'] || $bucket['key']['publisher_id'] != $currentSite['publisher_id'] || $bucket['key']['site_id'] != $currentSite['site_id']) {
                     $this->saveSiteStats($currentSite);
@@ -135,7 +137,7 @@ class StatsUpdater
                     ];
                 }
                 $currentSite['count'] += $bucket['doc_count'];
-                $currentSite['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'];
+                $currentSite['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
 
                 $this->saveZoneStats($bucket['key'], $bucket['doc_count'], $bucket['rpm']['value']);
             }
@@ -147,6 +149,8 @@ class StatsUpdater
         $this->saveSiteStats($currentSite);
 
         $this->commitUpdates();
+
+        $this->client->refreshIndex(CampaignIndex::name());
         $this->removeStaleRPMStats();
     }
 
@@ -155,7 +159,7 @@ class StatsUpdater
         if (!$stats['campaign_id'] || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT) {
             return;
         }
-        $rpm = $stats['paid_amount'] / $stats['count'];
+        $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
         echo "saving campaign ", json_encode($stats), " => $rpm\n";
 
         $mapped = CampaignMapper::mapStats($stats['campaign_id'], CampaignIndex::name(), $rpm);
@@ -173,7 +177,7 @@ class StatsUpdater
         if (!$stats['campaign_id'] || !$stats['publisher_id'] || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT) {
             return;
         }
-        $rpm = $stats['paid_amount'] / $stats['count'];
+        $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
         echo "saving publisher ", json_encode($stats), " => $rpm\n";
 
         $mapped = CampaignMapper::mapStats($stats['campaign_id'], CampaignIndex::name(), $rpm, $stats['publisher_id']);
@@ -191,7 +195,7 @@ class StatsUpdater
         if (!$stats['campaign_id'] || !$stats['publisher_id'] || !$stats['site_id'] || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT) {
             return;
         }
-        $rpm = $stats['paid_amount'] / $stats['count'];
+        $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
         echo "saving site ", json_encode($stats), " => $rpm\n";
 
         $mapped = CampaignMapper::mapStats($stats['campaign_id'], CampaignIndex::name(), $rpm, $stats['publisher_id'],
@@ -244,31 +248,6 @@ class StatsUpdater
 
     public function recalculateAdserverStats(\DateTimeInterface $from, \DateTimeInterface $to): void
     {
-        // procentowy udzial sources w paid_amount
-//        POST /adshares_events/_search
-//        {
-//        "size": 0,
-//        "aggs" : {
-//        "zones": {
-//            "composite" : {
-//                "size": 100,
-//                    "sources" : [
-//                        { "publisher_id": { "terms" : { "field": "last_payer" } } }
-//                    ]
-//                },
-//                "aggs": {
-//                "revenue": {
-//                    "sum": {
-//                        "script" : {
-//                            "source": "doc['paid_amount'].value/1e11",
-//                                        "lang": "painless"
-//                                    }
-//                    }
-//                  }
-//                }
-//            }
-//         }
-//}
         $after = null;
 
         $adserverList = [];
@@ -360,6 +339,8 @@ class StatsUpdater
         }
 
         $this->commitUpdates();
+        $this->client->refreshIndex(AdserverIndex::name());
+
         $this->removeStaleAdserverStats();
     }
 

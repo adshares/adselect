@@ -29,6 +29,8 @@ use function array_keys;
 class EventCollector implements EventCollectorInterface
 {
     private const ES_TYPE = 'COLLECT_UNPAID_EVENTS';
+    private const APC_REFRESH_CLICKS_KEY = 'EventCollector.RefreshClicks';
+    private const APC_REFRESH_PAYMENT_KEY = 'EventCollector.RefreshPayments';
 
     /** @var Client */
     private $client;
@@ -106,6 +108,14 @@ class EventCollector implements EventCollectorInterface
         }
     }
 
+    private function refreshIndexIfNeeded($cache_key)
+    {
+        if(apcu_fetch($cache_key)) {
+            $this->client->refreshIndex(EventIndex::name());
+            apcu_delete($cache_key);
+        }
+    }
+
     public function collectCases(EventCollection $events): void
     {
         $mappedEvents = [];
@@ -118,7 +128,7 @@ class EventCollector implements EventCollectorInterface
 
             if (count($mappedEvents) >= $this->bulkLimit) {
                 $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-                if($response['errors']) {
+                if ($response['errors']) {
                     throw new ElasticSearchRuntime('Could not insert all cases');
                 }
                 $mappedEvents = [];
@@ -127,7 +137,7 @@ class EventCollector implements EventCollectorInterface
 
         if ($mappedEvents) {
             $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-            if($response['errors']) {
+            if ($response['errors']) {
                 throw new ElasticSearchRuntime('Could not insert all cases');
             }
         }
@@ -135,11 +145,15 @@ class EventCollector implements EventCollectorInterface
         if ($events->count() > 0) {
             $key = 'Adselect.EventFinder.LastCase';
             apcu_store($key, $events->last()->getId(), 300);
+            apcu_store(self::APC_REFRESH_CLICKS_KEY, 1);
+            apcu_store(self::APC_REFRESH_PAYMENT_KEY, 1);
         }
     }
 
     public function collectClicks(EventCollection $events): void
     {
+        $this->refreshIndexIfNeeded(self::APC_REFRESH_CLICKS_KEY);
+
         $mappedEvents = [];
 
         /** @var Click $event */
@@ -150,28 +164,31 @@ class EventCollector implements EventCollectorInterface
 
             if (count($mappedEvents) >= $this->bulkLimit) {
                 $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-                if($response['errors']) {
-                    throw new ElasticSearchRuntime('Could not update all clicks');
-                }
+//                if ($response['errors']) {
+//                    throw new ElasticSearchRuntime('Could not update all clicks');
+//                }
                 $mappedEvents = [];
             }
         }
 
         if ($mappedEvents) {
             $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-            if($response['errors']) {
-                throw new ElasticSearchRuntime('Could not update all clicks');
-            }
+//            if ($response['errors']) {
+//                throw new ElasticSearchRuntime('Could not update all clicks');
+//            }
         }
 
         if ($events->count() > 0) {
             $key = 'Adselect.EventFinder.LastClick';
             apcu_store($key, $events->last()->getId(), 300);
+            apcu_store(self::APC_REFRESH_PAYMENT_KEY, 1);
         }
     }
 
     public function collectPayments(EventCollection $events): void
     {
+        $this->refreshIndexIfNeeded(self::APC_REFRESH_PAYMENT_KEY);
+
         $mappedEvents = [];
 
         /** @var Click $event */
@@ -182,9 +199,9 @@ class EventCollector implements EventCollectorInterface
 
             if (count($mappedEvents) >= $this->bulkLimit) {
                 $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-                if($response['errors']) {
-                    throw new ElasticSearchRuntime('Could not update all payments');
-                }
+//                if ($response['errors']) {
+//                    throw new ElasticSearchRuntime('Could not update all payments');
+//                }
 
                 $mappedEvents = [];
             }
@@ -192,9 +209,9 @@ class EventCollector implements EventCollectorInterface
 
         if ($mappedEvents) {
             $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-            if($response['errors']) {
-                throw new ElasticSearchRuntime('Could not update all payments');
-            }
+//            if ($response['errors']) {
+//                throw new ElasticSearchRuntime('Could not update all payments');
+//            }
         }
 
         if ($events->count() > 0) {

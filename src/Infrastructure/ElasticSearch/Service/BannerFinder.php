@@ -103,7 +103,7 @@ class BannerFinder implements BannerFinderInterface
                     $hit['_id'],
                     $bannerHit['fields']['banners.id'][0],
                     $bannerHit['fields']['banners.size'][0],
-                    ($hit['_score'] - floor($hit['_score'] / 10000) * 10000) / 100
+                    $chance < $this->experimentChance ? null : (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
                 ));
             }
         }

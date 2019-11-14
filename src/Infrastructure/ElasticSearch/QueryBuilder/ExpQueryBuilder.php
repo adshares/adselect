@@ -37,11 +37,12 @@ class ExpQueryBuilder
                             if(_score >= 300.0) {
                                 return 0.0;
                             }
-                            if (!params.source_weights.containsKey(doc['source_address'].value)) {
-                                return 0.1;
+                            double weight = 0.1;
+                            if (params.source_weights.containsKey(doc['source_address'].value)) {
+                                weight = (double)params.source_weights[doc['source_address'].value];
                             }
                             // see: Weighted Random Sampling (2005; Efraimidis, Spirakis) http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
-                            return Math.pow(Math.random(), 1.0 / params.source_weights[doc['source_address'].value]);
+                            return Math.pow(Math.random(), 1.0 / weight);
 PAINLESS
                     ],
                 ],
