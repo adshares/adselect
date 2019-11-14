@@ -28,7 +28,7 @@ script:
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
   - ./vendor/bin/phpcs -s src tests
   - ./vendor/bin/deptrac
-  - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure -c phpunit.xml
+  - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure -c phpunit.xml.dist
 
 notifications:
   email: false

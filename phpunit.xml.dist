@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit backupGlobals="false"
+         colors="true"
+         bootstrap="config/bootstrap.php"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true">
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <server name="APP_ENV" value="test" force="true" />
+        <server name="SHELL_VERBOSITY" value="-1" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Domain">
+            <directory suffix="Test.php">tests/Domain</directory>
+        </testsuite>
+        <testsuite name="Application">
+            <directory suffix="Test.php">tests/Application</directory>
+        </testsuite>
+        <testsuite name="UI">
+            <directory suffix="Test.php">tests/UI</directory>
+        </testsuite>
+        <testsuite name="Infrastructure">
+            <directory suffix="Test.php">tests/Infrastructure</directory>
+        </testsuite>
+        <testsuite name="Lib">
+            <directory suffix="Test.php">tests/Lib</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+        <log type="coverage-clover" target="code-coverage/phpunit/coverage.xml"/>
+        <log type="junit" target="code-coverage/phpunit/logfile.xml"/>
+    </logging>
+
+</phpunit>
