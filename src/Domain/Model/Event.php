@@ -75,6 +75,7 @@ final class Event
         $this->paidAmount = 0;
         $this->lastPaymentId = null;
         $this->lastPaymentTime = null;
+        $this->keywords = $keywords;
     }
 
     public function flatKeywords(): array
