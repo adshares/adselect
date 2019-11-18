@@ -10,9 +10,6 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\CleanQuery;
-use Adshares\AdSelect\Lib\DateTimeInterface;
 use DateTime;
 
 class StatsUpdater
