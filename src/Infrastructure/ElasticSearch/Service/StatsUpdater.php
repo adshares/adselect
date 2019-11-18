@@ -89,8 +89,8 @@ class StatsUpdater
                                 "avg" => [
                                     "script" => [
                                         "source" => "
-                                        long eventTime = doc['time'].value.toInstant().toEpochMilli();
-                                        return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_amount'].value/(double)1e8 : null;",
+long eventTime = doc['time'].value.toInstant().toEpochMilli();
+return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_amount'].value/(double)1e8 : null;",
                                         "lang"   => "painless",
                                         "params" => [
                                             "from" => $from->getTimestamp() * 1000,
@@ -319,8 +319,8 @@ class StatsUpdater
                                 "sum" => [
                                     "script" => [
                                         "source" => "
-                                        long eventTime = doc['time'].value.toInstant().toEpochMilli();
-                                        return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_amount'].value/1e11 : null;",
+long eventTime = doc['time'].value.toInstant().toEpochMilli();
+return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_amount'].value/1e11 : null;",
                                         "lang"   => "painless",
                                         "params" => [
                                             "from" => $from->getTimestamp() * 1000,
