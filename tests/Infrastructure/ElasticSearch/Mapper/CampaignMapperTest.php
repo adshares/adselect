@@ -176,21 +176,15 @@ final class CampaignMapperTest extends TestCase
                     3 => 'safari',
                 ],
                 'searchable' => true,
-                'budget' => 6666666,
-                'max_cpc' => 10001,
-                'max_cpm' => 10002,
+                'join' => [
+                    'name' => 'campaign'
+                ],
+                'source_address' => '0001-00000005-CBCA',
             ]
-        ];
-
-        $expectedStats = [
-            'stats_views' => 0,
-            'stats_clicks' => 0,
-            'stats_exp' => 0,
-            'stats_paid_amount' => 0,
         ];
 
         $this->assertCount(2, $mapped);
         $this->assertEquals($campaignId, $index['update']['_id']);
-        $this->assertEquals(['script' => $expected, 'upsert' => $expectedStats, 'scripted_upsert' => true], $data);
+        $this->assertEquals(['script' => $expected, 'upsert' => (object)[], 'scripted_upsert' => true], $data);
     }
 }

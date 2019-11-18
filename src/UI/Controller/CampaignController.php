@@ -80,7 +80,6 @@ class CampaignController
         $size = 1;
 
         $results = [];
-
         foreach ($queries as $query) {
             $requestId = $query['request_id'] ?? uniqid('', true);
 

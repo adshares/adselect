@@ -15,6 +15,9 @@ class FilterClause
         $range = [];
 
         foreach ($values as $key => $value) {
+            if(!is_string($value) && !is_numeric($value)) {
+                continue;
+            }
             if (preg_match('/([0-9\.]*)--([0-9\.]*)/', (string)$value, $match)) {
                  $min = $match[1] === '' ? null : (int)$match[1];
                  $max = $match[2] === '' ? null : (int)$match[2];

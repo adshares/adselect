@@ -3,8 +3,8 @@
     "license": "proprietary",
     "require": {
         "php": "^7.2",
-        "ext-ctype": "*",
         "ext-apcu": "*",
+        "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
         "doctrine/collections": " 1.6.*",

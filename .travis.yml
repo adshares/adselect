@@ -17,6 +17,7 @@ cache:
 
 before_install:
   - composer self-update
+  - echo "extension = apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
   - composer install
@@ -27,7 +28,7 @@ script:
   - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
   - ./vendor/bin/phpcs -s src tests
   - ./vendor/bin/deptrac
-  - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure
+  - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure -c phpunit.xml.dist
 
 notifications:
   email: false

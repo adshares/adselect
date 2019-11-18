@@ -19,7 +19,7 @@ final class FoundBannersCollection extends ArrayCollection
         foreach ($randKeys as $key) {
             $random[] = $data[$key];
         }
-        
+
         return new self($random);
     }
 

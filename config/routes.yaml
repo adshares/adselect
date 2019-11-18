@@ -21,22 +21,29 @@ campaign_find_banners:
     defaults:
         _format: json
 
-events_unpaid:
-    path: /api/%api_version%/events/unpaid
+new_cases:
+    path: /api/%api_version%/cases
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\EventController::unpaidEvents
+    controller: Adshares\AdSelect\UI\Controller\EventController::newCases
+last_case:
+    path: /api/%api_version%/cases/last
+    methods: [GET]
+    controller: Adshares\AdSelect\UI\Controller\EventController::lastCase
 
-events_paid:
-    path: /api/%api_version%/events/paid
+new_clicks:
+    path: /api/%api_version%/clicks
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\EventController::paidEvents
-
-last_events_unpaid:
-    path: /api/%api_version%/events/unpaid/last
+    controller: Adshares\AdSelect\UI\Controller\EventController::newClicks
+last_click:
+    path: /api/%api_version%/clicks/last
     methods: [GET]
-    controller: Adshares\AdSelect\UI\Controller\EventController::lastUnpaidEvent
+    controller: Adshares\AdSelect\UI\Controller\EventController::lastClick
 
-last_events_paid:
-    path: /api/%api_version%/events/paid/last
+new_payments:
+    path: /api/%api_version%/payments
+    methods: [POST]
+    controller: Adshares\AdSelect\UI\Controller\EventController::newPayments
+last_payment:
+    path: /api/%api_version%/payments/last
     methods: [GET]
-    controller: Adshares\AdSelect\UI\Controller\EventController::lastPaidEvent
+    controller: Adshares\AdSelect\UI\Controller\EventController::lastPayment

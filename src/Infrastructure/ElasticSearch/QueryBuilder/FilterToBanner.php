@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
@@ -11,7 +11,10 @@ class FilterToBanner
         $clauses = [];
 
         foreach ($filters as $field => $filter) {
-            $clauses[] = FilterClause::build("{$prefix}:{$field}", (array)$filter);
+            $clause = FilterClause::build("{$prefix}:{$field}", (array)$filter);
+            if ($clause) {
+                $clauses[] = $clause;
+            }
         }
 
         return $clauses;

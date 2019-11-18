@@ -5,18 +5,22 @@ declare(strict_types = 1);
 namespace Adshares\AdSelect\Application\Dto;
 
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+use Adshares\AdSelect\Domain\Model\Click;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
 use function array_diff;
 use function array_keys;
 
-abstract class Events
+class Clicks
 {
-    protected const REQUIRED_FIELDS = [];
+    protected const REQUIRED_FIELDS = [
+        'id',
+        'case_id',
+        'created_at',
+    ];
     protected $events;
     protected $failedEvents = [];
 
@@ -27,20 +31,10 @@ abstract class Events
         foreach ($events as $event) {
             if ($this->isValid($event)) {
                 try {
-                    $event = new Event(
+                    $event = new Click(
                         $event['id'],
-                        new Id($event['case_id']),
-                        new Id($event['publisher_id']),
-                        new Id($event['user_id']),
-                        new Id($event['tracking_id']),
-                        new Id($event['zone_id']),
-                        new Id($event['campaign_id']),
-                        new Id($event['banner_id']),
-                        $event['keywords'] ?? [],
-                        ExtendedDateTime::createFromString($event['time']),
-                        new EventType($event['type']),
-                        (float)($event['paid_amount'] ?? 0),
-                        isset($event['payment_id'])  ? (int)$event['payment_id'] : null
+                        ExtendedDateTime::createFromString($event['created_at']),
+                        $event['case_id']
                     );
 
                     $this->events->add($event);
@@ -56,8 +50,8 @@ abstract class Events
     public function getEventsIds(): array
     {
         return $this->events->map(
-            static function (Event $event) {
-                return $event->getCaseId();
+            static function (Click $event) {
+                return $event->getId();
             }
         )->toArray();
     }

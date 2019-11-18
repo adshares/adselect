@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
@@ -77,17 +78,10 @@ class Client
             return EventIndex::mappings();
         }
 
-        if ($indexName === UserHistoryIndex::INDEX) {
-            return UserHistoryIndex::mappings();
+        if ($indexName === AdserverIndex::INDEX) {
+            return AdserverIndex::mappings();
         }
 
-        if ($indexName === KeywordIndex::INDEX) {
-            return KeywordIndex::mappings();
-        }
-
-        if ($indexName === KeywordIntersectIndex::INDEX) {
-            return KeywordIntersectIndex::mappings();
-        }
 
         throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
     }
@@ -96,7 +90,7 @@ class Client
     {
         $this->createIndex(CampaignIndex::INDEX, $force);
         $this->createIndex(EventIndex::INDEX, $force);
-        $this->createIndex(UserHistoryIndex::INDEX, $force);
+        $this->createIndex(AdserverIndex::INDEX, $force);
     }
 
     public function indexExists(string $indexName): bool
@@ -104,22 +98,34 @@ class Client
         return $this->client->indices()->exists(['index' => $indexName]);
     }
 
+    public function refreshIndex(string $indexName): array
+    {
+        return $this->client->indices()->refresh(['index' => $indexName]);
+    }
+
     public function bulk(array $mapped, string $type): array
     {
         try {
             $response = $this->client->bulk(['body' => $mapped]);
 
-            if ($response['errors'] === true) {
-                $errors = json_encode(array_map(
+            if ($response['errors']) {
+                $errors = array_map(
                     static function ($item) {
                         return $item;
                     },
                     $response['items']
-                ));
+                );
 
-                $this->logger->notice(sprintf('[%s] Update data to ES failed. ES ERROR: %s', $type, $errors));
+                $this->logger->notice(
+                    sprintf(
+                        '[%s] Update data to ES failed. ES ERROR: %s QUERY: %s',
+                        $type,
+                        json_encode($errors),
+                        json_encode($mapped)
+                    )
+                );
 
-                return [];
+                return $response;
             }
 
             return $response;
@@ -157,25 +163,28 @@ class Client
     {
         $params = [
             'index' => $indexName,
-            'body' => [
+            'body'  => [
                 'query' => $query,
             ],
         ];
 
         try {
             $result = $this->client->deleteByQuery($params);
-
-            $this->logger->debug(sprintf(
-                '%s documents has been removed from index %s',
-                $result['deleted'],
-                $indexName
-            ));
+            $this->logger->debug(
+                sprintf(
+                    '%s documents has been removed from index %s',
+                    $result['deleted'],
+                    $indexName
+                )
+            );
         } catch (BadRequest400Exception $exception) {
-            $this->logger->error(sprintf(
-                'Documents from index %s could not be removed (%s)',
-                $indexName,
-                $exception->getMessage()
-            ));
+            $this->logger->error(
+                sprintf(
+                    'Documents from index %s could not be removed (%s)',
+                    $indexName,
+                    $exception->getMessage()
+                )
+            );
         }
     }
 }

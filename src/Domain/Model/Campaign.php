@@ -55,6 +55,11 @@ final class Campaign
         $this->budget = $budget;
     }
 
+    public function getSourceAddress(): string
+    {
+        return $this->keywords['adshares_address'];
+    }
+
     public function getId(): string
     {
         return $this->campaignId->toString();

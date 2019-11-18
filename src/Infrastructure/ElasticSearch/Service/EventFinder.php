@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
@@ -30,7 +30,7 @@ class EventFinder implements EventFinderInterface
             'index' => EventIndex::name(),
             'body' => [
                 '_source' => false,
-                'docvalue_fields' => ['id', 'case_id', 'publisher_id', 'paid_amount', 'time', 'payment_id'],
+                'docvalue_fields' => ['id', 'click_id', 'last_payment_id'],
                 'size' => 1,
                 'query' => [],
                 'sort' => [],
@@ -122,6 +122,138 @@ class EventFinder implements EventFinderInterface
             $data['paid_amount'][0],
             $data['time'][0],
             $data['payment_id'][0]
+        );
+    }
+
+
+    public function findLastCase(): FoundEvent
+    {
+        $key = 'Adselect.EventFinder.LastCase';
+        $found_id = apcu_fetch($key);
+        if (!$found_id) {
+            $query = [
+                'bool' => [
+                    'must' => [
+                        'exists' => [
+                            'field' => 'id',
+                        ],
+                    ],
+                ],
+            ];
+
+            $sort = [
+                [
+                    'id' => [
+                        'order' => 'desc'
+                    ],
+                ],
+            ];
+
+            $params = $this->params;
+            $params['body']['query'] = $query;
+            $params['body']['sort'] = $sort;
+
+            $this->logger->debug(sprintf('[EVENT FINDER] (last case) sending a query: %s', json_encode($params)));
+
+            $response = $this->client->search($params);
+            $data = $response['hits']['hits'][0]['fields'] ?? null;
+
+            if (!$data) {
+                throw new EventNotFound('No events.');
+            }
+
+            $found_id = $data['id'][0];
+            apcu_store($key, $found_id, 300);
+        }
+        return new FoundEvent(
+            $found_id
+        );
+    }
+
+    public function findLastClick(): FoundEvent
+    {
+        $key = 'Adselect.EventFinder.LastClick';
+        $found_id = apcu_fetch($key);
+        if (!$found_id) {
+            $query = [
+                'bool' => [
+                    'must' => [
+                        'exists' => [
+                            'field' => 'click_id',
+                        ],
+                    ],
+                ],
+            ];
+
+            $sort = [
+                [
+                    'click_id' => [
+                        'order' => 'desc'
+                    ],
+                ],
+            ];
+
+            $params = $this->params;
+            $params['body']['query'] = $query;
+            $params['body']['sort'] = $sort;
+
+            $this->logger->debug(sprintf('[EVENT FINDER] (last click) sending a query: %s', json_encode($params)));
+
+            $response = $this->client->search($params);
+            $data = $response['hits']['hits'][0]['fields'] ?? null;
+
+            if (!$data) {
+                throw new EventNotFound('No events.');
+            }
+
+            $found_id = $data['click_id'][0];
+            apcu_store($key, $found_id, 300);
+        }
+        return new FoundEvent(
+            $found_id
+        );
+    }
+
+    public function findLastPayment(): FoundEvent
+    {
+        $key = 'Adselect.EventFinder.LastPayment';
+        $found_id = apcu_fetch($key);
+        if (!$found_id) {
+            $query = [
+                'bool' => [
+                    'must' => [
+                        'exists' => [
+                            'field' => 'last_payment_id',
+                        ],
+                    ],
+                ],
+            ];
+
+            $sort = [
+                [
+                    'last_payment_id' => [
+                        'order' => 'desc'
+                    ],
+                ],
+            ];
+
+            $params = $this->params;
+            $params['body']['query'] = $query;
+            $params['body']['sort'] = $sort;
+
+            $this->logger->debug(sprintf('[EVENT FINDER] (last case) sending a query: %s', json_encode($params)));
+
+            $response = $this->client->search($params);
+            $data = $response['hits']['hits'][0]['fields'] ?? null;
+
+            if (!$data) {
+                throw new EventNotFound('No events.');
+            }
+            $found_id = $data['last_payment_id'][0];
+            apcu_store($key, $found_id, 300);
+        }
+        return new FoundEvent(
+            $found_id
         );
     }
 }

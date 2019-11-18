@@ -1,95 +1,112 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Domain\Model;
 
-use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\DateTimeInterface;
 
 final class Event
 {
-    /** @var Id */
-    private $caseId;
+    /** @var int */
+    private $id;
+    /** @var DateTimeInterface */
+    private $createdAt;
     /** @var Id */
     private $publisherId;
     /** @var Id */
-    private $userId;
+    private $siteId;
     /** @var Id */
     private $zoneId;
     /** @var Id */
     private $campaignId;
     /** @var Id */
     private $bannerId;
-    /** @var array */
-    private $keywords;
-    /** @var DateTimeInterface */
-    private $time;
-    /** @var float */
-    private $paidAmount;
-    /** @var EventType */
-    private $type;
-    /** @var int */
-    private $id;
-    /** @var int */
-    private $paymentId;
+    /** @var Id */
+    private $impressionId;
     /** @var Id */
     private $trackingId;
+    /** @var Id */
+    private $userId;
+    /** @var array */
+    private $keywords;
+
+    /** @var int */
+    private $clickId;
+    /** @var DateTimeInterface */
+    private $clickTime;
+
+    /** @var float */
+    private $paidAmount;
+    /** @var int */
+    private $lastPaymentId;
+    /** @var DateTimeInterface */
+    private $lastPaymentTime;
 
     public function __construct(
         int $id,
-        Id $caseId,
+        DateTimeInterface $createdAt,
         Id $publisherId,
-        Id $userId,
-        Id $trackingId,
+        Id $siteId,
         Id $zoneId,
         Id $campaignId,
         Id $bannerId,
-        array $keywords,
-        DateTimeInterface $time,
-        EventType $type,
-        float $paidAmount = 0,
-        int $paymentId = null
+        Id $impressionId,
+        Id $trackingId,
+        Id $userId,
+        array $keywords
     ) {
         $this->id = $id;
-        $this->caseId = $caseId;
+        $this->createdAt = $createdAt;
         $this->publisherId = $publisherId;
-        $this->userId = $userId;
-        $this->trackingId = $trackingId;
+        $this->siteId = $siteId;
         $this->zoneId = $zoneId;
         $this->campaignId = $campaignId;
         $this->bannerId = $bannerId;
+        $this->impressionId = $impressionId;
+        $this->trackingId = $trackingId;
+        $this->userId = $userId;
+        $this->keywords = [];
+
+        $this->clickId = null;
+        $this->clickTime = null;
+
+        $this->paidAmount = 0;
+        $this->lastPaymentId = null;
+        $this->lastPaymentTime = null;
         $this->keywords = $keywords;
-        $this->time = $time;
-        $this->paidAmount = $paidAmount;
-        $this->type = $type;
-        $this->paymentId = $paymentId;
     }
 
     public function flatKeywords(): array
     {
-        $flatKeywords = [];
+        $ret = [];
+
         foreach ($this->keywords as $key => $values) {
-            foreach ((array)$values as $value) {
-                $keyword = $key . '=' . $value;
-                $flatKeywords[sha1($keyword)] = $keyword;
+            if (!is_array($values)) {
+                $values = [$values];
+            }
+            foreach ($values as $value) {
+                $ret[] = $key . '=' . $value;
             }
         }
 
-        asort($flatKeywords);
+        return $ret;
+    }
 
-        return $flatKeywords;
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getDayDate(): string
     {
-        return $this->time->format('Y-m-d');
+        return $this->createdAt->format('Y-m-d');
     }
 
-    public function getCaseId(): string
+    public function getImpressionId(): string
     {
-        return $this->caseId->toString();
+        return $this->impressionId->toString();
     }
 
     public function getUserId(): string
@@ -114,7 +131,7 @@ final class Event
 
     public function getTime(): string
     {
-        return $this->time->format('Y-m-d H:i:s');
+        return $this->createdAt->format('Y-m-d H:i:s');
     }
 
     public function getPaidAmount(): ?float
@@ -124,7 +141,7 @@ final class Event
 
     public function getPaymentId(): ?int
     {
-        return $this->paymentId;
+        return $this->lastPaymentId;
     }
 
     public function getKeywords(): array
@@ -132,41 +149,29 @@ final class Event
         return $this->keywords;
     }
 
-    public function getType(): string
-    {
-        return $this->type->toString();
-    }
-
-    public function isView(): bool
-    {
-        return $this->type->isView();
-    }
-
-    public function isClick(): bool
-    {
-        return $this->type->isClick();
-    }
-
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'case_id' => $this->caseId->toString(),
+            'time' => $this->getTime(),
             'publisher_id' => $this->publisherId->toString(),
+            'site_id' => $this->siteId->toString(),
+            'zone_id' => $this->zoneId->toString(),
             'user_id' => $this->userId->toString(),
             'tracking_id' => $this->trackingId->toString(),
-            'zone_id' => $this->zoneId->toString(),
+            'impression_id' => $this->impressionId->toString(),
             'campaign_id' => $this->campaignId->toString(),
             'banner_id' => $this->bannerId->toString(),
-            'keywords' => $this->keywords,
-            'time' => $this->getTime(),
             'paid_amount' => $this->paidAmount,
-            'payment_id' => $this->paymentId,
+            'last_payment_id' => $this->lastPaymentId,
+            'last_payment_time' => $this->lastPaymentTime,
+            'click_id' => $this->clickId,
+            'click_time' => $this->clickTime,
         ];
     }
 
     public function equals(Event $event): bool
     {
-        return $this->caseId->equals($event->caseId);
+        return $this->id === $event->id;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 use Elasticsearch\ClientBuilder;
 
 require '../vendor/autoload.php';
@@ -12,9 +13,8 @@ $params = ['index' => 'campaigns'];
 $response = $client->indices()->getMapping($params);
 
 $all_require_keywords = [];
-foreach($response['campaigns']['mappings']['properties'] as $key => $def)
-{
-    if(preg_match('/^filters:require:(.+)/', $key, $match)) {
+foreach ($response['campaigns']['mappings']['properties'] as $key => $def) {
+    if (preg_match('/^filters:require:(.+)/', $key, $match)) {
         $all_require_keywords[] = $match[1];
     }
 }
@@ -24,7 +24,8 @@ $request = json_decode(file_get_contents('banner_select.json'), JSON_OBJECT_AS_A
 
 $select = $request[0];
 
-function getLastSeenCampaings($client, $user_id) {
+function getLastSeenCampaings($client, $user_id)
+{
     $params = [
         'index' => 'user_history',
         'body' => [
@@ -53,9 +54,9 @@ function getLastSeenCampaings($client, $user_id) {
 
     $seen = [];
     $response = $client->search($params);
-    foreach($response['hits']['hits'] as $hit) {
-        if(!isset($seen[$hit['fields']['campaign_id'][0]])) {
-            $seen[$hit['fields']['campaign_id'][0]]=0;
+    foreach ($response['hits']['hits'] as $hit) {
+        if (!isset($seen[$hit['fields']['campaign_id'][0]])) {
+            $seen[$hit['fields']['campaign_id'][0]] = 0;
         }
         $seen[$hit['fields']['campaign_id'][0]]++;
     }
@@ -79,14 +80,22 @@ $params = [
                 'script_score' => [
 
                     "script" => [
-                        "lang"=> "painless",
-                        // tu zmaiast 1.0 będzie liczony RPM
-                        "source"=> "1.0 / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1)",
+                        "lang" => "painless",
                         "params" => [
-                            "last_seen" => (object)$last_seen
-                        ]
+                            "last_seen" => (object)$last_seen,
+                            "min_rpm" => 0.0,
+                        ],
+                        // tu zmaiast 1.0 będzie liczony RPM
+                        "source" => <<<PAINLESS
+                            double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0)) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1);
+                            if(params.min_rpm > real_rpm) {
+                                return 0;
+                            }
+                            // encode score na rpm in one number. 4 significant digits each 
+                            return Math.round(100.0 * real_rpm * Math.random() ) * 10000 + Math.round(real_rpm * 100);
+PAINLESS
                     ]
-                ]
+                ],
             ],
         ]
 //        "sort" => [
@@ -107,7 +116,7 @@ $params = [
 ];
 print_r($last_seen);
 $response = $client->search($params);
-print_r($response);
+//print_r($response);
 
 $campaigns = [];
 foreach ($response['hits']['hits'] as $hit) {
@@ -115,10 +124,11 @@ foreach ($response['hits']['hits'] as $hit) {
     $cmp = [
         'campaign_id' => $hit['_id'],
         'score' => $hit['_score'],
+        'rpm' => ($hit['_score'] - floor($hit['_score'] / 10000) * 10000) / 100,
         'banners' => [],
     ];
 
-    foreach($hit['inner_hits']['banners']['hits']['hits'] as $banner_hit) {
+    foreach ($hit['inner_hits']['banners']['hits']['hits'] as $banner_hit) {
         $cmp['banners'][] = [
             'banner_id' => $banner_hit['fields']['banners.id'],
             'score' => $banner_hit['_score'],
@@ -151,9 +161,9 @@ $intersect = [
 $m = [];
 $n = count($sizes);
 
-for($i=0;$i<$n;$i++) {
+for ($i = 0; $i < $n; $i++) {
     $m[$i][$i] = 1;
-    for($j=$i+1;$j<$n;$j++) {
+    for ($j = $i + 1; $j < $n; $j++) {
         list($x, $y) = getWeights($sizes[$i], $intersect[$i . ',' . $j], $sizes[$j]);
         $m[$i][$j] = $x;
         $m[$j][$i] = $y;
@@ -166,11 +176,11 @@ function getWeights($sizeA, $intersect, $sizeB)
 {
     $a = $intersect / $sizeA;
     $b = $intersect / $sizeB;
-    if($a == 1 && $b == 1) {
+    if ($a == 1 && $b == 1) {
         return [0, 1];
     }
-    $x = (1-$b) / (1 - $a * $b);
-    $y = (1-$a) / (1 - $a * $b);
+    $x = (1 - $b) / (1 - $a * $b);
+    $y = (1 - $a) / (1 - $a * $b);
     return [$x, $y];
 }
 
@@ -189,6 +199,7 @@ function getSelectQuery($all_require_keywords, $select): array
 
     $params = [
         'bool' => [
+//            "boost" => 0.0,
             // exclude
             'must_not' => $excludes,
             //require
@@ -198,6 +209,7 @@ function getSelectQuery($all_require_keywords, $select): array
                         'bool' => [
                             'should' => $requires,
                             'minimum_should_match' => count($all_require_keywords),
+                            "boost" => 0.0,
                         ]
                     ]
                 ],
@@ -221,17 +233,79 @@ function getSelectQuery($all_require_keywords, $select): array
                         ]
                     ]
                 ],
+                [
+                    "bool" => [
+                        "should" => [
+                            [
+                                "has_child" => [
+                                    "type" => "stats",
+                                    "query" => [
+                                        'function_score' => [
+                                            "query" => getRpmQuery($select),
+                                            "script_score" => [
+                                                "script" => [
+                                                    "params" => [
+                                                        'publisher_id' => $select['publisher_id'],
+                                                        'site_id' => $select['site_id'],
+                                                        'zone_id' => $select['zone_id'],
+                                                    ],
+                                                    "source" => <<<PAINLESS
+double rpm = Math.min(99.9, doc['stats.rpm'].value);                                              
+return rpm + (doc['stats.publisher_id'].value == params['publisher_id'] ? 100.0 : 0.0) + (doc['stats.site_id'].value == params['site_id'] ? 100.0 : 0.0) + (doc['stats.zone_id'].value == params['zone_id'] ? 100.0 : 0.0);
+PAINLESS
+                                                ]
+                                            ],
+                                            "boost_mode" => "replace",
+                                            //"score_mode" => "max",
+                                        ],
+                                    ],
+                                    "score_mode" => "max",
+                                ]
+                            ],
+                        ],
+                    ]
+
+                ],
+
             ]
         ],
     ];
     return $params;
 }
 
+function getRpmQuery(array $select)
+{
+//    return [
+//        'match_all' => (object)[],
+//    ];
+//    print_r($select);exit;
+    return [
+        'bool' => [
+            'filter' => [
+                [
+                    'terms' => [
+                        'stats.publisher_id' => ['', $select['publisher_id']],
+                    ]
+                ],
+                [
+                    'terms' => [
+                        'stats.site_id' => ['', $select['site_id']],
+                    ]
+                ],
+                [
+                    'terms' => [
+                        'stats.zone_id' => ['', $select['zone_id']],
+                    ]
+                ],
+            ],
+        ]
+    ];
+}
+
 function HelperFilterToBannerClauses($prefix, array $filters)
 {
     $clauses = [];
-    foreach ($filters as $field => $filter)
-    {
+    foreach ($filters as $field => $filter) {
         $clauses[] = getFilterClause("{$prefix}:{$field}", $filter);
     }
     return $clauses;
@@ -239,20 +313,20 @@ function HelperFilterToBannerClauses($prefix, array $filters)
 
 function getFilterClause($field, $values)
 {
-    if(!is_array($values)) {
+    if (!is_array($values)) {
         $values = [$values];
     }
     $use_ranges = false;
     foreach ($values as &$value) {
-        if(preg_match('/([0-9\.]*)--([0-9\.]*)/', $value, $match)) {
+        if (preg_match('/([0-9\.]*)--([0-9\.]*)/', $value, $match)) {
             $value = HelperElasticRange($match[1] === '' ? null : (int)$match[1], $match[2] === '' ? null : (int)$match[2]);
             $use_ranges = true;
         }
     }
-    if($use_ranges) {
+    if ($use_ranges) {
         $should = [];
 
-        foreach($values as $value) {
+        foreach ($values as $value) {
             $should[] = [
                 'range' => [
                     $field => $value
@@ -260,7 +334,7 @@ function getFilterClause($field, $values)
             ];
         }
 
-        if(count($should) > 1) {
+        if (count($should) > 1) {
             return [
                 'bool' => [
                     'should' => $should
@@ -280,13 +354,13 @@ function getFilterClause($field, $values)
 
 function getKeywordClause($field, $value)
 {
-    if(is_array($value) && count($value) == 1) {
+    if (is_array($value) && count($value) == 1) {
         $value = $value[0];
 
     }
     return [
-    (is_array($value) ? 'terms' : 'term') => [
-            $field  => $value,
+        (is_array($value) ? 'terms' : 'term') => [
+            $field => $value,
         ],
     ];
 }
@@ -294,8 +368,7 @@ function getKeywordClause($field, $value)
 function HelperKeywordsToExcludeClauses($prefix, array $keywords)
 {
     $clauses = [];
-    foreach ($keywords as $field => $value)
-    {
+    foreach ($keywords as $field => $value) {
         $clauses[] = getKeywordClause("{$prefix}:{$field}", $value);
     }
     return $clauses;
@@ -305,7 +378,7 @@ function HelperKeywordsToRequireClauses(array $all_require_keywords, $prefix, ar
 {
     $clauses = [];
 
-    foreach($all_require_keywords as $field) {
+    foreach ($all_require_keywords as $field) {
         $clauses[] = [
             'bool' => [
                 'must_not' => [
@@ -317,7 +390,7 @@ function HelperKeywordsToRequireClauses(array $all_require_keywords, $prefix, ar
                 ]
             ]
         ];
-        if(isset($keywords[$field])) {
+        if (isset($keywords[$field])) {
             $clauses[] = getKeywordClause("{$prefix}:{$field}", $keywords[$field]);
         }
     }
@@ -328,13 +401,13 @@ function HelperKeywordsToRequireClauses(array $all_require_keywords, $prefix, ar
 function HelperElasticRange($min, $max)
 {
     $range = [];
-    if($min !== null && $min !== '') {
+    if ($min !== null && $min !== '') {
         $range['gte'] = $min;
     }
-    if($max !== null && $max !== '') {
+    if ($max !== null && $max !== '') {
         $range['lte'] = $max;
     }
-    if(!$range) {
+    if (!$range) {
         throw new Exception("Must set min or max");
     }
     return $range;
