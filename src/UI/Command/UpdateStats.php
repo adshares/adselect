@@ -34,8 +34,8 @@ class UpdateStats extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $from = new \DateTimeImmutable('-1 hour');
-        $to = $from->modify('-14 days');
+        $to = new \DateTimeImmutable('-1 hour');
+        $from = $to->modify('-14 days');
 
         $this->updater->recalculateRPMStats($from, $to);
         $output->writeln(

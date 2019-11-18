@@ -12,6 +12,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\CleanQuery;
+use Adshares\AdSelect\Lib\DateTimeInterface;
 use DateTime;
 
 class StatsUpdater
@@ -57,6 +58,7 @@ class StatsUpdater
             'paid_amount'  => 0,
         ];
 
+
         do {
             $query = [
                 "size" => 0,
@@ -72,14 +74,31 @@ class StatsUpdater
                             ]
                         ],
                         "aggs"      => [
-                            "rpm" => [
-                                "avg" => [
-                                    "script" => [
-                                        "source" => "(double)doc['paid_amount'].value/(double)1e8",
-                                        "lang"   => "painless"
+                            "time_filter" => [
+                                "filter" => [
+                                    "range" => [
+                                        "time" => [
+                                            "time_zone" => $from->format('P'),
+                                            "gte"       => $from->format('Y-m-d H:i:s'),
+                                            "lte"       => $to->format('Y-m-d H:i:s')
+                                        ],
                                     ]
                                 ]
-                            ]
+                            ],
+                            "rpm"         => [
+                                "avg" => [
+                                    "script" => [
+                                        "source" => "
+                                        long eventTime = doc['time'].value.toInstant().toEpochMilli();
+                                        return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_amount'].value/(double)1e8 : null;",
+                                        "lang"   => "painless",
+                                        "params" => [
+                                            "from" => $from->getTimestamp() * 1000,
+                                            "to"   => $to->getTimestamp() * 1000,
+                                        ]
+                                    ]
+                                ],
+                            ],
                         ]
                     ]
                 ]
@@ -103,6 +122,12 @@ class StatsUpdater
 
 
             foreach ($result['aggregations']['zones']['buckets'] as $bucket) {
+                unset($bucket['doc_count']);
+
+                if (!$bucket['time_filter']['doc_count']) {
+                    continue;
+                }
+
                 if ($bucket['key']['campaign_id'] != $currentCampaign['campaign_id']) {
                     $this->saveCampaignStats($currentCampaign);
                     $currentCampaign = [
@@ -111,8 +136,8 @@ class StatsUpdater
                         'paid_amount' => 0,
                     ];
                 }
-                $currentCampaign['count'] += $bucket['doc_count'];
-                $currentCampaign['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
+                $currentCampaign['count'] += $bucket['time_filter']['doc_count'];
+                $currentCampaign['paid_amount'] += $bucket['rpm']['value'] * $bucket['time_filter']['doc_count'] / 1000;
 
                 if ($bucket['key']['campaign_id'] != $currentPublisher['campaign_id']
                     || $bucket['key']['publisher_id'] != $currentPublisher['publisher_id']
@@ -125,8 +150,9 @@ class StatsUpdater
                         'paid_amount'  => 0,
                     ];
                 }
-                $currentPublisher['count'] += $bucket['doc_count'];
-                $currentPublisher['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
+                $currentPublisher['count'] += $bucket['time_filter']['doc_count'];
+                $currentPublisher['paid_amount'] += $bucket['rpm']['value'] * $bucket['time_filter']['doc_count']
+                    / 1000;
 
                 if ($bucket['key']['campaign_id'] != $currentSite['campaign_id']
                     || $bucket['key']['publisher_id'] != $currentSite['publisher_id']
@@ -141,10 +167,10 @@ class StatsUpdater
                         'paid_amount'  => 0,
                     ];
                 }
-                $currentSite['count'] += $bucket['doc_count'];
-                $currentSite['paid_amount'] += $bucket['rpm']['value'] * $bucket['doc_count'] / 1000;
+                $currentSite['count'] += $bucket['time_filter']['doc_count'];
+                $currentSite['paid_amount'] += $bucket['rpm']['value'] * $bucket['time_filter']['doc_count'] / 1000;
 
-                $this->saveZoneStats($bucket['key'], $bucket['doc_count'], $bucket['rpm']['value']);
+                $this->saveZoneStats($bucket['key'], $bucket['time_filter']['doc_count'], $bucket['rpm']['value']);
             }
         } while ($after && $found > 0);
 
@@ -292,9 +318,15 @@ class StatsUpdater
                             "revenue" => [
                                 "sum" => [
                                     "script" => [
-                                        "source" => "doc['paid_amount'].value/1e11",
-                                        "lang"   => "painless"
-                                    ]
+                                        "source" => "
+                                        long eventTime = doc['time'].value.toInstant().toEpochMilli();
+                                        return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_amount'].value/1e11 : null;",
+                                        "lang"   => "painless",
+                                        "params" => [
+                                            "from" => $from->getTimestamp() * 1000,
+                                            "to"   => $to->getTimestamp() * 1000,
+                                        ]
+                                    ],
                                 ]
                             ]
                         ]

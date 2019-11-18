@@ -22,6 +22,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use Adshares\Common\Exception\Exception;
 use Adshares\Common\Exception\RuntimeException;
 use function array_filter;
 use function array_keys;
@@ -29,6 +30,8 @@ use function array_keys;
 class EventCollector implements EventCollectorInterface
 {
     private const ES_TYPE = 'COLLECT_UNPAID_EVENTS';
+    private const ES_TYPE_CLICK = 'COLLECT_CLICKS';
+    private const ES_TYPE_PAYMENT = 'COLLECT_PAYMENTS';
     private const APC_REFRESH_CLICKS_KEY = 'EventCollector.RefreshClicks';
     private const APC_REFRESH_PAYMENT_KEY = 'EventCollector.RefreshPayments';
 
@@ -122,6 +125,16 @@ class EventCollector implements EventCollectorInterface
         }
     }
 
+    private function getLastUpdatedOffset(array $elasticResponse): ?int
+    {
+        for ($i = count($elasticResponse['items']) - 1; $i >= 0; $i--) {
+            if ($elasticResponse['items'][$i]['update']['status'] == 200) {
+                return $i;
+            }
+        }
+        return null;
+    }
+
     public function collectCases(EventCollection $events): void
     {
         $mappedEvents = [];
@@ -160,6 +173,8 @@ class EventCollector implements EventCollectorInterface
     {
         $this->refreshIndexIfNeeded(self::APC_REFRESH_CLICKS_KEY);
 
+        $lastId = 0;
+        $bulkOffset = 0;
         $mappedEvents = [];
 
         /** @var Click $event */
@@ -169,25 +184,30 @@ class EventCollector implements EventCollectorInterface
             $mappedEvents[] = $mappedUnpaidEvent['data'];
 
             if (count($mappedEvents) >= $this->bulkLimit) {
-                $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-//                if ($response['errors']) {
-//                    throw new ElasticSearchRuntime('Could not update all clicks');
-//                }
+                $response = $this->client->bulk($mappedEvents, self::ES_TYPE_CLICK);
+                $lastOffset = $this->getLastUpdatedOffset($response);
+                if ($lastOffset !== null) {
+                    $lastId = $events[$bulkOffset + $lastOffset]->getId();
+                }
+                $bulkOffset += count($mappedEvents) / 2;
                 $mappedEvents = [];
             }
         }
 
         if ($mappedEvents) {
-            $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-//            if ($response['errors']) {
-//                throw new ElasticSearchRuntime('Could not update all clicks');
-//            }
+            $response = $this->client->bulk($mappedEvents, self::ES_TYPE_CLICK);
+            $lastOffset = $this->getLastUpdatedOffset($response);
+            if ($lastOffset !== null) {
+                $lastId = $events[$bulkOffset + $lastOffset]->getId();
+            }
         }
 
-        if ($events->count() > 0) {
+        if ($lastId > 0) {
             $key = 'Adselect.EventFinder.LastClick';
-            apcu_store($key, $events->last()->getId(), 300);
+            apcu_store($key, $lastId, 300);
             apcu_store(self::APC_REFRESH_PAYMENT_KEY, 1);
+        } else {
+            throw new ElasticSearchRuntime('Could not insert any clicks');
         }
     }
 
@@ -195,6 +215,8 @@ class EventCollector implements EventCollectorInterface
     {
         $this->refreshIndexIfNeeded(self::APC_REFRESH_PAYMENT_KEY);
 
+        $lastId = 0;
+        $bulkOffset = 0;
         $mappedEvents = [];
 
         /** @var Click $event */
@@ -204,25 +226,27 @@ class EventCollector implements EventCollectorInterface
             $mappedEvents[] = $mappedUnpaidEvent['data'];
 
             if (count($mappedEvents) >= $this->bulkLimit) {
-                $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-//                if ($response['errors']) {
-//                    throw new ElasticSearchRuntime('Could not update all payments');
-//                }
-
+                $response = $this->client->bulk($mappedEvents, self::ES_TYPE_PAYMENT);
+                $lastOffset = $this->getLastUpdatedOffset($response);
+                if ($lastOffset !== null) {
+                    $lastId = $events[$bulkOffset + $lastOffset]->getId();
+                }
+                $bulkOffset += count($mappedEvents) / 2;
                 $mappedEvents = [];
             }
         }
 
         if ($mappedEvents) {
-            $response = $this->client->bulk($mappedEvents, self::ES_TYPE);
-//            if ($response['errors']) {
-//                throw new ElasticSearchRuntime('Could not update all payments');
-//            }
+            $response = $this->client->bulk($mappedEvents, self::ES_TYPE_PAYMENT);
+            $lastOffset = $this->getLastUpdatedOffset($response);
+            if ($lastOffset !== null) {
+                $lastId = $events[$bulkOffset + $lastOffset]->getId();
+            }
         }
 
         if ($events->count() > 0) {
             $key = 'Adselect.EventFinder.LastPayment';
-            apcu_store($key, $events->last()->getId(), 300);
+            apcu_store($key, $lastId, 300);
         }
     }
 }
