@@ -12,17 +12,10 @@ final class SizeTest extends TestCase
 {
     public function testFromString(): void
     {
-        $size = Size::fromString('200x65');
+        $size = new Size('200x65');
 
         $this->assertEquals(200, $size->getWidth());
         $this->assertEquals(65, $size->getHeight());
         $this->assertEquals('200x65', $size->toString());
-    }
-
-    public function testWhenSizeFormatIsNotValid(): void
-    {
-        $this->expectException(AdSelectRuntimeException::class);
-
-        Size::fromString('20065');
     }
 }

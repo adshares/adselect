@@ -146,7 +146,7 @@ final class QueryDto
                 new Id($input['zone_id']),
                 new Id($input['user_id']),
                 new Id($input['tracking_id']),
-                Size::fromString($input['banner_size']),
+                new Size($input['banner_size']),
                 $input['banner_filters'],
                 $input['keywords']
             );
