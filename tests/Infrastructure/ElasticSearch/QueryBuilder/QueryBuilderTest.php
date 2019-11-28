@@ -22,7 +22,7 @@ final class QueryBuilderTest extends TestCase
         $siteId = new Id('43c567e1396b4cadb52223a51796fd04');
         $zoneId = new Id('43c567e1396b4cadb52223a51796fd03');
         $trackingId = new Id('43c567e1396b4cadb52223a51796fd02');
-        $dto = new QueryDto($publisherId, $siteId, $zoneId, $userId, $trackingId, new Size(200, 100));
+        $dto = new QueryDto($publisherId, $siteId, $zoneId, $userId, $trackingId, new Size("200x100"));
         $defined = [
             'one',
             'two',
@@ -149,7 +149,7 @@ PAINLESS;
             $zoneId,
             $userId,
             $trackingId,
-            new Size(160, 600),
+            new Size("160x600"),
             $filters,
             $keywords
         );

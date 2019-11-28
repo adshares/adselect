@@ -34,21 +34,21 @@ final class CampaignMapperTest extends TestCase
         $banner1 = new Banner(
             new Id($campaignId),
             new Id('43c567e1396b4cadb52223a51796fd01'),
-            new Size(90, 25),
+            new Size("90x25"),
             $keywords1
         );
 
         $banner2 = new Banner(
             new Id($campaignId),
             new Id('43c567e1396b4cadb52223a51796fd02'),
-            new Size(180, 90),
+            new Size("180x90"),
             $keywords2
         );
 
         $banner3 = new Banner(
             new Id($campaignId),
             new Id('43c567e1396b4cadb52223a51796fd03'),
-            new Size(333, 111)
+            new Size("333x111")
         );
 
         $start = new ExtendedDateTime();

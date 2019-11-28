@@ -75,8 +75,8 @@ EOF;
         string $index,
         float $rpm,
         string $publisher_id = '',
-        ?string $site_id = '',
-        ?string $zone_id = ''
+        string $site_id = '',
+        string $zone_id = ''
     ) {
         $id = sha1(implode(":", [$campaignId, $publisher_id, $site_id, $zone_id]));
         $mapped = [];

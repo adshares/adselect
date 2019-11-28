@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Domain\ValueObject;
 
@@ -8,43 +8,40 @@ use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 
 final class Size
 {
-    /** @var int */
-    private $width;
-    /** @var int */
-    private $height;
+    /** @var string */
+    private $size;
 
-    public function __construct(int $width, int $height)
+    public function __construct(string $size)
     {
-        $this->width = $width;
-        $this->height = $height;
-    }
-
-    public static function fromString(string $input): self
-    {
-        $size = explode('x', $input);
-
-        if (!isset($size[0], $size[1])) {
-            throw new AdSelectRuntimeException(sprintf(
-                'Given size (%s) format is not valid. We support only {$width}x{$height}.',
-                $input
-            ));
-        }
-
-        return new self((int)$size[0], (int)$size[1]);
+        $this->size = $size;
     }
 
     public function getWidth(): int
     {
-        return $this->width;
+        $size = explode('x', $this->size);
+        if (!isset($size[0], $size[1])) {
+            return 0;
+        }
+        if (!is_numeric($size[0])) {
+            return 0;
+        }
+        return (int)$size[0];
     }
 
     public function getHeight(): int
     {
-        return $this->height;
+        $size = explode('x', $this->size);
+        if (!isset($size[0], $size[1])) {
+            return 0;
+        }
+        if (!is_numeric($size[1])) {
+            return 0;
+        }
+        return (int)$size[1];
     }
 
     public function toString(): string
     {
-        return $this->width.'x'.$this->height;
+        return $this->size;
     }
 }

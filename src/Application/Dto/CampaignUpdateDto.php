@@ -118,7 +118,7 @@ final class CampaignUpdateDto
             $banner = new Banner(
                 $campaignId,
                 new Id($banner['banner_id']),
-                Size::fromString($banner['banner_size']),
+                new Size($banner['banner_size']),
                 $banner['keywords'] ?? []
             );
 
