@@ -171,9 +171,10 @@ return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_am
             }
         } while ($after && $found > 0);
 
-        $this->saveCampaignStats($currentCampaign);
-        $this->savePublisherStats($currentPublisher);
         $this->saveSiteStats($currentSite);
+        $this->savePublisherStats($currentPublisher);
+        $this->saveCampaignStats($currentCampaign);
+
 
         $this->commitUpdates();
 
@@ -183,7 +184,7 @@ return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_am
 
     private function saveCampaignStats(array $stats): void
     {
-        if (!$stats['campaign_id'] || $stats['count'] < self::ES_BUCKET_MIN_SIGNIFICANT_COUNT) {
+        if (!$stats['campaign_id']) {
             return;
         }
         $rpm = $stats['paid_amount'] / $stats['count'] * 1000;
