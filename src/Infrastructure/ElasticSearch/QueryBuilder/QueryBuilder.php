@@ -12,11 +12,14 @@ class QueryBuilder
     private $userHistory;
     /** @var QueryInterface */
     private $query;
+    /** @var float */
+    private $minCpm;
 
-    public function __construct(QueryInterface $query, array $userHistory = [])
+    public function __construct(QueryInterface $query, float $minCpm, array $userHistory = [])
     {
         $this->userHistory = $userHistory;
         $this->query = $query;
+        $this->minCpm = $minCpm;
     }
 
     public function build(): array
@@ -40,7 +43,7 @@ PAINLESS;
                         "lang" => "painless",
                         "params" => [
                             "last_seen" => (object)$this->userHistory,
-                            "min_rpm" => 0.0,
+                            "min_rpm" => $this->minCpm,
                         ],
                         "source" => $scriptScore,
                     ]

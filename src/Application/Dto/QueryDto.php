@@ -29,6 +29,8 @@ final class QueryDto
     private $keywords;
     /** @var Id */
     private $trackingId;
+    /** @var array */
+    private $zoneOptions;
 
     public function __construct(
         Id $publisherId,
@@ -37,6 +39,7 @@ final class QueryDto
         Id $userId,
         Id $trackingId,
         Size $size,
+        array $zone_options = [],
         array $filters = [],
         array $keywords = []
     ) {
@@ -49,6 +52,7 @@ final class QueryDto
         $this->requireFilters = $filters['require'] ?? [];
         $this->excludeFilters = $filters['exclude'] ?? [];
         $this->keywords = $keywords;
+        $this->zoneOptions = $zone_options;
     }
 
     /**
@@ -78,6 +82,11 @@ final class QueryDto
     public function getKeywords(): array
     {
         return $this->keywords;
+    }
+
+    public function getZoneOption($key, $default = null)
+    {
+        return $this->zoneOptions[$key] ?? $default;
     }
 
     public function getRequireFilters(): array
@@ -147,6 +156,7 @@ final class QueryDto
                 new Id($input['user_id']),
                 new Id($input['tracking_id']),
                 new Size($input['banner_size']),
+                $input['zone_options'] ?? [],
                 $input['banner_filters'],
                 $input['keywords']
             );

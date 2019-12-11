@@ -30,7 +30,7 @@ class BannerFinder implements BannerFinderInterface
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
     const HISTORY_ENTRY_CAMPAIGN_ID = 1;
-    private const HISTORY_MAXAGE = 3600;
+    private const HISTORY_MAXAGE = 3600 * 3;
     private const HISTORY_MAXENTRIES = 50;
 
     /** @var Client */
@@ -76,7 +76,7 @@ class BannerFinder implements BannerFinderInterface
         if ($chance < $this->experimentChance) {
             $queryBuilder = new ExpQueryBuilder($query, $this->getSourceServerWeights());
         } else {
-            $queryBuilder = new QueryBuilder($query, self::getSeenFrequencies($userHistory));
+            $queryBuilder = new QueryBuilder($query, (float)$queryDto->getZoneOption('min_cpm', 0.0), self::getSeenFrequencies($userHistory));
         }
 
 //        $params['body']['explain'] = true;

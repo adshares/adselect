@@ -52,6 +52,9 @@ EOF;
                 'banners' => $banners,
                 'searchable' => true,
                 'source_address' => $campaign->getSourceAddress(),
+                'budget' => $campaign->getBudget(),
+                'max_cpc' => $campaign->getMaxCpc(),
+                'max_cpm' => $campaign->getMaxCpm(),
             ],
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)

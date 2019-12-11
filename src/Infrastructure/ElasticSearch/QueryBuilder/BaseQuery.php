@@ -45,26 +45,42 @@ class BaseQuery implements QueryInterface
             $this->bannerFinderDto->getExcludeFilters()
         );
 
+
+        $require_base = [
+            [
+                'bool' => [
+                    'should'               => $requires,
+                    'minimum_should_match' => count($this->definedRequireFilters),
+                    "boost"                => 0.0,
+                ],
+            ],
+            [
+                'term' => [
+                    'searchable' => true,
+                ]
+            ]
+        ];
+
+        if($this->bannerFinderDto->getZoneOption('cpa_only')) {
+            $require_base[] = [
+                'term' => [
+                    'max_cpm' => 0,
+                ]
+            ];
+            $require_base[] = [
+                'term' => [
+                    'max_cpc' => 0,
+                ]
+            ];
+        }
+
         return [
             'bool' => [
                 // exclude
                 'must_not' => $excludes,
                 //require
                 'must'     => [
-                    [
-                        [
-                            'bool' => [
-                                'should'               => $requires,
-                                'minimum_should_match' => count($this->definedRequireFilters),
-                                "boost"                => 0.0,
-                            ],
-                        ],
-                        [
-                            'term' => [
-                                'searchable' => true,
-                            ]
-                        ]
-                    ],
+                    $require_base,
                     [
                         'nested' => [
                             'path'       => 'banners',
