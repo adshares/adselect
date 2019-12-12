@@ -33,9 +33,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
     {
         $created = [];
         foreach ($bulkUpsertResult['items'] as $item) {
-            if ($item['update']['result'] == 'created') {
-                $created[] = $campaigns[$item['update']['_id']];
-            }
+            $created[] = $campaigns[$item['update']['_id']];
         }
         return $created;
     }
@@ -78,6 +76,10 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
         foreach ($campaigns as $campaign) {
             $mapped = CampaignMapper::mapStats($campaign->getId(), CampaignIndex::name(), 0.00);
+            #do not update if exists
+            $mapped['data']['upsert'] = $mapped['data']['doc'];
+            $mapped['data']['doc'] = (object)[];
+            unset($mapped['data']['doc_as_upsert']);
             $mappedCampaigns[] = $mapped['index'];
             $mappedCampaigns[] = $mapped['data'];
         }
