@@ -274,6 +274,7 @@ return params.from <= eventTime && eventTime <= params.to ? (double)doc['paid_am
     {
         if (count($this->updateCache) > 0) {
             $this->client->bulk($this->updateCache, 'ES_STATS_UPDATE');
+            $this->updateCache = [];
         }
     }
 

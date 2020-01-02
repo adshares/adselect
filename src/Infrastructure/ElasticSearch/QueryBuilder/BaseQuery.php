@@ -46,7 +46,7 @@ class BaseQuery implements QueryInterface
         );
 
 
-        $require_base = [
+        $filter = [
             [
                 'bool' => [
                     'should'               => $requires,
@@ -61,112 +61,105 @@ class BaseQuery implements QueryInterface
             ]
         ];
 
-        if($this->bannerFinderDto->getZoneOption('cpa_only')) {
-            $require_base[] = [
+        if ($this->bannerFinderDto->getZoneOption('cpa_only')) {
+            $filter[] = [
                 'term' => [
                     'max_cpm' => 0,
                 ]
             ];
-            $require_base[] = [
+            $filter[] = [
                 'term' => [
                     'max_cpc' => 0,
                 ]
             ];
         }
+        $filter[] = [
+            'nested' => [
+                'path'       => 'banners',
+                'score_mode' => "none",
+                'inner_hits' => [
+                    '_source'         => false,
+                    'docvalue_fields' => ['banners.id', 'banners.size'],
+                ],
+                'query'      => [
+                    'bool' => [
+                        // filter exclude
+                        'must_not' => $excludeFilter,
+                        // filter require
+                        'must'     => array_merge([$sizeFilter], $requireFilter),
+                    ],
+
+                ],
+            ],
+        ];
 
         return [
             'bool' => [
                 // exclude
                 'must_not' => $excludes,
                 //require
-                'must'     => [
-                    $require_base,
+                'filter'   => $filter,
+                "should"   => [
                     [
-                        'nested' => [
-                            'path'       => 'banners',
-                            'score_mode' => "none",
-                            'inner_hits' => [
-                                '_source'         => false,
-                                'docvalue_fields' => ['banners.id', 'banners.size'],
-                            ],
-                            'query'      => [
-                                'bool' => [
-                                    // filter exclude
-                                    'must_not' => $excludeFilter,
-                                    // filter require
-                                    'must'     => array_merge([$sizeFilter], $requireFilter),
-                                ],
-
-                            ],
-                        ],
-                    ],
-                    [
-                        "bool" => [
-                            "should" => [
-                                [
-                                    "has_child" => [
-                                        "type"       => "stats",
-                                        "query"      => [
-                                            'function_score' => [
-                                                "query"        => [
-                                                    'bool' => [
-                                                        'filter' => [
-                                                            [
-                                                                'terms' => [
-                                                                    'stats.publisher_id' => [
-                                                                        '',
-                                                                        $this->bannerFinderDto->getPublisherId()
-                                                                            ->toString()
-                                                                    ],
-                                                                ]
-                                                            ],
-                                                            [
-                                                                'terms' => [
-                                                                    'stats.site_id' => [
-                                                                        '',
-                                                                        $this->bannerFinderDto->getSiteId()->toString()
-                                                                    ],
-                                                                ]
-                                                            ],
-                                                            [
-                                                                'terms' => [
-                                                                    'stats.zone_id' => [
-                                                                        '',
-                                                                        $this->bannerFinderDto->getZoneId()->toString()
-                                                                    ],
-                                                                ]
-                                                            ],
+                        "has_child" => [
+                            "type"       => "stats",
+                            "query"      => [
+                                'function_score' => [
+                                    "query"        => [
+                                        'bool' => [
+                                            'filter' => [
+                                                [
+                                                    'terms' => [
+                                                        'stats.publisher_id' => [
+                                                            '',
+                                                            $this->bannerFinderDto->getPublisherId()
+                                                                ->toString()
                                                         ],
                                                     ]
                                                 ],
-                                                "script_score" => [
-                                                    "script" => [
-                                                        "params" => [
-                                                            'publisher_id' => $this->bannerFinderDto->getPublisherId()
-                                                                ->toString(),
-                                                            'site_id'      => $this->bannerFinderDto->getSiteId()
-                                                                ->toString(),
-                                                            'zone_id'      => $this->bannerFinderDto->getZoneId()
-                                                                ->toString(),
+                                                [
+                                                    'terms' => [
+                                                        'stats.site_id' => [
+                                                            '',
+                                                            $this->bannerFinderDto->getSiteId()->toString()
                                                         ],
-                                                        "source" => <<<PAINLESS
+                                                    ]
+                                                ],
+                                                [
+                                                    'terms' => [
+                                                        'stats.zone_id' => [
+                                                            '',
+                                                            $this->bannerFinderDto->getZoneId()->toString()
+                                                        ],
+                                                    ]
+                                                ],
+                                            ],
+                                        ]
+                                    ],
+                                    "script_score" => [
+                                        "script" => [
+                                            "params" => [
+                                                'publisher_id' => $this->bannerFinderDto->getPublisherId()
+                                                    ->toString(),
+                                                'site_id'      => $this->bannerFinderDto->getSiteId()
+                                                    ->toString(),
+                                                'zone_id'      => $this->bannerFinderDto->getZoneId()
+                                                    ->toString(),
+                                            ],
+                                            "source" => <<<PAINLESS
 double rpm = Math.min(99.9, doc['stats.rpm'].value);                                              
 return rpm + (doc['stats.publisher_id'].value == params['publisher_id'] ? 100.0 : 0.0) + 
             (doc['stats.site_id'].value == params['site_id'] ? 100.0 : 0.0) + 
             (doc['stats.zone_id'].value == params['zone_id'] ? 100.0 : 0.0);
 PAINLESS
-                                                    ]
-                                                ],
-                                                "boost_mode"   => "replace",
-                                                //"score_mode" => "max",
-                                            ],
-                                        ],
-                                        "score_mode" => "max",
-                                    ]
+                                        ]
+                                    ],
+                                    "boost_mode"   => "replace",
+                                    //"score_mode" => "max",
                                 ],
                             ],
+                            "score_mode" => "max",
                         ]
-
                     ],
                 ],
             ],
