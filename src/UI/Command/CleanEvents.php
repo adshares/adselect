@@ -31,13 +31,13 @@ class CleanEvents extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Remove events from documents older than given date (or -14 days by default).')
+            ->setDescription('Remove events from documents older than given date (or -30 days by default).')
             ->addOption(
                 'from',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Older documents than `from` date will be removed. Supported format: Y-m-d H:i:s',
-                new DateTime('-14 days')
+                new DateTime('-30 days')
             );
     }
 

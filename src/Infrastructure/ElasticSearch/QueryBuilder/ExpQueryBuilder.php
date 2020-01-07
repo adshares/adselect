@@ -33,11 +33,7 @@ class ExpQueryBuilder
                             "source_weights" => (object)$this->sourceWeights,
                         ],
                         'source' => <<<PAINLESS
-                            // there is data available on zone_id level
-                            if(_score >= 300.0) {
-                                return 0.0;
-                            }
-                            double weight = 0.1;
+                            double weight = 0.01;
                             if (params.source_weights.containsKey(doc['source_address'].value)) {
                                 weight = (double)params.source_weights[doc['source_address'].value];
                             }
