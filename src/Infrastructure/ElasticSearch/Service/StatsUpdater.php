@@ -115,7 +115,6 @@ class StatsUpdater
     private function nestedStats(array $path, callable $callback, $upstream = [])
     {
         foreach ($path as $key => $child) {
-
             $after = null;
 
             $terms = [];
@@ -267,7 +266,6 @@ class StatsUpdater
                             );
 
                             if ($bucketPartialStats['count'] >= $nConfidence / 2) {
-
                                 $bucketPartialStats['std_deviation'] = $bucketStats['std_deviation'];
                                 $bucketPartialStats['avg_err'] = $bucketStats['avg_err'];
                                 $bucketPartialStats['avg_min'] = $bucketPartialStats['avg']
@@ -278,7 +276,6 @@ class StatsUpdater
                                 $bucketPartialStats['used_count'] = $bucketPartialStats['count'];
                                 $bucketPartialStats['count'] = $bucketStats['count'];
                                 $bucketStats = $bucketPartialStats;
-
                             }
                         }
                     }
@@ -299,7 +296,6 @@ class StatsUpdater
                         }
 
                         $rpm_est = max($tmp['avg_min'], min($rpm_est, $tmp['avg_max']));
-
                     }
                     $bucketStats['rpm_est'] = $rpm_est;
 
@@ -312,7 +308,6 @@ class StatsUpdater
                     if (is_array($child)) {
                         $this->nestedStats($child, $callback, array_merge($upstream, [$current]));
                     }
-
                 }
             } while ($after);
         }
@@ -380,7 +375,6 @@ class StatsUpdater
 
                 $keyMap = [];
                 foreach (array_merge(array_slice($upstream, 1), [$current]) as $item) {
-
                     $keyMap[$item['key']] = $item['value'];
                 }
 

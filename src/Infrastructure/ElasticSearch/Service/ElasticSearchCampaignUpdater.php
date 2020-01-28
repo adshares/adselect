@@ -38,7 +38,6 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         $mappedBanners = [];
         /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
         foreach ($campaigns as $campaign) {
-
             foreach ($campaign->getBanners() as $banner) {
                 $mapped = BannerMapper::map($campaign, $banner, BannerIndex::name());
                 $mappedBanners[] = $mapped['index'];

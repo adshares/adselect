@@ -43,7 +43,6 @@ class UpdateStats extends Command
         $perThread = 256 / $n;
 
         for ($i = 0; round($i) < 256; $i += $perThread) {
-
             $min = round($i);
             $max = round($i + $perThread);
             $campaignRange = [
@@ -66,7 +65,6 @@ class UpdateStats extends Command
         $campaignRange = null;
 
         if ($threads > 1) {
-
             $threads = min(16, $threads);
 
             $nJobs = 0;
@@ -87,7 +85,7 @@ class UpdateStats extends Command
                 }
             }
 
-            if(!$is_child) {
+            if (!$is_child) {
                 while ($nJobs > 0) {
                     $pid = 0;
                     \pcntl_wait($pid);
@@ -109,7 +107,7 @@ class UpdateStats extends Command
         $to = new \DateTimeImmutable($toStr, new \DateTimeZone("UTC"));
         $from = $to->modify('-30 days');
 
-        if(!$is_parent) {
+        if (!$is_parent) {
             $this->updater->recalculateRPMStats($from, $to, $campaignRange);
 
             if ($is_child) {
