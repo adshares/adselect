@@ -180,6 +180,9 @@ final class CampaignMapperTest extends TestCase
                     'name' => 'campaign'
                 ],
                 'source_address' => '0001-00000005-CBCA',
+                'budget' => 6666666,
+                'max_cpc' => 10001,
+                'max_cpm' => 10002,
             ]
         ];
 

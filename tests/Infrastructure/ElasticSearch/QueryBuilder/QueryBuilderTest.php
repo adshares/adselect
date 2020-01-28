@@ -34,7 +34,7 @@ final class QueryBuilderTest extends TestCase
         ];
 
         $baseQuery = new BaseQuery($dto, $defined);
-        $queryBuilder = new QueryBuilder($baseQuery, $userHistory);
+        $queryBuilder = new QueryBuilder($baseQuery, 0.0, $userHistory);
 
         $result = $queryBuilder->build();
 
@@ -168,7 +168,7 @@ PAINLESS;
         ];
 
         $baseQuery = new BaseQuery($dto, $defined);
-        $queryBuilder = new QueryBuilder($baseQuery, $userHistory);
+        $queryBuilder = new QueryBuilder($baseQuery, 0.0, $userHistory);
 
         $result = $queryBuilder->build();
 
