@@ -17,8 +17,9 @@ class StatsUpdater
     /** @var Client */
     private $client;
 
+    const MAX_HOURLY_RPM_GROWTH = 1.20;
+
     private const ES_BUCKET_PAGE_SIZE = 500;
-    private const ES_BUCKET_MIN_SIGNIFICANT_COUNT = 1000;
 
     private const CONFIDENCE_Z = 1.96; // 95%
     private const TIME_PERCENTILES = [25, 50, 60, 70, 80, 90, 95, 97.5, 99, 99.5];
@@ -26,14 +27,14 @@ class StatsUpdater
     private $updateCache = [];
     private $bulkLimit;
 
-    /** @var \DateTimeInterface */
+    /** @var \DateTimeImmutable */
     private $timeFrom;
-    /** @var \DateTimeInterface */
+    /** @var \DateTimeImmutable */
     private $timeTo;
 
     private $campaignRange;
 
-    private $global_avg_rpm = 0.5;
+    private $globalAverageRpm = null;
 
     public function __construct(Client $client, int $bulkLimit = 100)
     {
@@ -69,6 +70,46 @@ class StatsUpdater
         );
 
         return $result['aggregations']['max_time']['value_as_string'] ?? null;
+    }
+
+    public function getAverageRpm() : ?float
+    {
+        if($this->globalAverageRpm === null) {
+            $from = $this->timeTo->modify("-24 hours");
+
+            $result = $this->client->search(
+                [
+                    'index' => [
+                        '_index' => EventIndex::name(),
+                    ],
+                    'size'  => 0,
+                    'body'  => [
+                        'query' => [
+                            'range' => [
+                                "time" => [
+                                    "time_zone" => $from->format('P'),
+                                    "gte"       => $from->format('Y-m-d H:i:s'),
+                                    "lte"       => $this->timeTo->format('Y-m-d H:i:s')
+                                ],
+                            ]
+                        ],
+                        'aggs'  => [
+                            'avg_rpm' => [
+                                'avg' => [
+                                    "script" => [
+                                        "source" => "doc['paid_amount'].value/(double)1e8",
+                                        "lang"   => "painless",
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                ]
+            );
+
+            $this->globalAverageRpm = $result['aggregations']['avg_rpm']['value'] ?? 0;
+        }
+        return $this->globalAverageRpm;
     }
 
     private function nestedStats(array $path, callable $callback, $upstream = [])
@@ -277,57 +318,13 @@ class StatsUpdater
         }
     }
 
-    private function partitionCampaigns($n)
+    public function recalculateRPMStats( \DateTimeImmutable $from,  \DateTimeImmutable $to, $campaignRange = null): void
     {
-        $perThread = 256 / $n;
+        $this->campaignRange = $campaignRange;
+        $this->timeFrom = $from;
+        $this->timeTo = $to;
 
-        for ($i = 0; round($i) < 256; $i += $perThread) {
-
-            $min = round($i);
-            $max = round($i + $perThread);
-            $campaignRange = [
-                'gte' => \str_pad(\dechex($min), 2, "0", STR_PAD_LEFT),
-            ];
-            if ($max < 256) {
-                $campaignRange['lt'] = \str_pad(\dechex($max), 2, "0", STR_PAD_LEFT);
-            }
-
-            yield $campaignRange;
-        }
-    }
-
-    public function recalculateRPMStats(\DateTimeInterface $from, \DateTimeInterface $to, $threads = 4): void
-    {
-        if ($threads > 1) {
-            $threads = min(16, $threads);
-
-            $nJobs = 0;
-            foreach ($this->partitionCampaigns(4 * $threads) as $range) {
-                if ($nJobs >= $threads) {
-                    echo "waiting for free thread...\n";
-                    \pcntl_wait($pid);
-                    $nJobs--;
-                }
-                $pid = \pcntl_fork();
-                if ($pid === 0) {
-                    $this->campaignRange = $range;
-//                    sleep(mt_rand(2, 4));
-                    $this->recalculateRPMStats($from, $to, 1);
-                    printf("finished range=%s\n", json_encode($range));
-                    exit;
-                } else {
-                    $nJobs++;
-                    printf("started sub job pid=%d range=%s\n", $pid, json_encode($range));
-                }
-            }
-            while ($nJobs > 0) {
-                $pid = 0;
-                \pcntl_wait($pid);
-                $nJobs--;
-            }
-            echo "done all\n";
-            exit;
-        }
+//        printf("Global average RPM = $%.3f\n", $this->getAverageRpm());
 
         $path = [
             'campaign_id' => [
@@ -340,8 +337,6 @@ class StatsUpdater
                 ],
             ],
         ];
-        $this->timeFrom = $from;
-        $this->timeTo = $to;
 
         $currentCampaign = null;
         $campaignBanners = null;
@@ -407,7 +402,9 @@ class StatsUpdater
 
     private function saveBannerStats($campaignId, $bannerId, array $keyMap, array $stats): void
     {
-        $mapped = BannerMapper::mapStats($campaignId, $bannerId, BannerIndex::name(), $keyMap, $stats);
+        $averageRPM = $this->getAverageRpm();
+
+        $mapped = BannerMapper::mapStats(BannerIndex::name(), $campaignId, $bannerId, $averageRPM, $keyMap, $stats);
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];
@@ -416,7 +413,7 @@ class StatsUpdater
             $this->commitUpdates();
         }
 
-        echo "save C:$campaignId B:$bannerId S:" . ($keyMap['site_id'] ?? '') . " Z:" . ($keyMap['zone_id'] ?? '')
+        echo "save B:$bannerId C:$campaignId banner:" . (($keyMap['banner_id'] ?? '') ? 'yes' : '') . " S:" . ($keyMap['site_id'] ?? '') . " Z:" . ($keyMap['zone_id'] ?? '')
             . " => ", json_encode($stats), "\n";
     }
 

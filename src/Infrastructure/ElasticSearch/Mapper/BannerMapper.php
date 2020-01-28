@@ -6,6 +6,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
 use function array_merge;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 
@@ -73,9 +74,10 @@ EOF;
     }
 
     public static function mapStats(
+        string $index,
         $campaignId,
         $bannerId,
-        string $index,
+        float $globalAverageRpm,
         array $path = [],
         array $stats = []
     ) {
@@ -97,7 +99,7 @@ EOF;
         ];
 
         $mapped['data'] = [
-            'doc'           => [
+            'upsert' => [
                 'join'  => [
                     'name'   => 'stats',
                     'parent' => $bannerId,
@@ -108,7 +110,23 @@ EOF;
                     'banner_id'   => $path['banner_id'] ?? '',
                     'site_id'     => $path['site_id'] ?? '',
                     'zone_id'     => $path['zone_id'] ?? '',
-                    'rpm'         => $stats['rpm_est'] ?? 0,
+                ]
+            ],
+            "scripted_upsert" => true,
+            "script" => [
+                "source" => '
+                    ctx._source.rpm = Math.min(Math.max((ctx._source.rpm ?: 0) * params._growth_cap, params._global_avg_rpm), params._rpm);
+                    for (String key : params.keySet()) {
+                        if(!key.startsWith("_")) {
+                            ctx._source[key] = params[key];
+                        }
+                    }
+                ',
+                "lang"   => "painless",
+                "params" => [
+                    "_growth_cap" => StatsUpdater::MAX_HOURLY_RPM_GROWTH,
+                    "_global_avg_rpm" => $globalAverageRpm,
+                    "_rpm" => $stats['rpm_est'] ?? 0,
                     'rpm_min'     => $stats['avg_min'] ?? 0,
                     'rpm_max'     => $stats['avg_max'] ?? 0,
                     'total_count' => $stats['count'] ?? 0,
@@ -117,7 +135,6 @@ EOF;
                     'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
                 ]
             ],
-            'doc_as_upsert' => true,
         ];
         return $mapped;
     }
