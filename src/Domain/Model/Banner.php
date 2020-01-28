@@ -31,6 +31,12 @@ final class Banner
         return $this->bannerId->toString();
     }
 
+
+    public function getCampaignId(): string
+    {
+        return $this->campaignId->toString();
+    }
+
     public function getKeywords(): array
     {
         return $this->keywords;

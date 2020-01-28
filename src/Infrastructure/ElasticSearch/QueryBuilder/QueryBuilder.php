@@ -24,7 +24,8 @@ class QueryBuilder
 
     public function build(): array
     {
-        $scriptScore = <<<PAINLESS
+        $scriptScore
+            = <<<PAINLESS
                             double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0)) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1);
                             if(params.min_rpm > real_rpm) {
                                 return 0;
@@ -36,14 +37,14 @@ PAINLESS;
 
         return [
             'function_score' => [
-                'boost_mode' => 'replace',
-                'query' => $this->query->build(),
+                'boost_mode'   => 'replace',
+                'query'        => $this->query->build(),
                 'script_score' => [
                     "script" => [
-                        "lang" => "painless",
+                        "lang"   => "painless",
                         "params" => [
                             "last_seen" => (object)$this->userHistory,
-                            "min_rpm" => $this->minCpm,
+                            "min_rpm"   => $this->minCpm,
                         ],
                         "source" => $scriptScore,
                     ]

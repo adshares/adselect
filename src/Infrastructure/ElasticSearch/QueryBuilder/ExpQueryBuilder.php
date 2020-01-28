@@ -33,12 +33,16 @@ class ExpQueryBuilder
                             "source_weights" => (object)$this->sourceWeights,
                         ],
                         'source' => <<<PAINLESS
+                            double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0));
                             double weight = 0.01;
                             if (params.source_weights.containsKey(doc['source_address'].value)) {
                                 weight = (double)params.source_weights[doc['source_address'].value];
                             }
                             // see: Weighted Random Sampling (2005; Efraimidis, Spirakis) http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
-                            return Math.pow(Math.random(), 1.0 / weight);
+                            weight = Math.pow(Math.random(), 1.0 / (100.0 * weight));
+                            
+                            // encode score na rpm in one number. 4 significant digits each 
+                            return Math.round(100.0 * weight) * 100000 + Math.round(real_rpm * 1000);
 PAINLESS
                     ],
                 ],

@@ -76,7 +76,7 @@ EOF;
     public static function mapStats(
         $campaignId,
         string $index,
-        float $rpm,
+        array $stats,
         string $publisher_id = '',
         string $site_id = '',
         string $zone_id = ''
@@ -102,7 +102,12 @@ EOF;
                     'publisher_id' => $publisher_id,
                     'site_id' => $site_id,
                     'zone_id' => $zone_id,
-                    'rpm' => $rpm,
+                    'rpm' => $stats['avg'] ?? 0,
+                    'rpm_min' => $stats['avg_min'] ?? 0,
+                    'rpm_max' => $stats['avg_max'] ?? 0,
+                    'total_count' => $stats['count'] ?? 0,
+                    'used_count' => $stats['used_count'] ?? 0,
+                    'count_sign' => $stats['count_sign'] ?? 0,
                     'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
                 ]
             ],

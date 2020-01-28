@@ -29,15 +29,29 @@ class UpdateStats extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Update RPM stats for all campaigns and all zones');
+        $this->setDescription('Update RPM stats for all campaigns and all zones')->addOption(
+            'threads',
+            't',
+            InputOption::VALUE_OPTIONAL,
+            'How many threads to run',
+            1
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $to = new \DateTimeImmutable('-1 hour');
+        $toStr = $this->updater->getLastPaidEventTime();
+        if (!$toStr) {
+            $output->writeln(
+                'No events to process'
+            );
+            return;
+        }
+
+        $to = new \DateTimeImmutable($toStr, new \DateTimeZone("UTC"));
         $from = $to->modify('-30 days');
 
-        $this->updater->recalculateRPMStats($from, $to);
+        $this->updater->recalculateRPMStats($from, $to, $input->getOption('threads'));
         $output->writeln(
             sprintf(
                 'Finished calculating zone RPM stats using events between %s and %s',
@@ -45,6 +59,9 @@ class UpdateStats extends Command
                 $to->format(DATE_ISO8601)
             )
         );
+
+
+        $from = $to->modify('-12 hours');
 
         $this->updater->recalculateAdserverStats($from, $to);
         $output->writeln(

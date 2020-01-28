@@ -50,7 +50,6 @@ services:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $bulkLimit: 500
-            $keywordIntersectThreshold: 10
 
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder:
         arguments:
