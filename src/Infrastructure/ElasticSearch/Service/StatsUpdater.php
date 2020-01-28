@@ -42,7 +42,7 @@ class StatsUpdater
         $this->bulkLimit = 2 * $bulkLimit;
     }
 
-    public function getLastPaidEventTime() : ?string
+    public function getLastPaidEventTime(): ?string
     {
         $result = $this->client->search(
             [
@@ -72,9 +72,9 @@ class StatsUpdater
         return $result['aggregations']['max_time']['value_as_string'] ?? null;
     }
 
-    public function getAverageRpm() : ?float
+    public function getAverageRpm(): ?float
     {
-        if($this->globalAverageRpm === null) {
+        if ($this->globalAverageRpm === null) {
             $from = $this->timeTo->modify("-24 hours");
 
             $result = $this->client->search(
@@ -318,7 +318,7 @@ class StatsUpdater
         }
     }
 
-    public function recalculateRPMStats( \DateTimeImmutable $from,  \DateTimeImmutable $to, $campaignRange = null): void
+    public function recalculateRPMStats(\DateTimeImmutable $from, \DateTimeImmutable $to, $campaignRange = null): void
     {
         $this->campaignRange = $campaignRange;
         $this->timeFrom = $from;
@@ -413,7 +413,8 @@ class StatsUpdater
             $this->commitUpdates();
         }
 
-        echo "save B:$bannerId C:$campaignId banner:" . (($keyMap['banner_id'] ?? '') ? 'yes' : '') . " S:" . ($keyMap['site_id'] ?? '') . " Z:" . ($keyMap['zone_id'] ?? '')
+        echo "save B:$bannerId C:$campaignId banner:" . (($keyMap['banner_id'] ?? '') ? 'yes' : '') . " S:"
+            . ($keyMap['site_id'] ?? '') . " Z:" . ($keyMap['zone_id'] ?? '')
             . " => ", json_encode($stats), "\n";
     }
 
