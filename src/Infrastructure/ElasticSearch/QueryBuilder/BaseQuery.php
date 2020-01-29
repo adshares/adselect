@@ -86,6 +86,7 @@ class BaseQuery implements QueryInterface
                 'must_not' => $excludes,
                 //require
                 'filter'   => $filter,
+                "minimum_should_match" => 0,
                 "should"   => [
                     [
                         "has_child" => [
