@@ -115,10 +115,10 @@ EOF;
             "scripted_upsert" => true,
             "script"          => [
                 "source" => '
-ctx._source.rpm = Math.min(Math.max((ctx._source.rpm ?: 0) * params._growth_cap, params._global_avg_rpm), params._rpm);
+ctx._source.stats.rpm = Math.min(Math.max((ctx._source.rpm ?: 0) * params._growth_cap, params._global_avg_rpm), params._rpm);
 for (String key : params.keySet()) {
     if(!key.startsWith("_")) {
-        ctx._source[key] = params[key];
+        ctx._source.stats[key] = params[key];
     }
 }'
                 ,
