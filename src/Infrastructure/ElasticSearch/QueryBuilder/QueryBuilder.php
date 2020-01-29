@@ -31,7 +31,7 @@ class QueryBuilder
                                 return 0;
                             }
                             // encode score na rpm in one number. 4 significant digits each 
-                            return Math.round(100.0 * Math.max(0.0001, real_rpm) * Math.random() ) * 100000 + Math.round(real_rpm * 1000);
+                            return Math.round(1000.0 * Math.max(0.001, real_rpm) * Math.random() ) * 100000 + Math.round(real_rpm * 1000);
 PAINLESS;
 
 
