@@ -209,7 +209,7 @@ class StatsUpdater
                     $nViews = $bucket['doc_count'];
                     $bucketId = $bucket['key']['bucket_id'];
 
-                    if ($nViews < 3) {
+                    if ($nViews < 1) {
                         continue;
                     }
 
