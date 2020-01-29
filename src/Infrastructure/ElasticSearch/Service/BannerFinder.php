@@ -70,7 +70,7 @@ class BannerFinder implements BannerFinderInterface
 
         $chance = (mt_rand(0, 999) / 1000);
 
-        if (0 && $chance < $this->experimentChance) {
+        if ($chance < $this->experimentChance) {
             $queryBuilder = new ExpQueryBuilder($query, $this->getSourceServerWeights());
         } else {
             $queryBuilder = new QueryBuilder(
@@ -80,7 +80,6 @@ class BannerFinder implements BannerFinderInterface
             );
         }
 
-//        $params['body']['explain'] = true;
         $params['body']['query'] = $queryBuilder->build();
 
         $this->logger->debug(
@@ -93,7 +92,6 @@ class BannerFinder implements BannerFinderInterface
         );
 
         $response = $this->client->search($params);
-        file_put_contents("/tmp/x", json_encode($response));
 
         $this->logger->debug(sprintf('[BANNER FINDER] response: %s', json_encode($response)));
 
