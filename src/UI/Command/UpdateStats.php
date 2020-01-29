@@ -13,6 +13,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Lock\Key;
+use Symfony\Component\Lock\Lock;
+use Symfony\Component\Lock\Store\FlockStore;
 
 class UpdateStats extends Command
 {
@@ -58,6 +61,12 @@ class UpdateStats extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $lock = new Lock(new Key($this->getName()), new FlockStore(), null, false);
+        if (!$lock->acquire()) {
+            $output->writeln('The command is already running in another process.');
+
+            return 0;
+        }
         $threads = $input->getOption('threads');
 
         $is_child = false;
@@ -76,6 +85,8 @@ class UpdateStats extends Command
                 }
                 $pid = \pcntl_fork();
                 if ($pid === 0) {
+                    sleep(5);
+                    exit;
                     $is_child = true;
                     $campaignRange = $range;
                     break;
