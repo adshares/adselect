@@ -85,8 +85,6 @@ class UpdateStats extends Command
                 }
                 $pid = \pcntl_fork();
                 if ($pid === 0) {
-                    sleep(5);
-                    exit;
                     $is_child = true;
                     $campaignRange = $range;
                     break;
