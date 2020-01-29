@@ -108,6 +108,8 @@ class StatsUpdater
             );
 
             $this->globalAverageRpm = $result['aggregations']['avg_rpm']['value'] ?? 0;
+
+            printf("globalAverageRpm = %f\n");
         }
         return $this->globalAverageRpm;
     }
