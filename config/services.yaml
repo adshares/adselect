@@ -41,6 +41,11 @@ services:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $bulkLimit: 500
 
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ExperimentsUpdater:
+        arguments:
+            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+            $bulkLimit: 500
+
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:
         arguments:
             $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'

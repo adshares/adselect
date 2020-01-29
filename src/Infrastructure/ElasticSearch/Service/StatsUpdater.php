@@ -682,4 +682,9 @@ class StatsUpdater
         ];
         $this->client->delete($query, AdserverIndex::name());
     }
+
+    public function recalculateExperiments(\DateTimeInterface $from): void
+    {
+
+    }
 }
