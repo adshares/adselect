@@ -7,6 +7,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
 use Adshares\AdSelect\Domain\Model\IdCollection;
+use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignDeleteMapper;
@@ -56,21 +57,13 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
     public function delete(IdCollection $ids): void
     {
-        $mapped = [];
-        foreach ($ids as $id) {
-            $mappedIdDelete = CampaignDeleteMapper::map($id, BannerIndex::name());
-            $mapped[] = $mappedIdDelete['index'];
-            $mapped[] = $mappedIdDelete['data'];
+        $ids = array_map(function(Id $id) {
+            return $id->toString();
+        }, $ids->toArray());
+        for ($i = 0; $i < count($ids); $i += $this->bulkLimit) {
+            $mapped = CampaignDeleteMapper::mapMulti(array_slice($ids, $i, $this->bulkLimit), BannerIndex::name());
 
-            if (count($mapped) === $this->bulkLimit) {
-                $this->client->bulk($mapped, self::ES_DELETE_TYPE);
-
-                $mapped = [];
-            }
-        }
-
-        if ($mapped) {
-            $this->client->bulk($mapped, self::ES_DELETE_TYPE);
+            $this->client->getClient()->updateByQuery($mapped);
         }
     }
 }
