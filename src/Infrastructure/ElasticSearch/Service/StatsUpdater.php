@@ -17,12 +17,12 @@ class StatsUpdater
     /** @var Client */
     private $client;
 
-    const MAX_HOURLY_RPM_GROWTH = 1.20;
+    const MAX_HOURLY_RPM_GROWTH = 1.50;
 
     private const ES_BUCKET_PAGE_SIZE = 500;
 
     private const CONFIDENCE_Z = 1.96; // 95%
-    private const TIME_PERCENTILES = [25, 50, 60, 70, 80, 90, 95, 97.5, 99, 99.5];
+    private const TIME_PERCENTILES = [0, 25, 50, 60, 70, 80, 90, 95, 97.5, 99, 99.5, 100];
 
     private $updateCache = [];
     private $bulkLimit;
@@ -216,6 +216,9 @@ class StatsUpdater
                     }
 
                     $bucketStats = $bucket['rpm'];
+
+                    $bucketStats['time_active'] = ($bucket['time']['values']['100.0'] - $bucket['time']['values']['0.0']) / 1000;
+
                     $fullStats = $upstream[0]['result'] ?? $bucketStats;
 
                     $bucketStats['avg_err'] = self::CONFIDENCE_Z * $fullStats['std_deviation'] / sqrt($nViews);
@@ -238,7 +241,7 @@ class StatsUpdater
 
                         $cPercents = self::TIME_PERCENTILES;
                         $cPercents[] = 0;
-
+                        $cPercents = array_unique($cPercents);
                         sort($cPercents);
                         $cPercent = 0;
 
@@ -277,6 +280,7 @@ class StatsUpdater
                                 $bucketPartialStats['count_sign'] = $bucketStats['count_sign'];
                                 $bucketPartialStats['used_count'] = $bucketPartialStats['count'];
                                 $bucketPartialStats['count'] = $bucketStats['count'];
+                                $bucketPartialStats['time_active'] = $bucketStats['time_active'];
                                 $bucketStats = $bucketPartialStats;
                             }
                         }
@@ -398,9 +402,13 @@ class StatsUpdater
 
     private function saveBannerStats($campaignId, $bannerId, array $keyMap, array $stats): void
     {
-        $averageRPM = $this->getAverageRpm();
+        if(count($keyMap) == 0 || $stats['time_active'] < 4 * 3600) {
+            $capRPM = $this->getAverageRpm();
+        } else {
+            $capRPM = 99.9;
+        }
 
-        $mapped = BannerMapper::mapStats(BannerIndex::name(), $campaignId, $bannerId, $averageRPM, $keyMap, $stats);
+        $mapped = BannerMapper::mapStats(BannerIndex::name(), $campaignId, $bannerId, $capRPM, $keyMap, $stats);
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];

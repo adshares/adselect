@@ -77,7 +77,7 @@ EOF;
         string $index,
         $campaignId,
         $bannerId,
-        float $globalAverageRpm,
+        float $capRpm,
         array $path = [],
         array $stats = []
     ) {
@@ -115,7 +115,7 @@ EOF;
             "scripted_upsert" => true,
             "script"          => [
                 "source" => '
-ctx._source.stats.rpm = Math.min(Math.max((ctx._source.stats.rpm ?: 0) * params._growth_cap, params._global_avg_rpm), params._rpm);
+ctx._source.stats.rpm = Math.min(Math.max((ctx._source.stats.rpm ?: 0) * params._growth_cap, params._cap_rpm), params._rpm);
 for (String key : params.keySet()) {
     if(!key.startsWith("_")) {
         ctx._source.stats[key] = params[key];
@@ -124,15 +124,15 @@ for (String key : params.keySet()) {
                 ,
                 "lang"   => "painless",
                 "params" => [
-                    "_growth_cap"     => StatsUpdater::MAX_HOURLY_RPM_GROWTH,
-                    "_global_avg_rpm" => $globalAverageRpm,
-                    "_rpm"            => $stats['rpm_est'] ?? 0,
-                    'rpm_min'         => $stats['avg_min'] ?? 0,
-                    'rpm_max'         => $stats['avg_max'] ?? 0,
-                    'total_count'     => $stats['count'] ?? 0,
-                    'used_count'      => $stats['used_count'] ?? 0,
-                    'count_sign'      => $stats['count_sign'] ?? 0,
-                    'last_update'     => (new \DateTime())->format('Y-m-d H:i:s'),
+                    "_growth_cap" => StatsUpdater::MAX_HOURLY_RPM_GROWTH,
+                    "_cap_rpm"    => $capRpm,
+                    "_rpm"        => $stats['rpm_est'] ?? 0,
+                    'rpm_min'     => $stats['avg_min'] ?? 0,
+                    'rpm_max'     => $stats['avg_max'] ?? 0,
+                    'total_count' => $stats['count'] ?? 0,
+                    'used_count'  => $stats['used_count'] ?? 0,
+                    'count_sign'  => $stats['count_sign'] ?? 0,
+                    'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
                 ]
             ],
         ];
