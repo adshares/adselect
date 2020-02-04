@@ -340,28 +340,24 @@ class StatsUpdater
             ],
         ];
 
-        $currentCampaign = null;
         $campaignBanners = null;
 
         $this->nestedStats(
             $path,
-            function ($upstream, $current) use (&$currentCampaign, &$campaignBanners) {
+            function ($upstream, $current) use (&$campaignBanners) {
 
                 if (!$upstream) {
+
+                    $campaignId = $current['value'];
+                    // saving all campaign banners
+                    $campaignBanners = $this->getAllBannerIds($campaignId);
+                    foreach($campaignBanners as $bannerId) {
+                        $this->saveBannerStats($campaignId, $bannerId, [], $current);
+                    }
                     return false;
                 }
 
                 $campaignId = $upstream[0]['value'];
-
-                // saving all campaign banners
-                if (count($upstream) == 1 && $current['key'] == 'banner_id') {
-                    $bannerId = $current['value'];
-                    if ($currentCampaign !== $campaignId) {
-                        $campaignBanners = $this->getAllBannerIds($campaignId);
-                        $currentCampaign = $campaignId;
-                    }
-                    $this->saveBannerStats($campaignId, $bannerId, [], $upstream[0]['result']);
-                }
 
                 $last = $upstream[count($upstream) - 1] ?? null;
                 if ($last) {
