@@ -217,7 +217,8 @@ class StatsUpdater
 
                     $bucketStats = $bucket['rpm'];
 
-                    $bucketStats['time_active'] = ($bucket['time']['values']['100.0'] - $bucket['time']['values']['0.0']) / 1000;
+                    $bucketStats['time_active'] = ($bucket['time']['values']['100.0']
+                            - $bucket['time']['values']['0.0']) / 1000;
 
                     $fullStats = $upstream[0]['result'] ?? $bucketStats;
 
@@ -356,10 +357,9 @@ class StatsUpdater
                 if (count($upstream) == 1 && $current['key'] == 'banner_id') {
                     $bannerId = $current['value'];
                     if ($currentCampaign !== $campaignId) {
-                        $campaignBanners = [];
+                        $campaignBanners = $this->getAllBannerIds($campaignId);
                         $currentCampaign = $campaignId;
                     }
-                    $campaignBanners[] = $bannerId;
                     $this->saveBannerStats($campaignId, $bannerId, [], $upstream[0]['result']);
                 }
 
@@ -400,9 +400,48 @@ class StatsUpdater
         $this->removeStaleRPMStats();
     }
 
+    private function getAllBannerIds($campaignId)
+    {
+        $query = [
+            "size"    => 100,
+            '_source' => false,
+            "query"   => [
+                "bool" => [
+                    "filter" => [
+                        [
+                            "term" => [
+                                "campaign_id" => $campaignId,
+                            ]
+                        ],
+                        [
+                            "term" => [
+                                "searchable"  => true
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+        ];
+
+        $mapped = [
+            'index' => [
+                '_index' => BannerIndex::name(),
+            ],
+            'body'  => $query,
+        ];
+
+        $result = $this->client->search($mapped);
+
+        $ids = [];
+        foreach ($result['hits']['hits'] as $hit) {
+            $ids[] = $hit['_id'];
+        }
+        return $ids;
+    }
+
     private function saveBannerStats($campaignId, $bannerId, array $keyMap, array $stats): void
     {
-        if(count($keyMap) == 0 || $stats['time_active'] < 4 * 3600) {
+        if (count($keyMap) == 0 || $stats['time_active'] < 4 * 3600) {
             $capRPM = $this->getAverageRpm();
         } else {
             $capRPM = 99.9;
