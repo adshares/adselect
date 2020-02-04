@@ -352,7 +352,7 @@ class StatsUpdater
                     // saving all campaign banners
                     $campaignBanners = $this->getAllBannerIds($campaignId);
                     foreach($campaignBanners as $bannerId) {
-                        $this->saveBannerStats($campaignId, $bannerId, [], $current);
+                        $this->saveBannerStats($campaignId, $bannerId, [], $current['result']);
                     }
                     return false;
                 }
