@@ -11,13 +11,9 @@ class ExpQueryBuilder
     /** @var QueryInterface */
     private $query;
 
-    /** @var array */
-    private $sourceWeights;
-
-    public function __construct(QueryInterface $query, $sourceWeights)
+    public function __construct(QueryInterface $query)
     {
         $this->query = $query;
-        $this->sourceWeights = $sourceWeights;
     }
 
     public function build(): array
@@ -29,17 +25,12 @@ class ExpQueryBuilder
                 'script_score' => [
                     'script' => [
                         'lang' => 'painless',
-                        "params" => [
-                            "source_weights" => (object)$this->sourceWeights,
-                        ],
                         'source' => <<<PAINLESS
                             double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0));
-                            double weight = 0.2;
-                            if (params.source_weights.containsKey(doc['source_address'].value)) {
-                                weight = (double)params.source_weights[doc['source_address'].value];
-                            }
+                            double weight = doc['exp.weight'].value;
+
                             // see: Weighted Random Sampling (2005; Efraimidis, Spirakis) http://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
-                            weight = Math.pow(Math.random(), 1.0 / (2.0 * weight));
+                            weight = Math.pow(Math.random(), 1.0 / weight);
                             
                             // encode score na rpm in one number. 4 significant digits each 
                             return Math.round(1000.0 * weight) * 100000 + Math.round(real_rpm * 1000);

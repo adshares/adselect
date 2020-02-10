@@ -71,7 +71,7 @@ class BannerFinder implements BannerFinderInterface
         $chance = (mt_rand(0, 999) / 1000);
 
         if ($chance < $this->experimentChance) {
-            $queryBuilder = new ExpQueryBuilder($query, $this->getSourceServerWeights());
+            $queryBuilder = new ExpQueryBuilder($query);
         } else {
             $queryBuilder = new QueryBuilder(
                 $query,
@@ -120,35 +120,6 @@ class BannerFinder implements BannerFinderInterface
         $this->logger->debug(sprintf('[BANNER FINDER] response: %s', json_encode($result[0]->toArray())));
 
         return $result;
-    }
-
-    private function getSourceServerWeights(): array
-    {
-        $key = self::SOURCE_WEIGHTS_APC_KEY;
-        $weights = apcu_fetch($key);
-
-        if (!$weights) {
-            $mapped = [
-                'index' => [
-                    '_index' => AdserverIndex::name(),
-                ],
-                'body'  => [
-                    'query' => [
-                        'match_all' => (object)[],
-                    ],
-                ],
-            ];
-            $response = $this->client->search($mapped);
-
-            $weights = [];
-            foreach ($response['hits']['hits'] as $adserver) {
-                $weights[$adserver['_source']['source_address']] = $adserver['_source']['weight'];
-            }
-
-            apcu_store($key, $weights, 60);
-        }
-
-        return $weights;
     }
 
     private static function getSeenFrequencies(array $userHistory): array
