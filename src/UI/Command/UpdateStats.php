@@ -134,6 +134,9 @@ class UpdateStats extends Command
         );
 
 
+        $this->updater->removeStaleRPMStats();
+
+
         $from = $to->modify('-12 hours');
 
         $this->updater->recalculateAdserverStats($from, $to);

@@ -46,6 +46,17 @@ class BannerIndex extends AbstractIndex implements Index
             'searchable' => [
                 'type' => 'boolean',
             ],
+            'exp' => [
+                'properties' => [
+                    'weight' => ['type' => 'double'],
+                    'views' => ['type' => 'long'],
+                    'banners' => ['type' => 'long'],
+                    'last_update' => [
+                        'type' => 'date',
+                        'format' => 'yyyy-MM-dd HH:mm:ss||epoch_second',
+                    ],
+                ]
+            ],
         ],
         'dynamic_templates' => [
             [

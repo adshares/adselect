@@ -55,6 +55,12 @@ EOF;
                 'budget'         => $campaign->getBudget(),
                 'max_cpc'        => $campaign->getMaxCpc(),
                 'max_cpm'        => $campaign->getMaxCpm(),
+                'exp'            => [
+                    'weight'      => 0.0,
+                    'views'       => 0,
+                    'banners'     => 0,
+                    'last_update' => time(),
+                ]
             ],
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
             Helper::keywords('filters:require', $campaign->getRequireFilters(), true)
@@ -136,6 +142,102 @@ for (String key : params.keySet()) {
                 ]
             ],
         ];
+        return $mapped;
+    }
+
+    public static function mapExperiments(
+        string $index,
+        array $adservers,
+        $campaignId,
+        $cWeight,
+        $cViews,
+        $cBanners,
+        \DateTimeInterface $time
+    ) {
+        $mapped = [];
+        $mapped['index'] = $index;
+        $mapped['type'] = '_doc';
+
+        if ($campaignId) {
+            $query = [
+                'term' => [
+                    'campaign_id' => $campaignId,
+                ],
+            ];
+        } else {
+            $query = [
+                'range' => [
+                    'exp.last_update' => [
+                        "lt" => $time->getTimestamp(),
+                    ],
+                ],
+            ];
+        }
+
+        $mapped['body'] = [
+            'query'  => $query,
+            "script" => [
+                "source" => "
+                double sWeight = 0.1;
+                if (params.adservers.containsKey(ctx._source['source_address'])) {
+                    sWeight = (double)params.adservers[ctx._source['source_address']];
+                }
+                ctx._source.exp.last_update = params.time;
+                ctx._source.exp.views = params.views;
+                ctx._source.exp.banners = params.banners;
+                ctx._source.exp.weight = params.weight * sWeight;
+                ",
+                "lang"   => "painless",
+                "params" => [
+                    "weight"    => $cWeight,
+                    "views"     => $cViews,
+                    "banners"   => $cBanners,
+                    "time"      => $time->getTimestamp(),
+                    "adservers" => array_map(
+                        function ($x) {
+                            return $x['weight'];
+                        },
+                        $adservers
+                    ),
+
+                ]
+            ],
+        ];
+
+        return $mapped;
+    }
+
+    public static function mapClearExperiments(
+        string $index,
+        \DateTimeInterface $timeStale
+    ) {
+        $mapped = [];
+//        $mapped['refresh'] = 'true';
+        $mapped['index'] = $index;
+        $mapped['type'] = '_doc';
+
+        $mapped['body'] = [
+            'query'  => [
+                'range' => [
+                    'exp.last_update' => [
+                        "lt" => $timeStale->getTimestamp(),
+                    ],
+                ],
+            ],
+            "script" => [
+                "source" => "
+                ctx._source.exp.last_update = params.time;
+                ctx._source.exp.views = 0;
+                ctx._source.exp.banners = 0;
+                ctx._source.exp.weight = 0.0;
+                ",
+                "lang"   => "painless",
+                "params" => [
+                    "time" => time()
+                ]
+            ],
+        ];
+
         return $mapped;
     }
 }

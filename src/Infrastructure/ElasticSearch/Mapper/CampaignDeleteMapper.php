@@ -11,6 +11,7 @@ class CampaignDeleteMapper
 {
     public static function mapMulti(array $ids, string $index)
     {
+        $mapped = [];
         $mapped['index'] = $index;
         $mapped['type'] = '_doc';
 

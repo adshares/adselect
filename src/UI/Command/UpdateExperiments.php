@@ -52,7 +52,7 @@ class UpdateExperiments extends Command
             return 0;
         }
 
-        $from = $input->getOption('from');
+        $from = \DateTimeImmutable::createFromMutable($input->getOption('from'));
 
         $this->updater->recalculateExperiments($from);
 

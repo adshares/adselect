@@ -17,7 +17,7 @@ class StatsUpdater
     /** @var Client */
     private $client;
 
-    const MAX_HOURLY_RPM_GROWTH = 1.50;
+    const MAX_HOURLY_RPM_GROWTH = 1.30;
 
     private const ES_BUCKET_PAGE_SIZE = 500;
 
@@ -391,9 +391,6 @@ class StatsUpdater
         );
 
         $this->commitUpdates();
-
-        $this->client->refreshIndex(BannerIndex::name());
-        $this->removeStaleRPMStats();
     }
 
     private function getAllBannerIds($campaignId)
@@ -521,16 +518,17 @@ class StatsUpdater
         }
     }
 
-    private function removeStaleRPMStats(): void
+    public function removeStaleRPMStats(): void
     {
         $query = [
             'range' => [
                 'stats.last_update' => [
-                    'lt' => (new DateTime('-1 days'))->format('Y-m-d H:i:s')
+                    'lt' => (new DateTime('-4 hours'))->format('Y-m-d H:i:s')
                 ]
             ]
         ];
         $this->client->delete($query, BannerIndex::name());
+        $this->client->refreshIndex(BannerIndex::name());
     }
 
     public function recalculateAdserverStats(\DateTimeInterface $from, \DateTimeInterface $to): void
