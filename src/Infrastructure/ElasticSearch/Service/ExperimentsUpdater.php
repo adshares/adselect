@@ -53,7 +53,7 @@ class ExperimentsUpdater
         foreach ($this->getCampaignIterator($from) as $bucket) {
             $cViews = $bucket['doc_count'];
             $cBanners = $bucket['banners']['value'];
-            $cWeight = $allMod / (1 + log(1 + $cViews)) * count($adserverStats) / $cBanners;
+            $cWeight = $allMod / (1 + log(1 + $cViews) ** 2) * count($adserverStats) / $cBanners;
             $this->updateCampaignExp(
                 $adserverStats,
                 $bucket['key']['campaign_id'],
@@ -69,7 +69,7 @@ class ExperimentsUpdater
         $this->client->refreshIndex(BannerIndex::name());
         // all others with 0 views
         $cBanners = max(1, floor(max(1, $bCount) / max(1, $cCount)) / 2);
-        $cWeight = $allMod * (count($adserverStats)+1) / $cBanners;
+        $cWeight = $allMod * (count($adserverStats) + 1) / $cBanners;
 //        printf("%f %f %f\n", $allMod, count($adserverStats), $cBanners);
         $this->updateCampaignExp(
             $adserverStats,
