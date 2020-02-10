@@ -41,7 +41,7 @@ class ExperimentsUpdater
             },
             0
         );
-        $allMod = 1 + log(1 + $allViews) ** 2;
+        $allMod = 1 + log(1 + $allViews);
 
         printf("allViews = %d; log = %.2f\n", $allViews, $allMod);
 
