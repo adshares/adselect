@@ -32,7 +32,7 @@ class ExperimentsUpdater
     public function recalculateExperiments(\DateTimeImmutable $from): void
     {
         $adserverStats = $this->getAdserverStats($from->modify('-12 hours'), $from);
-//        print_r($adserverStats);
+        $this->client->refreshIndex(BannerIndex::name());
 
         $allViews = $sumRevenue = array_reduce(
             $adserverStats,
