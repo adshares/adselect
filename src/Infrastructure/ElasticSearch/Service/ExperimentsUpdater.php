@@ -69,7 +69,7 @@ class ExperimentsUpdater
         $this->client->refreshIndex(BannerIndex::name());
         // all others with 0 views
         $cBanners = max(1, floor(max(1, $bCount) / max(1, $cCount)) / 2);
-        $cWeight = $allMod * count($adserverStats) / $cBanners;
+        $cWeight = $allMod * (count($adserverStats)+1) / $cBanners;
 //        printf("%f %f %f\n", $allMod, count($adserverStats), $cBanners);
         $this->updateCampaignExp(
             $adserverStats,

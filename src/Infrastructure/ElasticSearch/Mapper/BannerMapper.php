@@ -16,6 +16,9 @@ class BannerMapper
         = <<<EOF
                 ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
                 for (String key : params.keySet()) {
+                    if (key.startsWith("exp") && ctx._source.containsKey(key)) {
+                        continue;
+                    }
                     ctx._source[key] = params[key];
                 }
 EOF;
@@ -193,7 +196,7 @@ for (String key : params.keySet()) {
                     "views"     => $cViews,
                     "banners"   => $cBanners,
                     "time"      => $time->getTimestamp(),
-                    "adservers" => array_map(
+                    "adservers" => (object)array_map(
                         function ($x) {
                             return $x['weight'];
                         },
