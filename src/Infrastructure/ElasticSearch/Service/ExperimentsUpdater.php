@@ -31,7 +31,7 @@ class ExperimentsUpdater
 
     public function recalculateExperiments(\DateTimeImmutable $from): void
     {
-        $adserverStats = $this->getAdserverStats($from->modify('-1 year'), $from);
+        $adserverStats = $this->getAdserverStats($from->modify('-12 hours'), $from);
 //        print_r($adserverStats);
 
         $allViews = $sumRevenue = array_reduce(
@@ -50,7 +50,7 @@ class ExperimentsUpdater
         $cCount = 0;
         $bCount = 0;
 
-        foreach ($this->getCampaignIterator($from->modify('-1 year')) as $bucket) {
+        foreach ($this->getCampaignIterator($from) as $bucket) {
             $cViews = $bucket['doc_count'];
             $cBanners = $bucket['banners']['value'];
             $cWeight = $allMod / (1 + log(1 + $cViews)) * count($adserverStats) / $cBanners;
