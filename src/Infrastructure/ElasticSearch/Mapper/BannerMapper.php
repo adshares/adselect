@@ -25,7 +25,10 @@ PAINLESS;
 
     private const STATS_SCRIPT
         = <<<PAINLESS
-ctx._source.stats.rpm = Math.min(Math.max((ctx._source.stats.rpm ?: 0) * params._growth_cap, params._cap_rpm), params._rpm);
+ctx._source.stats.rpm = Math.min(
+    Math.max((ctx._source.stats.rpm ?: 0) * params._growth_cap, params._cap_rpm),
+    params._rpm
+);
 for (String key : params.keySet()) {
     if(!key.startsWith("_")) {
         ctx._source.stats[key] = params[key];
