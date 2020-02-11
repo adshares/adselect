@@ -133,19 +133,6 @@ class UpdateStats extends Command
             )
         );
 
-
         $this->updater->removeStaleRPMStats();
-
-
-        $from = $to->modify('-12 hours');
-
-        $this->updater->recalculateAdserverStats($from, $to);
-        $output->writeln(
-            sprintf(
-                'Finished calculating Adserver stats using events between %s and %s',
-                $from->format(DATE_ISO8601),
-                $to->format(DATE_ISO8601)
-            )
-        );
     }
 }
