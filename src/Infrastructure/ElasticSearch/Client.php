@@ -6,11 +6,9 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
@@ -74,6 +72,10 @@ class Client
             return CampaignIndex::mappings();
         }
 
+        if ($indexName === BannerIndex::INDEX) {
+            return BannerIndex::mappings();
+        }
+
         if ($indexName === EventIndex::INDEX) {
             return EventIndex::mappings();
         }
@@ -88,7 +90,7 @@ class Client
 
     public function createIndexes(bool $force = false): void
     {
-        $this->createIndex(CampaignIndex::INDEX, $force);
+        $this->createIndex(BannerIndex::INDEX, $force);
         $this->createIndex(EventIndex::INDEX, $force);
         $this->createIndex(AdserverIndex::INDEX, $force);
     }

@@ -7,10 +7,11 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
 use Adshares\AdSelect\Domain\Model\IdCollection;
+use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\IdDeleteMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignDeleteMapper;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 
 class ElasticSearchCampaignUpdater implements CampaignUpdater
 {
@@ -29,82 +30,43 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         $this->bulkLimit = $bulkLimit * 2; // regarding to the additional items - 'index' for every campaign
     }
 
-    private static function getInsertedCampaigns(array $campaigns, array $bulkUpsertResult)
-    {
-        $created = [];
-        foreach ($bulkUpsertResult['items'] as $item) {
-            $created[] = $campaigns[$item['update']['_id']];
-        }
-        return $created;
-    }
-
     public function update(CampaignCollection $campaigns): void
     {
-        if (!$this->client->indexExists(CampaignIndex::name())) {
-            $this->client->createIndex(CampaignIndex::name());
+        if (!$this->client->indexExists(BannerIndex::name())) {
+            $this->client->createIndex(BannerIndex::name());
         }
 
-        $campaignsById = [];
-
-        $mappedCampaigns = [];
+        $mappedBanners = [];
         /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
         foreach ($campaigns as $campaign) {
-            $mapped = CampaignMapper::map($campaign, CampaignIndex::name());
-            $mappedCampaigns[] = $mapped['index'];
-            $mappedCampaigns[] = $mapped['data'];
-
-            $campaignsById[$campaign->getId()] = $campaign;
-
-            if (count($mappedCampaigns) >= $this->bulkLimit) {
-                $result = $this->client->bulk($mappedCampaigns, self::ES_UPDATE_TYPE);
-                $this->initializeStats(self::getInsertedCampaigns($campaignsById, $result));
-
-                $mappedCampaigns = [];
-                $campaignsById = [];
+            foreach ($campaign->getBanners() as $banner) {
+                $mapped = BannerMapper::map($campaign, $banner, BannerIndex::name());
+                $mappedBanners[] = $mapped['index'];
+                $mappedBanners[] = $mapped['data'];
+                if (count($mappedBanners) >= $this->bulkLimit) {
+                    $this->client->bulk($mappedBanners, self::ES_UPDATE_TYPE);
+                    $mappedBanners = [];
+                }
             }
         }
 
-        if ($mappedCampaigns) {
-            $result = $this->client->bulk($mappedCampaigns, self::ES_UPDATE_TYPE);
-            $this->initializeStats(self::getInsertedCampaigns($campaignsById, $result));
-        }
-    }
-
-    private function initializeStats(array $campaigns)
-    {
-        $mappedCampaigns = [];
-        /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
-        foreach ($campaigns as $campaign) {
-            $mapped = CampaignMapper::mapStats($campaign->getId(), CampaignIndex::name(), 0.00);
-            #do not update if exists
-            $mapped['data']['upsert'] = $mapped['data']['doc'];
-            $mapped['data']['doc'] = (object)[];
-            unset($mapped['data']['doc_as_upsert']);
-            $mappedCampaigns[] = $mapped['index'];
-            $mappedCampaigns[] = $mapped['data'];
-        }
-        if ($mappedCampaigns) {
-            $this->client->bulk($mappedCampaigns, self::ES_INITIALIZE_STATS_TYPE);
+        if ($mappedBanners) {
+            $this->client->bulk($mappedBanners, self::ES_UPDATE_TYPE);
         }
     }
 
     public function delete(IdCollection $ids): void
     {
-        $mapped = [];
-        foreach ($ids as $id) {
-            $mappedIdDelete = IdDeleteMapper::map($id, CampaignIndex::name());
-            $mapped[] = $mappedIdDelete['index'];
-            $mapped[] = $mappedIdDelete['data'];
+        $ids = array_map(
+            function (Id $id) {
+                return $id->toString();
+            },
+            $ids->toArray()
+        );
+        for ($i = 0; $i < count($ids); $i += $this->bulkLimit) {
+            $mapped = CampaignDeleteMapper::mapMulti(array_slice($ids, $i, $this->bulkLimit), BannerIndex::name());
 
-            if (count($mapped) === $this->bulkLimit) {
-                $this->client->bulk($mapped, self::ES_DELETE_TYPE);
-
-                $mapped = [];
-            }
-        }
-
-        if ($mapped) {
-            $this->client->bulk($mapped, self::ES_DELETE_TYPE);
+            $this->client->getClient()->updateByQuery($mapped);
         }
     }
 }

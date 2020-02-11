@@ -10,8 +10,16 @@ class BaseQuery implements QueryInterface
 {
     private const PREFIX_FILTER_REQUIRE = 'filters:require';
     private const PREFIX_FILTER_EXCLUDE = 'filters:exclude';
-    private const PREFIX_BANNER_REQUIRE = 'banners.keywords';
-    private const PREFIX_BANNER_EXCLUDE = 'banners.keywords';
+    private const PREFIX_BANNER_REQUIRE = 'banner.keywords';
+    private const PREFIX_BANNER_EXCLUDE = 'banner.keywords';
+
+    private const SCORE_SCRIPT
+        = <<<PAINLESS
+double rpm = Math.min(99.9, doc['stats.rpm'].value);
+return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 100.0) +
+    (doc['stats.site_id'].value == params['site_id'] ? 200.0 : 0.0) +
+    (doc['stats.zone_id'].value == params['zone_id'] ? 200.0 : 0.0);
+PAINLESS;
 
     /** @var QueryDto */
     private $bannerFinderDto;
@@ -33,7 +41,7 @@ class BaseQuery implements QueryInterface
         );
 
         $excludes = KeywordsToExclude::build(self::PREFIX_FILTER_EXCLUDE, $this->bannerFinderDto->getKeywords());
-        $sizeFilter = FilterClause::build('banners.size', [$this->bannerFinderDto->getSize()]);
+        $sizeFilter = FilterClause::build('banner.size', [$this->bannerFinderDto->getSize()]);
 
         $requireFilter = FilterToBanner::build(
             self::PREFIX_BANNER_REQUIRE,
@@ -61,6 +69,12 @@ class BaseQuery implements QueryInterface
             ]
         ];
 
+        $filter[] = $sizeFilter;
+
+        $filter = array_merge($filter, $requireFilter);
+
+        $excludes = array_merge($excludes, $excludeFilter);
+
         if ($this->bannerFinderDto->getZoneOption('cpa_only')) {
             $filter[] = [
                 'term' => [
@@ -73,33 +87,15 @@ class BaseQuery implements QueryInterface
                 ]
             ];
         }
-        $filter[] = [
-            'nested' => [
-                'path'       => 'banners',
-                'score_mode' => "none",
-                'inner_hits' => [
-                    '_source'         => false,
-                    'docvalue_fields' => ['banners.id', 'banners.size'],
-                ],
-                'query'      => [
-                    'bool' => [
-                        // filter exclude
-                        'must_not' => $excludeFilter,
-                        // filter require
-                        'must'     => array_merge([$sizeFilter], $requireFilter),
-                    ],
-
-                ],
-            ],
-        ];
 
         return [
             'bool' => [
                 // exclude
-                'must_not' => $excludes,
+                'must_not'             => $excludes,
                 //require
-                'filter'   => $filter,
-                "should"   => [
+                'filter'               => $filter,
+                "minimum_should_match" => 0,
+                "should"               => [
                     [
                         "has_child" => [
                             "type"       => "stats",
@@ -108,15 +104,6 @@ class BaseQuery implements QueryInterface
                                     "query"        => [
                                         'bool' => [
                                             'filter' => [
-                                                [
-                                                    'terms' => [
-                                                        'stats.publisher_id' => [
-                                                            '',
-                                                            $this->bannerFinderDto->getPublisherId()
-                                                                ->toString()
-                                                        ],
-                                                    ]
-                                                ],
                                                 [
                                                     'terms' => [
                                                         'stats.site_id' => [
@@ -139,19 +126,12 @@ class BaseQuery implements QueryInterface
                                     "script_score" => [
                                         "script" => [
                                             "params" => [
-                                                'publisher_id' => $this->bannerFinderDto->getPublisherId()
+                                                'site_id' => $this->bannerFinderDto->getSiteId()
                                                     ->toString(),
-                                                'site_id'      => $this->bannerFinderDto->getSiteId()
-                                                    ->toString(),
-                                                'zone_id'      => $this->bannerFinderDto->getZoneId()
+                                                'zone_id' => $this->bannerFinderDto->getZoneId()
                                                     ->toString(),
                                             ],
-                                            "source" => <<<PAINLESS
-double rpm = Math.min(99.9, doc['stats.rpm'].value);                                              
-return rpm + (doc['stats.publisher_id'].value == params['publisher_id'] ? 100.0 : 0.0) + 
-            (doc['stats.site_id'].value == params['site_id'] ? 100.0 : 0.0) + 
-            (doc['stats.zone_id'].value == params['zone_id'] ? 100.0 : 0.0);
-PAINLESS
+                                            "source" => self::SCORE_SCRIPT
                                         ]
                                     ],
                                     "boost_mode"   => "replace",

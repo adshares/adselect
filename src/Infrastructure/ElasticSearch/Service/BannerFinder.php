@@ -9,15 +9,11 @@ use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
 use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\UserHistoryMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\UserHistory;
-use DateTime;
 use Psr\Log\LoggerInterface;
 use function json_encode;
 
@@ -60,26 +56,30 @@ class BannerFinder implements BannerFinderInterface
         $query = new BaseQuery($queryDto, $defined);
 
         $params = [
-            'index'  => CampaignIndex::name(),
+            'index'  => BannerIndex::name(),
             'size'   => $size,
             'client' => [
                 'timeout'         => 0.5,
                 'connect_timeout' => 0.2
             ],
             'body'   => [
-                '_source' => false,
+                '_source'         => false,
+                'docvalue_fields' => ['banner.size', 'campaign_id'],
             ],
         ];
 
         $chance = (mt_rand(0, 999) / 1000);
 
         if ($chance < $this->experimentChance) {
-            $queryBuilder = new ExpQueryBuilder($query, $this->getSourceServerWeights());
+            $queryBuilder = new ExpQueryBuilder($query);
         } else {
-            $queryBuilder = new QueryBuilder($query, (float)$queryDto->getZoneOption('min_cpm', 0.0), self::getSeenFrequencies($userHistory));
+            $queryBuilder = new QueryBuilder(
+                $query,
+                (float)$queryDto->getZoneOption('min_cpm', 0.0),
+                self::getSeenFrequencies($userHistory)
+            );
         }
 
-//        $params['body']['explain'] = true;
         $params['body']['query'] = $queryBuilder->build();
 
         $this->logger->debug(
@@ -102,24 +102,14 @@ class BannerFinder implements BannerFinderInterface
         }
 
         foreach ($response['hits']['hits'] as $hit) {
-            if (!isset($hit['inner_hits']['banners']['hits']['hits'])) {
-                return null;
-            }
-
-            foreach ($hit['inner_hits']['banners']['hits']['hits'] as $bannerHit) {
-                $collection->add(
-                    new FoundBanner(
-                        $hit['_id'],
-                        $bannerHit['fields']['banners.id'][0],
-                        $bannerHit['fields']['banners.size'][0],
-                        $chance < $this->experimentChance
-                            ?
-                            null
-                            :
-                            (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
-                    )
-                );
-            }
+            $collection->add(
+                new FoundBanner(
+                    $hit['fields']['campaign_id'][0],
+                    $hit['_id'],
+                    $hit['fields']['banner.size'][0],
+                    (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
+                )
+            );
         }
 
         $this->updateUserHistory($userHistory, $collection);
@@ -130,35 +120,6 @@ class BannerFinder implements BannerFinderInterface
         $this->logger->debug(sprintf('[BANNER FINDER] response: %s', json_encode($result[0]->toArray())));
 
         return $result;
-    }
-
-    private function getSourceServerWeights(): array
-    {
-        $key = self::SOURCE_WEIGHTS_APC_KEY;
-        $weights = apcu_fetch($key);
-
-        if (!$weights) {
-            $mapped = [
-                'index' => [
-                    '_index' => AdserverIndex::name(),
-                ],
-                'body'  => [
-                    'query' => [
-                        'match_all' => (object)[],
-                    ],
-                ],
-            ];
-            $response = $this->client->search($mapped);
-
-            $weights = [];
-            foreach ($response['hits']['hits'] as $adserver) {
-                $weights[$adserver['_source']['source_address']] = $adserver['_source']['weight'];
-            }
-
-            apcu_store($key, $weights, 60);
-        }
-
-        return $weights;
     }
 
     private static function getSeenFrequencies(array $userHistory): array
@@ -178,11 +139,11 @@ class BannerFinder implements BannerFinderInterface
 
     private function getDefinedRequireKeywords(): array
     {
-        $params = ['index' => CampaignIndex::name()];
+        $params = ['index' => BannerIndex::name()];
         $response = $this->client->getMapping($params);
 
         $required = [];
-        foreach ($response[CampaignIndex::name()]['mappings']['properties'] as $key => $def) {
+        foreach ($response[BannerIndex::name()]['mappings']['properties'] as $key => $def) {
             if (preg_match('/^filters:require:(.+)/', $key, $match)) {
                 $required[] = $match[1];
             }

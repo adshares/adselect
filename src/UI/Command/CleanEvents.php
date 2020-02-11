@@ -9,6 +9,7 @@ use DateTime;
 use Exception;
 use function sprintf;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CleanEvents extends Command
 {
     use CleanTrait;
+    use LockableTrait;
 
     protected static $defaultName = 'ops:es:clean-events';
 
@@ -43,6 +45,11 @@ class CleanEvents extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->lock()) {
+            $output->writeln('The command is already running in another process.');
+
+            return 0;
+        }
         $fromDate = $this->readFrom($input, $output);
 
         if (!$fromDate) {
