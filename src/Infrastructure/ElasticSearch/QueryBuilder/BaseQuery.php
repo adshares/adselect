@@ -13,6 +13,14 @@ class BaseQuery implements QueryInterface
     private const PREFIX_BANNER_REQUIRE = 'banner.keywords';
     private const PREFIX_BANNER_EXCLUDE = 'banner.keywords';
 
+    private const SCORE_SCRIPT
+        = <<<PAINLESS
+double rpm = Math.min(99.9, doc['stats.rpm'].value);
+return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 100.0) +
+    (doc['stats.site_id'].value == params['site_id'] ? 200.0 : 0.0) +
+    (doc['stats.zone_id'].value == params['zone_id'] ? 200.0 : 0.0);
+PAINLESS;
+
     /** @var QueryDto */
     private $bannerFinderDto;
     /** @var array */
@@ -83,11 +91,11 @@ class BaseQuery implements QueryInterface
         return [
             'bool' => [
                 // exclude
-                'must_not' => $excludes,
+                'must_not'             => $excludes,
                 //require
-                'filter'   => $filter,
+                'filter'               => $filter,
                 "minimum_should_match" => 0,
-                "should"   => [
+                "should"               => [
                     [
                         "has_child" => [
                             "type"       => "stats",
@@ -123,12 +131,7 @@ class BaseQuery implements QueryInterface
                                                 'zone_id' => $this->bannerFinderDto->getZoneId()
                                                     ->toString(),
                                             ],
-                                            "source" => <<<PAINLESS
-double rpm = Math.min(99.9, doc['stats.rpm'].value);                                              
-return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 100.0) + 
-            (doc['stats.site_id'].value == params['site_id'] ? 200.0 : 0.0) + 
-            (doc['stats.zone_id'].value == params['zone_id'] ? 200.0 : 0.0);
-PAINLESS
+                                            "source" => self::SCORE_SCRIPT
                                         ]
                                     ],
                                     "boost_mode"   => "replace",

@@ -57,9 +57,12 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
     public function delete(IdCollection $ids): void
     {
-        $ids = array_map(function(Id $id) {
-            return $id->toString();
-        }, $ids->toArray());
+        $ids = array_map(
+            function (Id $id) {
+                return $id->toString();
+            },
+            $ids->toArray()
+        );
         for ($i = 0; $i < count($ids); $i += $this->bulkLimit) {
             $mapped = CampaignDeleteMapper::mapMulti(array_slice($ids, $i, $this->bulkLimit), BannerIndex::name());
 

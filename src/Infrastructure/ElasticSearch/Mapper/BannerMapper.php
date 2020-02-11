@@ -12,8 +12,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 
 class BannerMapper
 {
-    const UPDATE_SCRIPT
-        = <<<EOF
+    private const UPDATE_SCRIPT
+        = <<<PAINLESS
                 ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
                 for (String key : params.keySet()) {
                     if (key.startsWith("exp") && ctx._source.containsKey(key)) {
@@ -21,7 +21,30 @@ class BannerMapper
                     }
                     ctx._source[key] = params[key];
                 }
-EOF;
+PAINLESS;
+
+    private const STATS_SCRIPT
+        = <<<PAINLESS
+ctx._source.stats.rpm = Math.min(Math.max((ctx._source.stats.rpm ?: 0) * params._growth_cap, params._cap_rpm), params._rpm);
+for (String key : params.keySet()) {
+    if(!key.startsWith("_")) {
+        ctx._source.stats[key] = params[key];
+    }
+}
+PAINLESS;
+
+    private const EXP_SCRIPT
+        = <<<PAINLESS
+double sWeight = 0.1;
+if (params.adservers.containsKey(ctx._source['source_address'])) {
+    sWeight = (double)params.adservers[ctx._source['source_address']];
+}
+ctx._source.exp.last_update = params.time;
+ctx._source.exp.views = params.views;
+ctx._source.exp.banners = params.banners;
+ctx._source.exp.weight = params.weight * sWeight;
+PAINLESS;
+
 
     public static function map(Campaign $campaign, Banner $banner, string $index): array
     {
@@ -115,7 +138,6 @@ EOF;
                 ],
                 'stats' => [
                     'campaign_id' => $campaignId,
-                    //                    'parent_id' => $bannerId,
                     'banner_id'   => $path['banner_id'] ?? '',
                     'site_id'     => $path['site_id'] ?? '',
                     'zone_id'     => $path['zone_id'] ?? '',
@@ -123,14 +145,7 @@ EOF;
             ],
             "scripted_upsert" => true,
             "script"          => [
-                "source" => '
-ctx._source.stats.rpm = Math.min(Math.max((ctx._source.stats.rpm ?: 0) * params._growth_cap, params._cap_rpm), params._rpm);
-for (String key : params.keySet()) {
-    if(!key.startsWith("_")) {
-        ctx._source.stats[key] = params[key];
-    }
-}'
-                ,
+                "source" => self::STATS_SCRIPT,
                 "lang"   => "painless",
                 "params" => [
                     "_growth_cap" => StatsUpdater::MAX_HOURLY_RPM_GROWTH,
@@ -180,16 +195,7 @@ for (String key : params.keySet()) {
         $mapped['body'] = [
             'query'  => $query,
             "script" => [
-                "source" => "
-                double sWeight = 0.1;
-                if (params.adservers.containsKey(ctx._source['source_address'])) {
-                    sWeight = (double)params.adservers[ctx._source['source_address']];
-                }
-                ctx._source.exp.last_update = params.time;
-                ctx._source.exp.views = params.views;
-                ctx._source.exp.banners = params.banners;
-                ctx._source.exp.weight = params.weight * sWeight;
-                ",
+                "source" => self::EXP_SCRIPT,
                 "lang"   => "painless",
                 "params" => [
                     "weight"    => $cWeight,
@@ -215,7 +221,6 @@ for (String key : params.keySet()) {
         \DateTimeInterface $timeStale
     ) {
         $mapped = [];
-//        $mapped['refresh'] = 'true';
         $mapped['index'] = $index;
         $mapped['type'] = '_doc';
 

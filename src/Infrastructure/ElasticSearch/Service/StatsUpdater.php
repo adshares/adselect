@@ -347,11 +347,10 @@ class StatsUpdater
             function ($upstream, $current) use (&$campaignBanners) {
 
                 if (!$upstream) {
-
                     $campaignId = $current['value'];
                     // saving all campaign banners
                     $campaignBanners = $this->getAllBannerIds($campaignId);
-                    foreach($campaignBanners as $bannerId) {
+                    foreach ($campaignBanners as $bannerId) {
                         $this->saveBannerStats($campaignId, $bannerId, [], $current['result']);
                     }
                     return false;
@@ -408,7 +407,7 @@ class StatsUpdater
                         ],
                         [
                             "term" => [
-                                "searchable"  => true
+                                "searchable" => true
                             ]
                         ]
                     ]

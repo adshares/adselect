@@ -275,7 +275,6 @@ class ExperimentsUpdater
 
         $adservers = [];
         foreach ($adserverList as $adserver) {
-
             $adserver['revenue_weight'] = $sumRevenue ? $adserver['revenue'] / $sumRevenue : 0;
             $adserver['count_weight'] = $sumCount ? $adserver['count'] / $sumCount : 0;
             $adserver['weight'] = max(0.1, $adserver['revenue_weight']);
