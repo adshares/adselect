@@ -3,7 +3,7 @@ monolog:
         main:
             type:  stream
             path:  '%env(LOG_FILE_PATH)%'
-            level: '%env(LOG_LEVEL)%'
+            level: '%monolog.level%'
         console:
             type: console
             process_psr_3_messages: false
