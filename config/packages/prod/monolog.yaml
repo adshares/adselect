@@ -1,12 +1,9 @@
-parameters:
-    monolog.level: '%env(LOG_LEVEL)%'
-
 monolog:
     handlers:
         main:
             type:  stream
             path:  '%env(LOG_FILE_PATH)%'
-            level: '%monolog.level%'
+            level: error
         console:
             type: console
             process_psr_3_messages: false
