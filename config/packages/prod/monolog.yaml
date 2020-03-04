@@ -1,3 +1,6 @@
+parameters:
+    monolog.level: '%env(LOG_LEVEL)%'
+
 monolog:
     handlers:
         main:
