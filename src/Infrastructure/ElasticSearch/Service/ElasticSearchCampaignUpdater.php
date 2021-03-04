@@ -12,6 +12,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignDeleteMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use DateTime;
 
 class ElasticSearchCampaignUpdater implements CampaignUpdater
 {
