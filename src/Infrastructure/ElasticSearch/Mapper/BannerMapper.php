@@ -84,6 +84,7 @@ PAINLESS;
                 'budget'         => $campaign->getBudget(),
                 'max_cpc'        => $campaign->getMaxCpc(),
                 'max_cpm'        => $campaign->getMaxCpm(),
+                'last_update'    => time(),
                 'exp'            => [
                     'weight'      => 0.0,
                     'views'       => 0,

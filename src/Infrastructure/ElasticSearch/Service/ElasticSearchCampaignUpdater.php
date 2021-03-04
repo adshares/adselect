@@ -68,5 +68,20 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
             $this->client->getClient()->updateByQuery($mapped);
         }
+
+        $this->removeStaleBanners();
+    }
+
+    public function removeStaleBanners(): void
+    {
+        $query = [
+            'range' => [
+                'last_update' => [
+                    'lt' => (new DateTime('-1 hours'))->format('Y-m-d H:i:s')
+                ]
+            ]
+        ];
+        $this->client->delete($query, BannerIndex::name());
+        $this->client->refreshIndex(BannerIndex::name());
     }
 }
