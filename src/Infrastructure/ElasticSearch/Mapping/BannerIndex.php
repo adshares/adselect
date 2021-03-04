@@ -48,7 +48,7 @@ class BannerIndex extends AbstractIndex implements Index
             ],
             'last_update' => [
                 'type' => 'date',
-                'format' => 'yyyy-MM-dd HH:mm:ss',
+                'format' => 'yyyy-MM-dd HH:mm:ss||epoch_second',
             ],
             'exp' => [
                 'properties' => [
