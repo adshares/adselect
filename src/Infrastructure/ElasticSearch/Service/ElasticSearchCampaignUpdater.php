@@ -53,6 +53,8 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         if ($mappedBanners) {
             $this->client->bulk($mappedBanners, self::ES_UPDATE_TYPE);
         }
+
+        $this->removeStaleBanners();
     }
 
     public function delete(IdCollection $ids): void
@@ -68,8 +70,6 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
 
             $this->client->getClient()->updateByQuery($mapped);
         }
-
-        $this->removeStaleBanners();
     }
 
     public function removeStaleBanners(): void
