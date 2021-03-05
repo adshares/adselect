@@ -37,6 +37,8 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $this->client->createIndex(BannerIndex::name());
         }
 
+        $staleTime = (new \DateTime('-5 minute'));
+
         $mappedBanners = [];
         /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
         foreach ($campaigns as $campaign) {
@@ -55,7 +57,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $this->client->bulk($mappedBanners, self::ES_UPDATE_TYPE);
         }
 
-        $this->removeStaleBanners();
+        $this->removeStaleBanners($staleTime);
     }
 
     public function delete(IdCollection $ids): void
@@ -73,12 +75,12 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         }
     }
 
-    public function removeStaleBanners(): void
+    private function removeStaleBanners(\DateTime $staleTime): void
     {
         $query = [
             'range' => [
                 'last_update' => [
-                    'lt' => (new DateTime('-1 hours'))->format('Y-m-d H:i:s')
+                    'lt' => $staleTime->format('Y-m-d H:i:s')
                 ]
             ]
         ];
