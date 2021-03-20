@@ -28,13 +28,12 @@ class QueryBuilder
         // encode score na rpm in one number. 4 significant digits each
         $scriptScore
             = <<<PAINLESS
-double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0)) * (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]]) : 1);
+double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0));
 if(params.min_rpm > real_rpm) {
     return 0;
 }
-return Math.round(1000.0 * (real_rpm <= 0.0001 ? 0.001 : real_rpm) * Math.random() ) * 100000 + Math.round(real_rpm * 1000);
+return Math.round(1000.0 * (real_rpm <= 0.0001 ? 0.001 : real_rpm) * Math.random() * (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]]) : 1)) * 100000 + Math.round(real_rpm * 1000);
 PAINLESS;
-
 
         return [
             'function_score' => [

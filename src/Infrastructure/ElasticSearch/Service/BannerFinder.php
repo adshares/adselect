@@ -168,7 +168,7 @@ class BannerFinder implements BannerFinderInterface
     {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
         $val = apcu_fetch($key);
-        $history = $val ? json_decode($val, true) : [];
+        $history = $val ? $val : [];
         self::clearStaleEntries($history);
         return $history;
     }
@@ -179,7 +179,7 @@ class BannerFinder implements BannerFinderInterface
     ): void {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
         self::clearStaleEntries($history);
-        apcu_store($key, json_encode($history), self::HISTORY_MAXAGE);
+        apcu_store($key, $history, self::HISTORY_MAXAGE);
     }
 
     private static function clearStaleEntries(array &$history): void
