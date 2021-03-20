@@ -25,7 +25,7 @@ class BannerFinder implements BannerFinderInterface
 
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
-    const HISTORY_ENTRY_CAMPAIGN_ID = 1;
+    const HISTORY_ENTRY_BANNER_ID = 1;
     private const HISTORY_MAXAGE = 3600 * 3;
     private const HISTORY_MAXENTRIES = 50;
 
@@ -71,12 +71,23 @@ class BannerFinder implements BannerFinderInterface
         $chance = (mt_rand(0, 999) / 1000);
 
         if ($chance < $this->experimentChance) {
+            $this->logger->debug(
+                sprintf(
+                    '[BANNER FINDER] experiment < %s', $this->experimentChance
+                )
+            );
             $queryBuilder = new ExpQueryBuilder($query);
         } else {
+
             $queryBuilder = new QueryBuilder(
                 $query,
                 (float)$queryDto->getZoneOption('min_cpm', 0.0),
-                self::getSeenFrequencies($userHistory)
+                $this->getSeenOrder($userHistory)
+            );
+            $this->logger->debug(
+                sprintf(
+                    '[BANNER FINDER] regular'
+                )
             );
         }
 
@@ -122,18 +133,19 @@ class BannerFinder implements BannerFinderInterface
         return $result;
     }
 
-    private static function getSeenFrequencies(array $userHistory): array
+    private function getSeenOrder(array $userHistory): array
     {
         $seen = [];
 
-        foreach ($userHistory as $entry) {
-            if (isset($seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]])) {
-                $seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]]++;
+        foreach (array_reverse($userHistory) as $id => $entry) {
+            $mod = ($id**2) / (($id+1)**2);
+            if (!isset($seen[$entry[self::HISTORY_ENTRY_BANNER_ID]])) {
+                $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] = $mod;
             } else {
-                $seen[$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]] = 1;
+                $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
             }
         }
-
+        $this->logger->debug(sprintf('[BANNER FINDER] seen'), $seen);
         return $seen;
     }
 
@@ -152,21 +164,22 @@ class BannerFinder implements BannerFinderInterface
         return $required;
     }
 
-    private static function loadUserHistory(QueryDto $queryDto): array
+    private function loadUserHistory(QueryDto $queryDto): array
     {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
-        $history = (array)apcu_fetch($key);
+        $val = apcu_fetch($key);
+        $history = $val ? json_decode($val, true) : [];
         self::clearStaleEntries($history);
         return $history;
     }
 
-    private static function saveUserHistory(
+    private function saveUserHistory(
         QueryDto $queryDto,
         array $history
     ): void {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
         self::clearStaleEntries($history);
-        apcu_store($key, $history, self::HISTORY_MAXAGE);
+        apcu_store($key, json_encode($history), self::HISTORY_MAXAGE);
     }
 
     private static function clearStaleEntries(array &$history): void
@@ -188,8 +201,8 @@ class BannerFinder implements BannerFinderInterface
         // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [
-                self::HISTORY_ENTRY_TIME        => time(),
-                self::HISTORY_ENTRY_CAMPAIGN_ID => $collection[0]->getCampaignId(),
+                self::HISTORY_ENTRY_TIME      => time(),
+                self::HISTORY_ENTRY_BANNER_ID => $collection[0]->getBannerId(),
             ];
         }
     }

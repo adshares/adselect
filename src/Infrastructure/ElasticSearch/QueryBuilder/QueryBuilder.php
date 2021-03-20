@@ -28,7 +28,7 @@ class QueryBuilder
         // encode score na rpm in one number. 4 significant digits each
         $scriptScore
             = <<<PAINLESS
-double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0)) / (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]] + 1) : 1);
+double real_rpm = (_score - 100.0 * Math.floor(_score / 100.0)) * (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]]) : 1);
 if(params.min_rpm > real_rpm) {
     return 0;
 }
