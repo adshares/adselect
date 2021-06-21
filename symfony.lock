@@ -83,9 +83,6 @@
     "psr/log": {
         "version": "1.1.0"
     },
-    "psr/simple-cache": {
-        "version": "1.0.1"
-    },
     "qossmic/deptrac-shim": {
         "version": "0.7",
         "recipe": {
@@ -100,9 +97,6 @@
     },
     "react/promise": {
         "version": "v2.7.1"
-    },
-    "roave/security-advisories": {
-        "version": "dev-master"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"
@@ -170,6 +164,9 @@
     "symfony/cache": {
         "version": "v4.2.7"
     },
+    "symfony/cache-contracts": {
+        "version": "v2.4.0"
+    },
     "symfony/config": {
         "version": "v4.2.7"
     },
@@ -186,9 +183,6 @@
             "config/bootstrap.php"
         ]
     },
-    "symfony/contracts": {
-        "version": "v1.0.2"
-    },
     "symfony/debug": {
         "version": "v4.2.7"
     },
@@ -201,8 +195,14 @@
     "symfony/dotenv": {
         "version": "v4.2.7"
     },
+    "symfony/error-handler": {
+        "version": "v4.4.25"
+    },
     "symfony/event-dispatcher": {
         "version": "v4.2.7"
+    },
+    "symfony/event-dispatcher-contracts": {
+        "version": "v1.1.9"
     },
     "symfony/filesystem": {
         "version": "v4.2.7"
@@ -241,6 +241,9 @@
             "src/Kernel.php"
         ]
     },
+    "symfony/http-client-contracts": {
+        "version": "v2.4.0"
+    },
     "symfony/http-foundation": {
         "version": "v4.2.7"
     },
@@ -249,6 +252,9 @@
     },
     "symfony/lock": {
         "version": "v4.2.12"
+    },
+    "symfony/mime": {
+        "version": "v4.4.25"
     },
     "symfony/monolog-bridge": {
         "version": "v4.2.8"
@@ -267,8 +273,26 @@
             "config/packages/test/monolog.yaml"
         ]
     },
+    "symfony/polyfill-intl-idn": {
+        "version": "v1.23.0"
+    },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.23.0"
+    },
     "symfony/polyfill-mbstring": {
         "version": "v1.11.0"
+    },
+    "symfony/polyfill-php72": {
+        "version": "v1.23.0"
+    },
+    "symfony/polyfill-php73": {
+        "version": "v1.23.0"
+    },
+    "symfony/polyfill-php80": {
+        "version": "v1.23.0"
+    },
+    "symfony/polyfill-php81": {
+        "version": "v1.23.0"
     },
     "symfony/process": {
         "version": "v4.2.7"
@@ -287,6 +311,12 @@
             "config/packages/test/routing.yaml",
             "config/routes.yaml"
         ]
+    },
+    "symfony/service-contracts": {
+        "version": "v2.4.0"
+    },
+    "symfony/var-dumper": {
+        "version": "v4.4.25"
     },
     "symfony/var-exporter": {
         "version": "v4.2.7"
