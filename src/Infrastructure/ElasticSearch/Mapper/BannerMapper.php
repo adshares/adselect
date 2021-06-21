@@ -7,8 +7,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
-use function array_merge;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
+use DateTime;
 
 class BannerMapper
 {
@@ -84,7 +83,7 @@ PAINLESS;
                 'budget'         => $campaign->getBudget(),
                 'max_cpc'        => $campaign->getMaxCpc(),
                 'max_cpm'        => $campaign->getMaxCpm(),
-                'last_update'    => (new \DateTime())->format('Y-m-d H:i:s'),
+                'last_update'    => (new DateTime())->format('Y-m-d H:i:s'),
                 'exp'            => [
                     'weight'      => 0.0,
                     'views'       => 0,
@@ -160,7 +159,7 @@ PAINLESS;
                     'total_count' => $stats['count'] ?? 0,
                     'used_count'  => $stats['used_count'] ?? 0,
                     'count_sign'  => $stats['count_sign'] ?? 0,
-                    'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
+                    'last_update' => (new DateTime())->format('Y-m-d H:i:s'),
                 ]
             ],
         ];

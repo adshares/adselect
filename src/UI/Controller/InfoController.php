@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Adshares\AdSelect\UI\Controller;
 
 use Symfony\Component\HttpFoundation\Response;

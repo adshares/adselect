@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Command;
 
-use Adshares\AdSelect\Application\Service\DataCleaner;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
-use DateTime;
-use Exception;
-use function sprintf;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -110,6 +106,7 @@ class UpdateStats extends Command
             $output->writeln(
                 'No events to process'
             );
+
             return;
         }
 

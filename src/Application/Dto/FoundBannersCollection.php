@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Application\Dto;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use function array_rand;
-use function min;
 
 final class FoundBannersCollection extends ArrayCollection
 {

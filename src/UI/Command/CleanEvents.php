@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Command;
 
 use Adshares\AdSelect\Application\Service\DataCleaner;
 use DateTime;
-use Exception;
-use function sprintf;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -56,10 +54,12 @@ class CleanEvents extends Command
             return;
         }
 
-        $output->writeln(sprintf(
-            'Start removing documents (events) older than %s',
-            $fromDate->format('Y-m-d H:i:s')
-        ));
+        $output->writeln(
+            sprintf(
+                'Start removing documents (events) older than %s',
+                $fromDate->format('Y-m-d H:i:s')
+            )
+        );
 
         $this->dataCleaner->cleanEvents($fromDate);
 

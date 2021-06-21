@@ -6,12 +6,11 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
-use function array_merge;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
+use DateTime;
 
 class CampaignMapper
 {
-    const UPDATE_SCRIPT = <<<EOF
+    public const UPDATE_SCRIPT = <<<EOF
                 ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
                 for (String key : params.keySet()) {
                     ctx._source[key] = params[key];
@@ -108,7 +107,7 @@ EOF;
                     'total_count' => $stats['count'] ?? 0,
                     'used_count' => $stats['used_count'] ?? 0,
                     'count_sign' => $stats['count_sign'] ?? 0,
-                    'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
+                    'last_update' => (new DateTime())->format('Y-m-d H:i:s'),
                 ]
             ],
             'doc_as_upsert' => true,

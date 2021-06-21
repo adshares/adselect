@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Adshares\AdSelect\Lib;
 
 use DateTimeInterface as SystemDateTimeInterface;

@@ -10,8 +10,6 @@ use Adshares\AdSelect\Application\Service\EventFinder as EventFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Psr\Log\LoggerInterface;
-use function json_encode;
-use function sprintf;
 
 class EventFinder implements EventFinderInterface
 {

@@ -4,20 +4,10 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Banner;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use function array_merge;
-use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
+use DateTime;
 
 class AdserverMapper
 {
-    const UPDATE_SCRIPT = <<<EOF
-                ctx._source.keySet().removeIf(key -> key.startsWith("filters:"));
-                for (String key : params.keySet()) {
-                    ctx._source[key] = params[key];
-                }
-EOF;
-
     public static function map(
         $address,
         string $index,
@@ -26,7 +16,7 @@ EOF;
         float $revenue_weight,
         float $count_weight,
         float $weight
-    ) {
+    ): array {
         $mapped = [];
         $mapped['index'] = [
             'update' => [
@@ -45,10 +35,11 @@ EOF;
                 'count' => $count,
                 'count_weight' => $count_weight,
                 'weight' => $weight,
-                'last_update' => (new \DateTime())->format('Y-m-d H:i:s'),
+                'last_update' => (new DateTime())->format('Y-m-d H:i:s'),
             ],
             'doc_as_upsert' => true,
         ];
+
         return $mapped;
     }
 }

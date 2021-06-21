@@ -1,11 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Domain\ValueObject;
 
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use function preg_match;
 
 final class Id
 {
@@ -23,7 +22,7 @@ final class Id
     private function isValid(string $id): bool
     {
         $pregMatch = preg_match(
-            '/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?'.'[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i',
+            '/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?' . '[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i',
             $id
         );
 

@@ -9,8 +9,6 @@ use Adshares\AdSelect\Domain\Model\Payment;
 use Adshares\AdSelect\Domain\Model\EventCollection;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
-use function array_diff;
-use function array_keys;
 
 class Payments
 {
@@ -40,7 +38,7 @@ class Payments
                     );
 
                     $this->events->add($event);
-                } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
+                } catch (AdSelectRuntimeException | LibraryRuntimeException $exception) {
                     $this->failedEvents[] = $event;
                 }
             } else {

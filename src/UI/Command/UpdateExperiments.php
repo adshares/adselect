@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Command;
 
-use Adshares\AdSelect\Application\Service\DataCleaner;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ExperimentsUpdater;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
 use DateTime;
-use Exception;
-use function sprintf;
+use DateTimeImmutable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,8 +19,7 @@ class UpdateExperiments extends Command
 {
     protected static $defaultName = 'ops:es:update-exp';
 
-    /** @var ExperimentsUpdater */
-    private $updater;
+    private ExperimentsUpdater $updater;
 
     public function __construct(ExperimentsUpdater $updater)
     {
@@ -52,7 +48,7 @@ class UpdateExperiments extends Command
             return 0;
         }
 
-        $from = \DateTimeImmutable::createFromMutable($input->getOption('from'));
+        $from = DateTimeImmutable::createFromMutable($input->getOption('from'));
 
         $this->updater->recalculateExperiments($from);
 

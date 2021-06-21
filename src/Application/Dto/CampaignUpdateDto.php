@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Application\Dto;
 
@@ -53,7 +53,7 @@ final class CampaignUpdateDto
                 $campaignData['filters'],
                 $budget
             );
-        } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
+        } catch (AdSelectRuntimeException | LibraryRuntimeException $exception) {
             throw new ValidationDtoException($exception->getMessage());
         }
     }
