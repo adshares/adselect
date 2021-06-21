@@ -1,46 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
-<phpunit backupGlobals="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          colors="true"
          bootstrap="config/bootstrap.php"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true">
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+
     <php>
-        <ini name="error_reporting" value="-1" />
-        <server name="APP_ENV" value="test" force="true" />
-        <server name="SHELL_VERBOSITY" value="-1" />
+        <ini name="error_reporting" value="-1"/>
+        <server name="APP_ENV" value="test" force="true"/>
+        <server name="SHELL_VERBOSITY" value="-1"/>
     </php>
 
     <testsuites>
         <testsuite name="Domain">
-            <directory suffix="Test.php">tests/Domain</directory>
+            <directory>tests/Domain</directory>
         </testsuite>
         <testsuite name="Application">
-            <directory suffix="Test.php">tests/Application</directory>
+            <directory>tests/Application</directory>
         </testsuite>
         <testsuite name="UI">
-            <directory suffix="Test.php">tests/UI</directory>
+            <directory>tests/UI</directory>
         </testsuite>
         <testsuite name="Infrastructure">
-            <directory suffix="Test.php">tests/Infrastructure</directory>
+            <directory>tests/Infrastructure</directory>
         </testsuite>
         <testsuite name="Lib">
-            <directory suffix="Test.php">tests/Lib</directory>
+            <directory>tests/Lib</directory>
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
+    <coverage>
+        <include>
             <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+        </include>
+        <report>
+            <clover outputFile="code-coverage/phpunit/coverage.xml"/>
+            <text outputFile="php://stdout" />
+        </report>
+    </coverage>
 
     <logging>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-clover" target="code-coverage/phpunit/coverage.xml"/>
-        <log type="junit" target="code-coverage/phpunit/logfile.xml"/>
+        <junit outputFile="code-coverage/phpunit/logfile.xml"/>
     </logging>
 
 </phpunit>
