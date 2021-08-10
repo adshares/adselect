@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Command;
 
-use Adshares\AdSelect\Application\Service\DataCleaner;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ExperimentsUpdater;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
 use DateTime;
-use Exception;
-use function sprintf;
+use DateTimeImmutable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,8 +19,7 @@ class UpdateExperiments extends Command
 {
     protected static $defaultName = 'ops:es:update-exp';
 
-    /** @var ExperimentsUpdater */
-    private $updater;
+    private ExperimentsUpdater $updater;
 
     public function __construct(ExperimentsUpdater $updater)
     {
@@ -43,16 +39,15 @@ class UpdateExperiments extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $lock = new Lock(new Key($this->getName()), new FlockStore(), null, false);
         if (!$lock->acquire()) {
             $output->writeln('The command is already running in another process.');
-
-            return 0;
+            return self::FAILURE;
         }
 
-        $from = \DateTimeImmutable::createFromMutable($input->getOption('from'));
+        $from = DateTimeImmutable::createFromMutable($input->getOption('from'));
 
         $this->updater->recalculateExperiments($from);
 
@@ -62,5 +57,6 @@ class UpdateExperiments extends Command
                 $from->format(DATE_ISO8601)
             )
         );
+        return self::SUCCESS;
     }
 }

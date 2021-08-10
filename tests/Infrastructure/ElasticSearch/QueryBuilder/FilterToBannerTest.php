@@ -1,12 +1,13 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Tests\Infrastructure\ElasticSearch\QueryBuilder;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\FilterToBanner;
-use function array_keys;
 use PHPUnit\Framework\TestCase;
+
+use function array_keys;
 
 final class FilterToBannerTest extends TestCase
 {
@@ -20,7 +21,7 @@ final class FilterToBannerTest extends TestCase
     public function testWhenFiltersAreNotEmpty(): void
     {
         $filters = [
-            'classification' =>  ['classify:49:1'],
+            'classification' => ['classify:49:1'],
             'age' => '22--33',
         ];
 

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Controller;
 
 use Adshares\AdSelect\Application\Dto\Cases;
 use Adshares\AdSelect\Application\Dto\Clicks;
-use Adshares\AdSelect\Application\Dto\PaidCases;
 use Adshares\AdSelect\Application\Dto\Payments;
-use Adshares\AdSelect\Application\Dto\UnpaidCases;
 use Adshares\AdSelect\Application\Exception\EventNotFound;
 use Adshares\AdSelect\Application\Service\EventCollector;
 use Adshares\AdSelect\Application\Service\EventFinder;
@@ -18,10 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use function json_decode;
-use function implode;
-use function json_encode;
-use function sprintf;
 
 class EventController
 {

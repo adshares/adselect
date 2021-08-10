@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Adshares\AdSelect\UI\Command;
 
 use DateTime;
 use Exception;
-use function sprintf;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,10 +19,12 @@ trait CleanTrait
             try {
                 $fromDate = new DateTime($fromOption);
             } catch (Exception $exception) {
-                $output->writeln(sprintf(
-                    '<error>Unsupported `from` format: %s. Please use supported DateTime formats.</error>',
-                    $fromOption
-                ));
+                $output->writeln(
+                    sprintf(
+                        '<error>Unsupported `from` format: %s. Please use supported DateTime formats.</error>',
+                        $fromOption
+                    )
+                );
 
                 return null;
             }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Command;
 
@@ -37,9 +37,10 @@ class CreateIndex extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $force = (bool)$input->getOption('force');
         $this->client->createIndexes($force);
+        return self::SUCCESS;
     }
 }

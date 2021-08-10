@@ -17,7 +17,7 @@ class StatsUpdater
     /** @var Client */
     private $client;
 
-    const MAX_HOURLY_RPM_GROWTH = 1.30;
+    public const MAX_HOURLY_RPM_GROWTH = 1.30;
 
     private const ES_BUCKET_PAGE_SIZE = 500;
 
@@ -360,12 +360,14 @@ class StatsUpdater
 
                 $last = $upstream[count($upstream) - 1] ?? null;
                 if ($last) {
-                    if ($last['result']['avg_min'] >= $current['result']['avg_min']
+                    if (
+                        $last['result']['avg_min'] >= $current['result']['avg_min']
                         && $last['result']['avg_max'] <= $current['result']['avg_max']
                     ) {
                         return true;
                     }
-                    if ($last['result']['rpm_est'] == 0
+                    if (
+                        $last['result']['rpm_est'] == 0
                         || abs(
                             1 - $current['result']['rpm_est'] / $last['result']['rpm_est']
                         ) <= 0.05

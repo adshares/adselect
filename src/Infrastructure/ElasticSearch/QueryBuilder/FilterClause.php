@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\Helper;
-use function preg_match;
 
 class FilterClause
 {

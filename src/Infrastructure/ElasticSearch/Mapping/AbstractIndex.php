@@ -1,11 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use function getenv;
 
 abstract class AbstractIndex
 {

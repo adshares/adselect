@@ -9,13 +9,11 @@ use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
 use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Psr\Log\LoggerInterface;
-use function json_encode;
 
 class BannerFinder implements BannerFinderInterface
 {
@@ -25,7 +23,7 @@ class BannerFinder implements BannerFinderInterface
 
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
-    const HISTORY_ENTRY_BANNER_ID = 1;
+    private const HISTORY_ENTRY_BANNER_ID = 1;
     private const HISTORY_MAXAGE = 3600 * 3;
     private const HISTORY_MAXENTRIES = 50;
 
@@ -73,12 +71,12 @@ class BannerFinder implements BannerFinderInterface
         if ($chance < $this->experimentChance) {
             $this->logger->debug(
                 sprintf(
-                    '[BANNER FINDER] experiment < %s', $this->experimentChance
+                    '[BANNER FINDER] experiment < %s',
+                    $this->experimentChance
                 )
             );
             $queryBuilder = new ExpQueryBuilder($query);
         } else {
-
             $queryBuilder = new QueryBuilder(
                 $query,
                 (float)$queryDto->getZoneOption('min_cpm', 0.0),
@@ -138,7 +136,7 @@ class BannerFinder implements BannerFinderInterface
         $seen = [];
 
         foreach (array_reverse($userHistory) as $id => $entry) {
-            $mod = ($id**2) / (($id+1)**2);
+            $mod = ($id ** 2) / (($id + 1) ** 2);
             if (!isset($seen[$entry[self::HISTORY_ENTRY_BANNER_ID]])) {
                 $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] = $mod;
             } else {

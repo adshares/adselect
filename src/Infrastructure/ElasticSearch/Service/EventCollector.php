@@ -13,14 +13,8 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\ClickMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordIntersectMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\KeywordMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaymentMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\KeywordIntersectIndex;
-use function array_filter;
-use function array_keys;
 
 class EventCollector implements EventCollectorInterface
 {

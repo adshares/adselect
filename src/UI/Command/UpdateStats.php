@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\UI\Command;
 
-use Adshares\AdSelect\Application\Service\DataCleaner;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
-use DateTime;
-use Exception;
-use function sprintf;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -59,13 +55,12 @@ class UpdateStats extends Command
         }
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $lock = new Lock(new Key($this->getName()), new FlockStore(), null, false);
         if (!$lock->acquire()) {
             $output->writeln('The command is already running in another process.');
-
-            return 0;
+            return self::FAILURE;
         }
         $threads = $input->getOption('threads');
 
@@ -110,7 +105,7 @@ class UpdateStats extends Command
             $output->writeln(
                 'No events to process'
             );
-            return;
+            return self::SUCCESS;
         }
 
         $to = new \DateTimeImmutable($toStr, new \DateTimeZone("UTC"));
@@ -134,5 +129,6 @@ class UpdateStats extends Command
         );
 
         $this->updater->removeStaleRPMStats();
+        return self::SUCCESS;
     }
 }

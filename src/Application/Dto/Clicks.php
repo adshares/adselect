@@ -1,18 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Adshares\AdSelect\Application\Dto;
 
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\Model\Click;
-use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
-use function array_diff;
-use function array_keys;
 
 class Clicks
 {
@@ -38,7 +34,7 @@ class Clicks
                     );
 
                     $this->events->add($event);
-                } catch (AdSelectRuntimeException|LibraryRuntimeException $exception) {
+                } catch (AdSelectRuntimeException | LibraryRuntimeException $exception) {
                     $this->failedEvents[] = $event;
                 }
             } else {

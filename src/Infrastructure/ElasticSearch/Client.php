@@ -14,10 +14,6 @@ use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
 use Psr\Log\LoggerInterface;
-use function current;
-use function implode;
-use function json_encode;
-use function sprintf;
 
 class Client
 {
