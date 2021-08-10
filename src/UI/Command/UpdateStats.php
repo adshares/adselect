@@ -55,13 +55,12 @@ class UpdateStats extends Command
         }
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $lock = new Lock(new Key($this->getName()), new FlockStore(), null, false);
         if (!$lock->acquire()) {
             $output->writeln('The command is already running in another process.');
-
-            return 0;
+            return self::FAILURE;
         }
         $threads = $input->getOption('threads');
 
@@ -106,8 +105,7 @@ class UpdateStats extends Command
             $output->writeln(
                 'No events to process'
             );
-
-            return;
+            return self::SUCCESS;
         }
 
         $to = new \DateTimeImmutable($toStr, new \DateTimeZone("UTC"));
@@ -131,5 +129,6 @@ class UpdateStats extends Command
         );
 
         $this->updater->removeStaleRPMStats();
+        return self::SUCCESS;
     }
 }

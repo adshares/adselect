@@ -41,17 +41,16 @@ class CleanEvents extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if (!$this->lock()) {
             $output->writeln('The command is already running in another process.');
-
-            return 0;
+            return self::FAILURE;
         }
         $fromDate = $this->readFrom($input, $output);
 
         if (!$fromDate) {
-            return;
+            return self::INVALID;
         }
 
         $output->writeln(
@@ -64,5 +63,6 @@ class CleanEvents extends Command
         $this->dataCleaner->cleanEvents($fromDate);
 
         $output->writeln('Finished removing documents.');
+        return self::SUCCESS;
     }
 }

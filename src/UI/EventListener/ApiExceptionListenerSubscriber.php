@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\UI\EventListener;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ApiExceptionListenerSubscriber implements EventSubscriberInterface
 {
-    /** @var string */
-    private $env;
-    /** @var LoggerInterface */
-    private $logger;
+    private string $env;
+    private LoggerInterface $logger;
 
     public function __construct(string $env, LoggerInterface $logger)
     {
@@ -25,9 +23,9 @@ class ApiExceptionListenerSubscriber implements EventSubscriberInterface
         $this->logger = $logger;
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event): void
+    public function onKernelException(ExceptionEvent $event): void
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
 
         if (!$exception instanceof HttpException) {
             $data = [

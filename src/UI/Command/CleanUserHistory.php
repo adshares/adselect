@@ -39,12 +39,12 @@ class CleanUserHistory extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $fromDate = $this->readFrom($input, $output);
 
         if (!$fromDate) {
-            return;
+            return self::INVALID;
         }
 
         $output->writeln(sprintf(
@@ -55,5 +55,6 @@ class CleanUserHistory extends Command
         $this->dataCleaner->cleanUserHistory($fromDate);
 
         $output->writeln('Finished removing documents.');
+        return self::SUCCESS;
     }
 }

@@ -39,13 +39,12 @@ class UpdateExperiments extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $lock = new Lock(new Key($this->getName()), new FlockStore(), null, false);
         if (!$lock->acquire()) {
             $output->writeln('The command is already running in another process.');
-
-            return 0;
+            return self::FAILURE;
         }
 
         $from = DateTimeImmutable::createFromMutable($input->getOption('from'));
@@ -58,5 +57,6 @@ class UpdateExperiments extends Command
                 $from->format(DATE_ISO8601)
             )
         );
+        return self::SUCCESS;
     }
 }
