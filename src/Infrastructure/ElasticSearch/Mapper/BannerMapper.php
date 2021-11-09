@@ -68,7 +68,7 @@ PAINLESS;
             ],
             Helper::keywords(
                 'keywords',
-                array_merge($banner->getkeywords(), $banner->getKeywords())
+                array_merge($campaign->getkeywords(), $banner->getKeywords())
             )
         );
 
