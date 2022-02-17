@@ -13,16 +13,16 @@ final class Banner
     private $campaignId;
     /** @var Id */
     private $bannerId;
-    /** @var Size */
-    private $size;
+    /** @var array|Size[] */
+    private $sizes;
     /** @var array */
     private $keywords;
 
-    public function __construct(Id $campaignId, Id $bannerId, Size $size, array $keywords = [])
+    public function __construct(Id $campaignId, Id $bannerId, array $sizes, array $keywords = [])
     {
         $this->campaignId = $campaignId;
         $this->bannerId = $bannerId;
-        $this->size = $size;
+        $this->sizes = $sizes;
         $this->keywords = $keywords;
     }
 
@@ -30,7 +30,6 @@ final class Banner
     {
         return $this->bannerId->toString();
     }
-
 
     public function getCampaignId(): string
     {
@@ -42,8 +41,8 @@ final class Banner
         return $this->keywords;
     }
 
-    public function getSize(): Size
+    public function getSizes(): array
     {
-        return $this->size;
+        return $this->sizes;
     }
 }

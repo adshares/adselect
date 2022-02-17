@@ -59,13 +59,18 @@ PAINLESS;
             ],
         ];
 
-        $size = $banner->getSize();
+        $sizes = [
+            'size' => [],
+            'width' => [],
+            'height' => [],
+        ];
+        foreach ($banner->getSizes() as $size) {
+            $sizes['size'][] = $size->toString();
+            $sizes['width'][] = $size->getWidth();
+            $sizes['height'][] = $size->getHeight();
+        }
         $banner = array_merge(
-            [
-                'size'   => $size->toString(),
-                'width'  => $size->getWidth(),
-                'height' => $size->getHeight(),
-            ],
+            $sizes,
             Helper::keywords(
                 'keywords',
                 array_merge($campaign->getkeywords(), $banner->getKeywords())
