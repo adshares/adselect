@@ -33,7 +33,9 @@ ruleset:
   Infrastructure:
     - Application
     - Domain
+    - Lib
   UI:
     - Infrastructure
     - Application
+    - Lib
 
