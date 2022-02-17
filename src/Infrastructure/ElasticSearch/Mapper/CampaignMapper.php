@@ -32,14 +32,21 @@ EOF;
 
         /** @var Banner $banner */
         foreach ($campaign->getBanners() as $banner) {
-            $size = $banner->getSize();
+            $sizes = [
+                'size' => [],
+                'width' => [],
+                'height' => [],
+            ];
+            foreach ($banner->getSizes() as $size) {
+                $sizes['size'][] = $size->toString();
+                $sizes['width'][] = $size->getWidth();
+                $sizes['height'][] = $size->getHeight();
+            }
             $banners[] = array_merge(
                 [
                     'id' => $banner->getBannerId(),
-                    'size' => $size->toString(),
-                    'width' => $size->getWidth(),
-                    'height' => $size->getHeight(),
                 ],
+                $sizes,
                 Helper::keywords('keywords', array_merge($campaign->getkeywords(), $banner->getKeywords()))
             );
         }
@@ -79,7 +86,7 @@ EOF;
         string $publisher_id = '',
         string $site_id = '',
         string $zone_id = ''
-    ) {
+    ): array {
         $id = sha1(implode(":", [$campaignId, $publisher_id, $site_id, $zone_id]));
         $mapped = [];
         $mapped['index'] = [

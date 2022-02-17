@@ -75,6 +75,12 @@
     "elasticsearch/elasticsearch": {
         "version": "v6.7.0"
     },
+    "ezimuel/guzzlestreams": {
+        "version": "3.0.1"
+    },
+    "ezimuel/ringphp": {
+        "version": "1.1.2"
+    },
     "guzzlehttp/ringphp": {
         "version": "1.1.1"
     },

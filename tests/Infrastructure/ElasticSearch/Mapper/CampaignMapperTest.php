@@ -34,21 +34,21 @@ final class CampaignMapperTest extends TestCase
         $banner1 = new Banner(
             new Id($campaignId),
             new Id('43c567e1396b4cadb52223a51796fd01'),
-            new Size("90x25"),
+            [new Size("90x25")],
             $keywords1
         );
 
         $banner2 = new Banner(
             new Id($campaignId),
             new Id('43c567e1396b4cadb52223a51796fd02'),
-            new Size("180x90"),
+            [new Size("180x90")],
             $keywords2
         );
 
         $banner3 = new Banner(
             new Id($campaignId),
             new Id('43c567e1396b4cadb52223a51796fd03'),
-            new Size("333x111")
+            [new Size("333x111")]
         );
 
         $start = new ExtendedDateTime();
@@ -93,9 +93,9 @@ final class CampaignMapperTest extends TestCase
                     [
                         0 => [
                             'id' => '43c567e1396b4cadb52223a51796fd01',
-                            'size' => '90x25',
-                            'width' => 90,
-                            'height' => 25,
+                            'size' => ['90x25'],
+                            'width' => [90],
+                            'height' => [25],
                             'keywords:source_host' => [
                                 0 => 'adshares.net',
                             ],
@@ -114,9 +114,9 @@ final class CampaignMapperTest extends TestCase
                         ],
                         1 => [
                             'id' => '43c567e1396b4cadb52223a51796fd02',
-                            'size' => '180x90',
-                            'width' => 180,
-                            'height' => 90,
+                            'size' => ['180x90'],
+                            'width' => [180],
+                            'height' => [90],
                             'keywords:source_host' => [
                                 0 => 'adshares.net',
                             ],
@@ -134,9 +134,9 @@ final class CampaignMapperTest extends TestCase
                         ],
                         2 => [
                             'id' => '43c567e1396b4cadb52223a51796fd03',
-                            'size' => '333x111',
-                            'width' => 333,
-                            'height' => 111,
+                            'size' => ['333x111'],
+                            'width' => [333],
+                            'height' => [111],
                             'keywords:source_host' => [
                                 0 => 'adshares.net',
                             ],

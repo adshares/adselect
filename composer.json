@@ -57,7 +57,13 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "symfony/flex": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "symfony/runtime": true
+        }
     },
     "autoload": {
         "psr-4": {
@@ -97,7 +103,7 @@
         "test": "phpunit --testsuite Domain,Lib,Application,Infrastructure",
         "test-coverage": "@php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text",
         "test-ci": "phpunit --configuration phpunit-ci.xml",
-        "dev": "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST}:${APP_PORT} -t public dev-router.php)'"
+        "dev": "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST:-localhost}:${APP_PORT:-8011} -t public dev-router.php)'"
     },
     "conflict": {
         "symfony/symfony": "*"

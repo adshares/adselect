@@ -57,6 +57,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $this->client->bulk($mappedBanners, self::ES_UPDATE_TYPE);
         }
 
+        $this->client->refreshIndex(BannerIndex::name());
         $this->removeStaleBanners($staleTime);
     }
 
@@ -85,6 +86,5 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             ]
         ];
         $this->client->delete($query, BannerIndex::name());
-        $this->client->refreshIndex(BannerIndex::name());
     }
 }

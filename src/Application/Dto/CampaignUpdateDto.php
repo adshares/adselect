@@ -115,10 +115,11 @@ final class CampaignUpdateDto
         $collection = new BannerCollection();
 
         foreach ($banners as $banner) {
+            $sizes = $this->prepareBannerSizes($banner['banner_size']);
             $banner = new Banner(
                 $campaignId,
                 new Id($banner['banner_id']),
-                new Size($banner['banner_size']),
+                $sizes,
                 $banner['keywords'] ?? []
             );
 
@@ -131,5 +132,15 @@ final class CampaignUpdateDto
     public function getCampaignCollection(): CampaignCollection
     {
         return $this->campaigns;
+    }
+
+    private function prepareBannerSizes($bannerSize): array
+    {
+        return array_map(
+            function ($size) {
+                return new Size($size);
+            },
+            is_array($bannerSize) ? $bannerSize : [$bannerSize]
+        );
     }
 }
