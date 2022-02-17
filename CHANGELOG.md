@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Support responsive banners
 
 ## [1.0.0] - 2021-08-10
 ### Changed
@@ -17,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - New score formula 
 - Remove stale banners
-- Return RPM without seen adjustement
+- Return RPM without seen adjustment
 - Support min_cpm and cpa_only
 - Only count recent events for rpm stats
 - Use RPM stats to select banners

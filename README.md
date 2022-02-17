@@ -18,6 +18,28 @@ It accepts requests from [AdServer](https://github.com/adshares/adserver) intern
 
 
 
+## Quick start
+
+### Development
+
+Start elasticsearch (docker example)
+```shell
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+docker network create elastic
+docker run --name es01 --net elastic -p 9200:9200 -p 9300:9300 -e discovery.type=single-node \
+  -it docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+```
+
+Configure and start server
+```shell
+git clone https://github.com/adshares/adselect.git
+cd adselect
+composer install
+composer dump-env dev
+vi .env.local.php
+composer dev
+```
+
 ## Related projects
  
 - [AdServer](https://github.com/adshares/adserver)
