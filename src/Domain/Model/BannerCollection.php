@@ -8,5 +8,4 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 final class BannerCollection extends ArrayCollection
 {
-
 }

@@ -8,5 +8,4 @@ use RuntimeException;
 
 class EventNotFound extends RuntimeException
 {
-
 }
