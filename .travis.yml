@@ -1,6 +1,9 @@
 language: php
 sudo: false
 
+services:
+  - elasticsearch
+
 env:
   global:
     - MIN_PHP=7.2
@@ -22,13 +25,20 @@ before_install:
 install:
   - composer install
 
-script:
-  - ./bin/console security:check
-  - ./bin/console lint:yaml config
-  - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
-  - ./vendor/bin/phpcs -s src tests
-  - ./vendor/bin/deptrac
-  - ./vendor/bin/phpunit --testsuite Domain,Lib,Application,Infrastructure -c phpunit.xml.dist
+before_script:
+  - sleep 10
+
+jobs:
+  include:
+    - script:
+      - ./bin/console security:check
+      - ./bin/console lint:yaml config
+      - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
+      - ./vendor/bin/phpcs -s src tests
+      - ./vendor/bin/deptrac
+      - ./vendor/bin/phpunit --testsuite Unit -c phpunit.xml.dist
+    - script:
+      - ./vendor/bin/phpunit --testsuite Integration -c phpunit.xml.dist
 
 notifications:
   email: false

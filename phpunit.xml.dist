@@ -17,20 +17,11 @@
     </php>
 
     <testsuites>
-        <testsuite name="Domain">
-            <directory>tests/Domain</directory>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
         </testsuite>
-        <testsuite name="Application">
-            <directory>tests/Application</directory>
-        </testsuite>
-        <testsuite name="UI">
-            <directory>tests/UI</directory>
-        </testsuite>
-        <testsuite name="Infrastructure">
-            <directory>tests/Infrastructure</directory>
-        </testsuite>
-        <testsuite name="Lib">
-            <directory>tests/Lib</directory>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
 
