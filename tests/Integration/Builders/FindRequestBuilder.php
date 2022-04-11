@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Tests\Integration\Builders;
 
-final class BannerRequestBuilder
+final class FindRequestBuilder
 {
     private array $data;
 
@@ -19,15 +19,15 @@ final class BannerRequestBuilder
         return $this;
     }
 
-    public function requires(array $requires): self
-    {
-        $this->data['banner_filters']['require'] = $requires;
-        return $this;
-    }
-
     public function mergeKeywords(array $keywords): self
     {
         $this->data['keywords'] = array_merge($this->data['keywords'], $keywords);
+        return $this;
+    }
+
+    public function requires(array $requires): self
+    {
+        $this->data['banner_filters']['require'] = $requires;
         return $this;
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Tests\Unit\UI\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 final class CampaignControllerTest extends WebTestCase
 {
@@ -64,9 +65,27 @@ final class CampaignControllerTest extends WebTestCase
             ],
         ];
 
-        $client = static::createClient();
+        $client = self::createClient();
         $client->request('POST', '/api/v1/find', [], [], [], json_encode($parameters));
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+    }
+
+    public function testUpdateCampaignNoContent(): void
+    {
+        $client = self::createClient();
+
+        $client->request('POST', '/api/v1/campaigns');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+    }
+
+    public function testDeleteCampaignNoContent(): void
+    {
+        $client = self::createClient();
+
+        $client->request('DELETE', '/api/v1/campaigns');
+
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 }

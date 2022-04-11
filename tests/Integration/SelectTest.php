@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Tests\Integration;
 
-use Adshares\AdSelect\Tests\Integration\Builders\BannerRequestBuilder;
+use Adshares\AdSelect\Tests\Integration\Builders\BannerBuilder;
+use Adshares\AdSelect\Tests\Integration\Builders\FindRequestBuilder;
 use Adshares\AdSelect\Tests\Integration\Builders\CampaignBuilder;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -16,7 +17,7 @@ final class SelectTest extends IntegrationTestCase
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
 
-        $this->find($client, [BannerRequestBuilder::default()]);
+        $this->find($client, [FindRequestBuilder::default()]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -28,11 +29,11 @@ final class SelectTest extends IntegrationTestCase
     {
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
-        $bannerRequest = (new BannerRequestBuilder())
+        $findRequest = (new FindRequestBuilder())
             ->excludes(['mime' => ['image/png']])
             ->build();
 
-        $this->find($client, [$bannerRequest]);
+        $this->find($client, [$findRequest]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -43,11 +44,11 @@ final class SelectTest extends IntegrationTestCase
     {
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
-        $bannerRequest = (new BannerRequestBuilder())
+        $findRequest = (new FindRequestBuilder())
             ->excludes(['test_classifier:category' => ['crypto']])
             ->build();
 
-        $this->find($client, [$bannerRequest]);
+        $this->find($client, [$findRequest]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -58,11 +59,11 @@ final class SelectTest extends IntegrationTestCase
     {
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
-        $bannerRequest = (new BannerRequestBuilder())
+        $findRequest = (new FindRequestBuilder())
             ->requires(['mime' => ['video/mp4', 'image/gif']])
             ->build();
 
-        $this->find($client, [$bannerRequest]);
+        $this->find($client, [$findRequest]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -73,11 +74,11 @@ final class SelectTest extends IntegrationTestCase
     {
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
-        $bannerRequest = (new BannerRequestBuilder())
+        $findRequest = (new FindRequestBuilder())
             ->requires(['test_classifier:category' => ['games']])
             ->build();
 
-        $this->find($client, [$bannerRequest]);
+        $this->find($client, [$findRequest]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -88,11 +89,11 @@ final class SelectTest extends IntegrationTestCase
     {
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
-        $bannerRequest = (new BannerRequestBuilder())
+        $findRequest = (new FindRequestBuilder())
             ->mergeKeywords(['device:type' => ['mobile']])
             ->build();
 
-        $this->find($client, [$bannerRequest]);
+        $this->find($client, [$findRequest]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -107,7 +108,7 @@ final class SelectTest extends IntegrationTestCase
             ->build();
         $this->setupCampaigns($client, [$campaignData]);
 
-        $this->find($client, [BannerRequestBuilder::default()]);
+        $this->find($client, [FindRequestBuilder::default()]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -118,11 +119,11 @@ final class SelectTest extends IntegrationTestCase
     {
         $client = self::createClient();
         $this->setupCampaigns($client, [CampaignBuilder::default()]);
-        $bannerRequest = (new BannerRequestBuilder())
+        $findRequest = (new FindRequestBuilder())
             ->size('300x250')
             ->build();
 
-        $this->find($client, [$bannerRequest]);
+        $this->find($client, [$findRequest]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
@@ -138,11 +139,87 @@ final class SelectTest extends IntegrationTestCase
             ->build();
         $this->setupCampaigns($client, [$campaignData]);
 
-        $this->find($client, [BannerRequestBuilder::default()]);
+        $this->find($client, [FindRequestBuilder::default()]);
 
         self::assertResponseIsSuccessful();
         $banners = json_decode($client->getResponse()->getContent(), true)[0];
         self::assertEmpty($banners);
+    }
+
+    public function testSelectDifferentCampaigns(): void
+    {
+        $client = self::createClient();
+        $campaignsData = [
+            (new CampaignBuilder())
+                ->id()
+                ->banners([(new BannerBuilder())->id()->build()])
+                ->build(),
+            (new CampaignBuilder())
+                ->id()
+                ->banners([(new BannerBuilder())->id()->build()])
+                ->build(),
+            (new CampaignBuilder())
+                ->id()
+                ->banners([(new BannerBuilder())->id()->build()])
+                ->build(),
+        ];
+        $this->setupCampaigns($client, $campaignsData);
+
+        $results = [];
+        for ($i = 0; $i < 1000; $i++) {
+            $this->find($client, [FindRequestBuilder::default()]);
+            self::assertResponseIsSuccessful();
+            $banners = json_decode($client->getResponse()->getContent(), true)[0];
+            $campaignId = $banners[0]['campaign_id'];
+            if (!isset($results[$campaignId])) {
+                $results[$campaignId] = 1;
+            } else {
+                $results[$campaignId]++;
+            }
+        }
+        self::assertCount(3, $results, 'Not every campaign was selected');
+        foreach ($results as $result) {
+            self::assertGreaterThan(100, $result, 'Less than 10% was selected');
+        }
+    }
+
+    public function testSelectOnlyMatchingCampaigns(): void
+    {
+        $client = self::createClient();
+        $campaignsData = [
+            (new CampaignBuilder())
+                ->id('11111111111111111111111111111111')
+                ->banners([(new BannerBuilder())->id()->build()])
+                ->build(),
+            (new CampaignBuilder())
+                ->id('22222222222222222222222222222222')
+                ->banners([(new BannerBuilder())->id()->build()])
+                ->build(),
+            (new CampaignBuilder())
+                ->id('33333333333333333333333333333333')
+                ->banners([(new BannerBuilder())->id()->size('300x250')->build()])
+                ->build(),
+        ];
+        $this->setupCampaigns($client, $campaignsData);
+
+        $results = [];
+        for ($i = 0; $i < 1000; $i++) {
+            $this->find($client, [FindRequestBuilder::default()]);
+            self::assertResponseIsSuccessful();
+            $banners = json_decode($client->getResponse()->getContent(), true)[0];
+            $campaignId = $banners[0]['campaign_id'];
+            if (!isset($results[$campaignId])) {
+                $results[$campaignId] = 1;
+            } else {
+                $results[$campaignId]++;
+            }
+        }
+        self::assertArrayHasKey('11111111111111111111111111111111', $results);
+        self::assertArrayHasKey('22222222222222222222222222222222', $results);
+        self::assertArrayNotHasKey('33333333333333333333333333333333', $results);
+        foreach ($results as $result) {
+            self::assertGreaterThan(100, $result, 'Less than 10% was selected');
+        }
     }
 
     private function setupCampaigns(KernelBrowser $client, array $campaigns): void

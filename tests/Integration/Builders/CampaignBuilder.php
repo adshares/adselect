@@ -16,21 +16,33 @@ final class CampaignBuilder
         $this->data = self::default();
     }
 
+    public function banners(array $banners): self
+    {
+        $this->data['banners'] = $banners;
+        return $this;
+    }
+
     public function excludes(array $excludes): self
     {
         $this->data['filters']['exclude'] = $excludes;
         return $this;
     }
 
-    public function timeStart(DateTimeInterface $dateTime): self
+    public function id(string $uuid = ''): self
     {
-        $this->data['time_start'] = $dateTime->getTimestamp();
+        $this->data['campaign_id'] = $uuid ?: Uuid::v4();
         return $this;
     }
 
     public function timeEnd(DateTimeInterface $dateTime): self
     {
         $this->data['time_end'] = $dateTime->getTimestamp();
+        return $this;
+    }
+
+    public function timeStart(DateTimeInterface $dateTime): self
+    {
+        $this->data['time_start'] = $dateTime->getTimestamp();
         return $this;
     }
 
@@ -46,19 +58,7 @@ final class CampaignBuilder
             'time_start' => (new DateTimeImmutable())->getTimestamp(),
             'time_end' => (new DateTimeImmutable('+10 day'))->getTimestamp(),
             'banners' => [
-                [
-                    'banner_id' => 'fedcba9876543210fedcba9876543210',
-                    'banner_size' => '728x90',
-                    'keywords' => [
-                        'type' => ['image'],
-                        'mime' => ['image/png'],
-                        'test_classifier:category' => [
-                            'crypto',
-                            'gambling',
-                        ],
-                        'test_classifier:classified' => ['1'],
-                    ],
-                ],
+                BannerBuilder::default(),
             ],
             'keywords' => [
                 'source_host' => 'https://example.com',

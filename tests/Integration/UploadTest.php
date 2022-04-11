@@ -9,15 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class UploadTest extends IntegrationTestCase
 {
-    public function testUpdateCampaignNoContent(): void
-    {
-        $client = self::createClient();
-
-        $client->request('POST', '/api/v1/campaigns');
-
-        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-    }
-
     public function testUpdateCampaign(): void
     {
         $client = self::createClient();
