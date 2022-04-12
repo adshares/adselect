@@ -17,4 +17,22 @@ final class SizeTest extends TestCase
         $this->assertEquals(65, $size->getHeight());
         $this->assertEquals('200x65', $size->toString());
     }
+
+    public function testSizeWithoutDimension(): void
+    {
+        $size = new Size('cube');
+
+        $this->assertEquals(0, $size->getWidth());
+        $this->assertEquals(0, $size->getHeight());
+        $this->assertEquals('cube', $size->toString());
+    }
+
+    public function testInvalidSize(): void
+    {
+        $size = new Size('widthxheight');
+
+        $this->assertEquals(0, $size->getWidth());
+        $this->assertEquals(0, $size->getHeight());
+        $this->assertEquals('widthxheight', $size->toString());
+    }
 }

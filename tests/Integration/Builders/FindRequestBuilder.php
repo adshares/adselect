@@ -66,8 +66,8 @@ final class FindRequestBuilder
             'zone_id' => '30000000000000000000000000000000',
             'zone_options' => [],
             'request_id' => 0,
-            'user_id' => '00000000000000000000000000000001',
-            'tracking_id' => '00000000000000000000000000000011',
+            'user_id' => Uuid::v4(),
+            'tracking_id' => Uuid::v4(),
             'banner_filters' => [
                 'require' => [
                     'test_classifier:classified' => ['1'],

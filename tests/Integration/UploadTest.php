@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Tests\Integration;
 
+use Adshares\AdSelect\Tests\Integration\Builders\BannerBuilder;
 use Adshares\AdSelect\Tests\Integration\Builders\CampaignBuilder;
-use Symfony\Component\HttpFoundation\Response;
 
 final class UploadTest extends IntegrationTestCase
 {
@@ -19,7 +19,11 @@ final class UploadTest extends IntegrationTestCase
             [],
             [],
             [],
-            json_encode(['campaigns' => [CampaignBuilder::default()]])
+            json_encode(['campaigns' => [
+                (new CampaignBuilder())
+                    ->banners([(new BannerBuilder())->id('fedcba9876543210fedcba9876543210')->build()])
+                    ->build()
+            ]])
         );
 
         self::assertResponseIsSuccessful();

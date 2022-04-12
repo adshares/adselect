@@ -13,9 +13,9 @@ final class BannerBuilder
         $this->data = self::default();
     }
 
-    public function id(): self
+    public function id(string $uuid = ''): self
     {
-        $this->data['banner_id'] = Uuid::v4();
+        $this->data['banner_id'] = $uuid ?: Uuid::v4();
         return $this;
     }
 
@@ -33,7 +33,7 @@ final class BannerBuilder
     public static function default(): array
     {
         return [
-            'banner_id' => 'fedcba9876543210fedcba9876543210',
+            'banner_id' => Uuid::v4(),
             'banner_size' => '728x90',
             'keywords' => [
                 'type' => ['image'],

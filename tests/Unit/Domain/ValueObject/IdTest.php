@@ -22,4 +22,20 @@ final class IdTest extends TestCase
 
         $this->assertEquals('43c567e1396b4cadb52223a51796fd01', $id->toString());
     }
+
+    public function testEquals(): void
+    {
+        $id1 = new Id('43c567e1396b4cadb52223a51796fd01');
+        $id2 = new Id('43c567e1396b4cadb52223a51796fd01');
+
+        $this->assertTrue($id1->equals($id2));
+    }
+
+    public function testNotEquals(): void
+    {
+        $id1 = new Id('43c567e1396b4cadb52223a51796fd01');
+        $id2 = new Id('12c567e1396b4cadb52223a51796fd10');
+
+        $this->assertFalse($id1->equals($id2));
+    }
 }

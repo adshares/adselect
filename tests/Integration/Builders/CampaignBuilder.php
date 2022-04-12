@@ -54,7 +54,7 @@ final class CampaignBuilder
     public static function default(): array
     {
         return [
-            'campaign_id' => '0123456789abcdef0123456789abcdef',
+            'campaign_id' => Uuid::v4(),
             'time_start' => (new DateTimeImmutable())->getTimestamp(),
             'time_end' => (new DateTimeImmutable('+10 day'))->getTimestamp(),
             'banners' => [
@@ -70,9 +70,9 @@ final class CampaignBuilder
                 ],
                 'exclude' => [],
             ],
-            'max_cpc' => 10000000001,
-            'max_cpm' => 10000000002,
-            'budget' => 93555000000,
+            'max_cpc' => 10_000_000_001,
+            'max_cpm' => 10_000_000_002,
+            'budget' => 93_555_000_000,
         ];
     }
 }
