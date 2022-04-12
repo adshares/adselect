@@ -22,6 +22,12 @@ final class CampaignBuilder
         return $this;
     }
 
+    public function budget(int $budget): self
+    {
+        $this->data['budget'] = $budget;
+        return $this;
+    }
+
     public function excludes(array $excludes): self
     {
         $this->data['filters']['exclude'] = $excludes;
