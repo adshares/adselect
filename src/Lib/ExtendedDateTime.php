@@ -22,7 +22,7 @@ final class ExtendedDateTime extends DateTimeImmutable implements DateTimeInterf
 
     public function toString(): string
     {
-        return $this->format(DateTimeInterface::ATOM);
+        return $this->format(self::ATOM);
     }
 
     public static function createFromString(string $date): DateTimeInterface

@@ -14,8 +14,7 @@ class CreateIndex extends Command
 {
     protected static $defaultName = 'ops:es:create-index';
 
-    /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct(Client $client)
     {

@@ -6,8 +6,7 @@ namespace Adshares\AdSelect\Application\Dto;
 
 class FoundEvent
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(
         int $id

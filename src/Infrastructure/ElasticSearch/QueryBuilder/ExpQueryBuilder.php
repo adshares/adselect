@@ -10,8 +10,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 class ExpQueryBuilder
 {
-    /** @var QueryInterface */
-    private $query;
+    private QueryInterface $query;
 
     private const SCORE_SCRIPT
         = <<<PAINLESS

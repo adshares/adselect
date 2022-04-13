@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Domain\Model;
 
-use Adshares\AdSelect\Domain\ValueObject\EventType;
-use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\DateTimeInterface;
 
 final class Click
 {
-    /** @var int */
-    private $id;
-    /** @var DateTimeInterface */
-    private $createdAt;
-    /** @var int */
-    private $caseId;
-
+    private int $id;
+    private DateTimeInterface $createdAt;
+    private int $caseId;
 
     public function __construct(
         int $id,

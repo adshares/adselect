@@ -18,7 +18,7 @@ use Adshares\AdSelect\Lib\ExtendedDateTime;
 
 final class CampaignUpdateDto
 {
-    private $campaigns;
+    private CampaignCollection $campaigns;
 
     public function __construct(array $campaigns)
     {

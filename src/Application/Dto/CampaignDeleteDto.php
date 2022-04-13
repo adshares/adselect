@@ -11,8 +11,7 @@ use Adshares\AdSelect\Domain\ValueObject\Id;
 
 final class CampaignDeleteDto
 {
-    /** @var IdCollection */
-    private $ids;
+    private IdCollection $ids;
 
     public function __construct(array $data)
     {

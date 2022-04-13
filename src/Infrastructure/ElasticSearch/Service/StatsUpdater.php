@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\AdserverMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
 
 class StatsUpdater
 {
-    /** @var Client */
-    private $client;
+    private Client $client;
 
     public const MAX_HOURLY_RPM_GROWTH = 1.30;
 
@@ -24,13 +24,11 @@ class StatsUpdater
     private const CONFIDENCE_Z = 1.96; // 95%
     private const TIME_PERCENTILES = [0, 25, 50, 60, 70, 80, 90, 95, 97.5, 99, 99.5, 100];
 
-    private $updateCache = [];
-    private $bulkLimit;
+    private array $updateCache = [];
+    private int $bulkLimit;
 
-    /** @var \DateTimeImmutable */
-    private $timeFrom;
-    /** @var \DateTimeImmutable */
-    private $timeTo;
+    private DateTimeImmutable $timeFrom;
+    private DateTimeImmutable $timeTo;
 
     private $campaignRange;
 
@@ -259,7 +257,7 @@ class StatsUpdater
                             $partialFrom = DateTime::createFromFormat(
                                 "Y-m-d H:i:s",
                                 $bucket['time']['values'][$statsKey],
-                                new \DateTimeZone("UTC")
+                                new DateTimeZone("UTC")
                             );
                             $partialTo = $this->timeTo;
 
@@ -320,7 +318,7 @@ class StatsUpdater
         }
     }
 
-    public function recalculateRPMStats(\DateTimeImmutable $from, \DateTimeImmutable $to, $campaignRange = null): void
+    public function recalculateRPMStats(DateTimeImmutable $from, DateTimeImmutable $to, $campaignRange = null): void
     {
         $this->campaignRange = $campaignRange;
         $this->timeFrom = $from;
@@ -394,7 +392,7 @@ class StatsUpdater
         $this->commitUpdates();
     }
 
-    private function getAllBannerIds($campaignId)
+    private function getAllBannerIds($campaignId): array
     {
         $query = [
             "size"    => 100,
@@ -455,7 +453,7 @@ class StatsUpdater
             . " => ", json_encode($stats), "\n";
     }
 
-    private function getPartialBucketStats(array $terms, \DateTimeInterface $from, \DateTimeInterface $to)
+    private function getPartialBucketStats(array $terms, DateTimeInterface $from, DateTimeInterface $to)
     {
         $filter = [
             [

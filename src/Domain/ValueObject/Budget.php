@@ -8,14 +8,11 @@ use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 
 final class Budget
 {
-    /** @var int */
-    private $budget;
+    private int $budget;
 
-    /** @var int|null */
-    private $maxCpc;
+    private ?int $maxCpc;
 
-    /** @var int|null */
-    private $maxCpm;
+    private ?int $maxCpm;
 
     public function __construct(int $budget, ?int $maxCpc = null, ?int $maxCpm = null)
     {

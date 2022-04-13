@@ -17,12 +17,9 @@ use Psr\Log\LoggerInterface;
 
 class Client
 {
-    /** @var Client */
-    private $client;
-    /** @var LoggerInterface */
-    private $logger;
-    /** @var string|null */
-    private $namespace;
+    private BaseClient $client;
+    private LoggerInterface $logger;
+    private string $namespace;
 
     public function __construct(array $hosts, LoggerInterface $logger)
     {

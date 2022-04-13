@@ -19,8 +19,7 @@ class CleanEvents extends Command
 
     protected static $defaultName = 'ops:es:clean-events';
 
-    /** @var DataCleaner */
-    private $dataCleaner;
+    private DataCleaner $dataCleaner;
 
     public function __construct(DataCleaner $dataCleaner)
     {

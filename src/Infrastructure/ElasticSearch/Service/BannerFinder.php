@@ -27,12 +27,9 @@ class BannerFinder implements BannerFinderInterface
     private const HISTORY_MAXAGE = 3600 * 3;
     private const HISTORY_MAXENTRIES = 50;
 
-    /** @var Client */
-    private $client;
-    /** @var LoggerInterface */
-    private $logger;
-    /** @var float */
-    private $experimentChance;
+    private Client $client;
+    private LoggerInterface $logger;
+    private float $experimentChance;
 
     public function __construct(
         Client $client,
@@ -81,11 +78,7 @@ class BannerFinder implements BannerFinderInterface
                 (float)$queryDto->getZoneOption('min_cpm', 0.0),
                 $this->getSeenOrder($userHistory)
             );
-            $this->logger->debug(
-                sprintf(
-                    '[BANNER FINDER] regular'
-                )
-            );
+            $this->logger->debug('[BANNER FINDER] regular');
         }
 
         $params['body']['query'] = $queryBuilder->build();
@@ -166,7 +159,7 @@ class BannerFinder implements BannerFinderInterface
     {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
         $val = apcu_fetch($key);
-        $history = $val ? $val : [];
+        $history = $val ?: [];
         self::clearStaleEntries($history);
         return $history;
     }
@@ -196,7 +189,7 @@ class BannerFinder implements BannerFinderInterface
         array &$history,
         FoundBannersCollection $collection
     ): void {
-        // It can be implemented only when we return one banner. Otherwise we do not know which one is displayed.
+        // It can be implemented only when we return one banner. Otherwise, we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [
                 self::HISTORY_ENTRY_TIME      => time(),

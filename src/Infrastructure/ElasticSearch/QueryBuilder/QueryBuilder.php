@@ -10,12 +10,9 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 class QueryBuilder
 {
-    /** @var array */
-    private $userHistory;
-    /** @var QueryInterface */
-    private $query;
-    /** @var float */
-    private $minCpm;
+    private array $userHistory;
+    private QueryInterface $query;
+    private float $minCpm;
 
     public function __construct(QueryInterface $query, float $minCpm, array $userHistory = [])
     {

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\UI\Command;
 
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
+use DateTimeImmutable;
+use DateTimeZone;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,8 +19,7 @@ class UpdateStats extends Command
 {
     protected static $defaultName = 'ops:es:update-stats';
 
-    /** @var StatsUpdater */
-    private $updater;
+    private StatsUpdater $updater;
 
     public function __construct(StatsUpdater $updater)
     {
@@ -108,7 +109,7 @@ class UpdateStats extends Command
             return self::SUCCESS;
         }
 
-        $to = new \DateTimeImmutable($toStr, new \DateTimeZone("UTC"));
+        $to = new DateTimeImmutable($toStr, new DateTimeZone("UTC"));
         $from = $to->modify('-30 days');
 
         if (!$is_parent) {
