@@ -11,20 +11,13 @@ use Adshares\AdSelect\Lib\DateTimeInterface;
 
 final class Campaign
 {
-    /** @var Id */
-    private $campaignId;
-    /** @var DateTimeInterface */
-    private $timeStart;
-    /** @var DateTimeInterface|null */
-    private $timeEnd;
-    /** @var BannerCollection */
-    private $banners;
-    /** @var array */
-    private $keywords;
-    /** @var array */
-    private $filters;
-    /** @var Budget */
-    private $budget;
+    private Id $campaignId;
+    private DateTimeInterface $timeStart;
+    private ?DateTimeInterface $timeEnd;
+    private BannerCollection $banners;
+    private array $keywords;
+    private array $filters;
+    private Budget $budget;
 
     public function __construct(
         Id $campaignId,

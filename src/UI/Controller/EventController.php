@@ -19,12 +19,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EventController
 {
-    /** @var EventCollector */
-    private $eventCollector;
-    /** @var LoggerInterface */
-    private $logger;
-    /** @var EventFinder */
-    private $eventFinder;
+    private EventCollector $eventCollector;
+    private LoggerInterface $logger;
+    private EventFinder $eventFinder;
 
     public function __construct(EventCollector $eventCollector, EventFinder $eventFinder, LoggerInterface $logger)
     {

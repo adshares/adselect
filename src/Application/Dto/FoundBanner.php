@@ -6,14 +6,10 @@ namespace Adshares\AdSelect\Application\Dto;
 
 final class FoundBanner
 {
-    /** @var string */
-    private $campaignId;
-    /** @var string */
-    private $bannerId;
-    /** @var string */
-    private $size;
-    /** @var ?float */
-    private $rpm;
+    private string $campaignId;
+    private string $bannerId;
+    private string $size;
+    private ?float $rpm;
 
     public function __construct(string $campaignId, string $bannerId, string $size, ?float $rpm)
     {

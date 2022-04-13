@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Domain\ValueObject;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-
 final class Size
 {
-    /** @var string */
-    private $size;
+    private string $size;
 
     public function __construct(string $size)
     {

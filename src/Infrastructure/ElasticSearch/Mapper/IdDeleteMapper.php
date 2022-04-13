@@ -8,7 +8,7 @@ use Adshares\AdSelect\Domain\ValueObject\Id;
 
 class IdDeleteMapper
 {
-    public static function map(Id $id, string $index)
+    public static function map(Id $id, string $index): array
     {
         $mapped['index'] = [
             'update' => [

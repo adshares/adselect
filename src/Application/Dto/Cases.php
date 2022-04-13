@@ -7,7 +7,6 @@ namespace Adshares\AdSelect\Application\Dto;
 use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
 use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\ValueObject\EventType;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
@@ -26,8 +25,9 @@ class Cases
         'tracking_id',
         'user_id'
     ];
-    protected $events;
-    protected $failedEvents = [];
+    protected EventCollection $events;
+    /** @var array|Event[] */
+    protected array $failedEvents = [];
 
     public function __construct(array $events)
     {

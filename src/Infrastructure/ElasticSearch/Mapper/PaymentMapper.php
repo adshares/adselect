@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Click;
-use Adshares\AdSelect\Domain\Model\Event;
 use Adshares\AdSelect\Domain\Model\Payment;
 
 class PaymentMapper

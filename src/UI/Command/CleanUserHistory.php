@@ -17,8 +17,7 @@ class CleanUserHistory extends Command
 
     protected static $defaultName = 'ops:es:clean-user-history';
 
-    /** @var DataCleaner */
-    private $dataCleaner;
+    private DataCleaner $dataCleaner;
 
     public function __construct(DataCleaner $dataCleaner)
     {
