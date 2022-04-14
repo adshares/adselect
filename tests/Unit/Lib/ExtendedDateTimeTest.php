@@ -6,7 +6,7 @@ namespace Adshares\AdSelect\Tests\Unit\Lib;
 
 use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
 use Adshares\AdSelect\Lib\ExtendedDateTime;
-use DateTime;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 final class ExtendedDateTimeTest extends TestCase
@@ -22,7 +22,7 @@ final class ExtendedDateTimeTest extends TestCase
     public function testToString(): void
     {
         $date = new ExtendedDateTime();
-        $iso8601 = $date->format(DateTime::ATOM);
+        $iso8601 = $date->format(DateTimeInterface::ATOM);
 
         $this->assertEquals($iso8601, $date->toString());
     }

@@ -37,9 +37,9 @@ final class KeywordsToRequireTest extends TestCase
         $clauses = KeywordsToRequire::build('some-prefix', $defined, $keywords);
 
         $this->assertCount(4, $clauses);
-        $this->assertEquals($clauses[0]['bool']['must_not'][0]['exists']['field'], 'some-prefix:device:type');
-        $this->assertEquals($clauses[1]['term']['some-prefix:device:type'], 'mobile');
-        $this->assertEquals($clauses[2]['bool']['must_not'][0]['exists']['field'], 'some-prefix:user:age');
-        $this->assertEquals($clauses[3]['bool']['must_not'][0]['exists']['field'], 'some-prefix:user:country');
+        $this->assertEquals('some-prefix:device:type', $clauses[0]['bool']['must_not'][0]['exists']['field']);
+        $this->assertEquals('mobile', $clauses[1]['term']['some-prefix:device:type']);
+        $this->assertEquals('some-prefix:user:age', $clauses[2]['bool']['must_not'][0]['exists']['field']);
+        $this->assertEquals('some-prefix:user:country', $clauses[3]['bool']['must_not'][0]['exists']['field']);
     }
 }
