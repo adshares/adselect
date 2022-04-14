@@ -34,7 +34,7 @@ class UpdateExperiments extends Command
                 'from',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Consider events since specified date. Supported format: Y-m-d H:i:s. Defaults to 3 hours ageo.',
+                'Consider events since specified date. Supported format: Y-m-d H:i:s. Defaults to 3 hours ago.',
                 new DateTime('-3 hours')
             );
     }

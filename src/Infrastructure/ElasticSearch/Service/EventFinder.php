@@ -13,12 +13,9 @@ use Psr\Log\LoggerInterface;
 
 class EventFinder implements EventFinderInterface
 {
-    /** @var Client */
-    private $client;
-    /** @var array */
-    private $params;
-    /** @var LoggerInterface */
-    private $logger;
+    private Client $client;
+    private array $params;
+    private LoggerInterface $logger;
 
     public function __construct(Client $client, LoggerInterface $logger)
     {

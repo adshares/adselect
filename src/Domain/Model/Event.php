@@ -9,40 +9,24 @@ use Adshares\AdSelect\Lib\DateTimeInterface;
 
 final class Event
 {
-    /** @var int */
-    private $id;
-    /** @var DateTimeInterface */
-    private $createdAt;
-    /** @var Id */
-    private $publisherId;
-    /** @var Id */
-    private $siteId;
-    /** @var Id */
-    private $zoneId;
-    /** @var Id */
-    private $campaignId;
-    /** @var Id */
-    private $bannerId;
-    /** @var Id */
-    private $impressionId;
-    /** @var Id */
-    private $trackingId;
-    /** @var Id */
-    private $userId;
-    /** @var array */
-    private $keywords;
+    private int $id;
+    private DateTimeInterface $createdAt;
+    private Id $publisherId;
+    private Id $siteId;
+    private Id $zoneId;
+    private Id $campaignId;
+    private Id $bannerId;
+    private Id $impressionId;
+    private Id $trackingId;
+    private Id $userId;
+    private array $keywords;
 
-    /** @var int */
-    private $clickId;
-    /** @var DateTimeInterface */
-    private $clickTime;
+    private ?int $clickId;
+    private ?DateTimeInterface $clickTime;
 
-    /** @var float */
-    private $paidAmount;
-    /** @var int */
-    private $lastPaymentId;
-    /** @var DateTimeInterface */
-    private $lastPaymentTime;
+    private float $paidAmount;
+    private ?int $lastPaymentId;
+    private ?DateTimeInterface $lastPaymentTime;
 
     public function __construct(
         int $id,
@@ -67,7 +51,7 @@ final class Event
         $this->impressionId = $impressionId;
         $this->trackingId = $trackingId;
         $this->userId = $userId;
-        $this->keywords = [];
+        $this->keywords = $keywords;
 
         $this->clickId = null;
         $this->clickTime = null;
@@ -75,7 +59,6 @@ final class Event
         $this->paidAmount = 0;
         $this->lastPaymentId = null;
         $this->lastPaymentTime = null;
-        $this->keywords = $keywords;
     }
 
     public function flatKeywords(): array

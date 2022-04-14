@@ -24,10 +24,8 @@ class EventCollector implements EventCollectorInterface
     private const APC_REFRESH_CLICKS_KEY = 'EventCollector.RefreshClicks';
     private const APC_REFRESH_PAYMENT_KEY = 'EventCollector.RefreshPayments';
 
-    /** @var Client */
-    private $client;
-    /** @var int */
-    private $bulkLimit;
+    private Client $client;
+    private int $bulkLimit;
 
     public function __construct(
         Client $client,

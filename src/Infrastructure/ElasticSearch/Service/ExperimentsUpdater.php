@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\AdserverMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
-use DateTime;
+use DateTimeImmutable;
 
 class ExperimentsUpdater
 {
     private const ES_BUCKET_PAGE_SIZE = 500;
 
-    /** @var Client */
-    private $client;
+    private Client $client;
 
-    private $updateCache = [];
-    private $bulkLimit;
+    private int $bulkLimit;
 
     public function __construct(Client $client, int $bulkLimit = 100)
     {
@@ -29,7 +24,7 @@ class ExperimentsUpdater
         $this->bulkLimit = 2 * $bulkLimit;
     }
 
-    public function recalculateExperiments(\DateTimeImmutable $from): void
+    public function recalculateExperiments(DateTimeImmutable $from): void
     {
         $adserverStats = $this->getAdserverStats($from->modify('-12 hours'), $from);
         $this->client->refreshIndex(BannerIndex::name());
@@ -45,7 +40,7 @@ class ExperimentsUpdater
 
         printf("allViews = %d; log = %.2f\n", $allViews, $allMod);
 
-        $cTime = new \DateTimeImmutable();
+        $cTime = new DateTimeImmutable();
 
         $cCount = 0;
         $bCount = 0;
@@ -87,7 +82,7 @@ class ExperimentsUpdater
         $cWeight,
         $cViews,
         $cBanners,
-        \DateTimeImmutable $cTime
+        DateTimeImmutable $cTime
     ) {
         $mapped = BannerMapper::mapExperiments(
             BannerIndex::name(),
@@ -112,7 +107,7 @@ class ExperimentsUpdater
 //        }
     }
 
-    private function getCampaignIterator(\DateTimeImmutable $from)
+    private function getCampaignIterator(DateTimeImmutable $from)
     {
         $after = null;
 
@@ -172,7 +167,7 @@ class ExperimentsUpdater
         } while ($after);
     }
 
-    private function getAdserverStats(\DateTimeImmutable $from, \DateTimeImmutable $to): array
+    private function getAdserverStats(DateTimeImmutable $from, DateTimeImmutable $to): array
     {
         $after = null;
 

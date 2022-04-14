@@ -9,14 +9,11 @@ use Adshares\AdSelect\Domain\ValueObject\Size;
 
 final class Banner
 {
-    /** @var Id */
-    private $campaignId;
-    /** @var Id */
-    private $bannerId;
+    private Id $campaignId;
+    private Id $bannerId;
     /** @var array|Size[] */
-    private $sizes;
-    /** @var array */
-    private $keywords;
+    private array $sizes;
+    private array $keywords;
 
     public function __construct(Id $campaignId, Id $bannerId, array $sizes, array $keywords = [])
     {

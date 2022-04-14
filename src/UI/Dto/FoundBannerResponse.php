@@ -9,8 +9,7 @@ use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
 
 class FoundBannerResponse
 {
-    /** @var FoundBannersCollection */
-    private $collection;
+    private FoundBannersCollection $collection;
 
     public function __construct(FoundBannersCollection $collection)
     {

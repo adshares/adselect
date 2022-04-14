@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
+use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
 use Adshares\AdSelect\Domain\Model\IdCollection;
@@ -20,15 +21,13 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
     private const ES_DELETE_TYPE = 'DELETE_CAMPAIGNS';
     private const ES_INITIALIZE_STATS_TYPE = 'INITIALIZE_CAMPAIGN_STATS';
 
-    /** @var Client */
-    private $client;
-    /** @var int */
-    private $bulkLimit;
+    private Client $client;
+    private int $bulkLimit;
 
     public function __construct(Client $client, int $bulkLimit = 2)
     {
         $this->client = $client;
-        $this->bulkLimit = $bulkLimit * 2; // regarding to the additional items - 'index' for every campaign
+        $this->bulkLimit = $bulkLimit * 2; // regard to the additional items - 'index' for every campaign
     }
 
     public function update(CampaignCollection $campaigns): void
@@ -37,10 +36,10 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $this->client->createIndex(BannerIndex::name());
         }
 
-        $staleTime = (new \DateTime('-5 minute'));
+        $staleTime = (new DateTime('-5 minute'));
 
         $mappedBanners = [];
-        /* @var $campaign \Adshares\AdSelect\Domain\Model\Campaign */
+        /* @var $campaign Campaign */
         foreach ($campaigns as $campaign) {
             foreach ($campaign->getBanners() as $banner) {
                 $mapped = BannerMapper::map($campaign, $banner, BannerIndex::name());
@@ -76,7 +75,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         }
     }
 
-    private function removeStaleBanners(\DateTime $staleTime): void
+    private function removeStaleBanners(DateTime $staleTime): void
     {
         $query = [
             'range' => [

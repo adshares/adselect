@@ -11,26 +11,16 @@ use Adshares\AdSelect\Domain\ValueObject\Size;
 
 final class QueryDto
 {
-    /** @var Id */
-    private $publisherId;
-    /** @var Id */
-    private $siteId;
-    /** @var Id */
-    private $zoneId;
-    /** @var Id */
-    private $userId;
-    /** @var Size */
-    private $size;
-    /** @var array */
-    private $requireFilters;
-    /** @var array */
-    private $excludeFilters;
-    /** @var array */
-    private $keywords;
-    /** @var Id */
-    private $trackingId;
-    /** @var array */
-    private $zoneOptions;
+    private Id $publisherId;
+    private Id $siteId;
+    private Id $zoneId;
+    private Id $userId;
+    private Size $size;
+    private array $requireFilters;
+    private array $excludeFilters;
+    private array $keywords;
+    private Id $trackingId;
+    private array $zoneOptions;
 
     public function __construct(
         Id $publisherId,
@@ -55,25 +45,16 @@ final class QueryDto
         $this->zoneOptions = $zone_options;
     }
 
-    /**
-     * @return Id
-     */
     public function getPublisherId(): Id
     {
         return $this->publisherId;
     }
 
-    /**
-     * @return Id
-     */
     public function getSiteId(): Id
     {
         return $this->siteId;
     }
 
-    /**
-     * @return Id
-     */
     public function getZoneId(): Id
     {
         return $this->zoneId;
