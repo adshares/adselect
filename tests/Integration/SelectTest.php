@@ -172,18 +172,8 @@ final class SelectTest extends IntegrationTestCase
         ];
         $this->setupCampaigns($campaignsData);
 
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
+        $results = $this->findBanners();
+
         self::assertCount(3, $results, sprintf('Not every banner was selected. Results: %s', print_r($results, true)));
         foreach ($results as $bannerId => $result) {
             self::assertGreaterThanOrEqual(
@@ -207,18 +197,8 @@ final class SelectTest extends IntegrationTestCase
         ];
         $this->setupCampaigns($campaignData);
 
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
+        $results = $this->findBanners();
+
         self::assertCount(3, $results, sprintf('Not every banner was selected. Results: %s', print_r($results, true)));
         foreach ($results as $bannerId => $result) {
             self::assertGreaterThanOrEqual(
@@ -244,18 +224,8 @@ final class SelectTest extends IntegrationTestCase
         ];
         $this->setupCampaigns($campaignsData);
 
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
+        $results = $this->findBanners();
+
         self::assertArrayHasKey('11111111111111111111111111111111', $results);
         self::assertArrayHasKey('22222222222222222222222222222222', $results);
         self::assertArrayNotHasKey('33333333333333333333333333333333', $results);
@@ -287,48 +257,16 @@ final class SelectTest extends IntegrationTestCase
         }
         $this->setupCampaigns($campaignsData);
 
-        $cases = [];
-        $payments = [];
-        $findRequest = FindRequestBuilder::default();
-        for ($j = 0; $j < count($idsMap); $j++) {
-            $campaignId = array_keys($idsMap)[$j];
-            $bannerId = $idsMap[$campaignId];
-            for ($i = 0; $i < 33; $i++) {
-                $caseId = $i * 100 + $j;
-                $cases[] = $this->getCase($caseId, $campaignId, $bannerId, $findRequest);
-                $payments[] = [
-                    'id' => $i + 1,
-                    'case_id' => $caseId,
-                    'paid_amount' => $eventAmount,
-                    'pay_time' => (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
-                    'payer' => '0001-00000001-XXXX',
-                ];
-            }
-        }
-
-        $this->setupCases($cases);
-        $this->setupPayments($payments);
-        $this->updateStatisticsOrFail();
-
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
-
-        $paidBannerIds = [
+        $payingBannerIds = [
             '11111111111111111111111111111111',
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
-        foreach ($paidBannerIds as $paidBannerId) {
+        $this->setupInitialPaymentsWithEqualEventAmount($idsMap, $payingBannerIds, $eventAmount);
+
+        $results = $this->findBanners();
+
+        foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
                 $results,
@@ -361,50 +299,15 @@ final class SelectTest extends IntegrationTestCase
         }
         $this->setupCampaigns($campaignsData);
 
-        $cases = [];
-        $payments = [];
-        $paidBannerIds = [
+        $payingBannerIds = [
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
-        $findRequest = FindRequestBuilder::default();
-        for ($j = 0; $j < count($idsMap); $j++) {
-            $campaignId = array_keys($idsMap)[$j];
-            $bannerId = $idsMap[$campaignId];
-            if (!in_array($bannerId, $paidBannerIds)) {
-                continue;
-            }
-            for ($i = 0; $i < 33; $i++) {
-                $caseId = $i * 100 + $j;
-                $cases[] = $this->getCase($caseId, $campaignId, $bannerId, $findRequest);
-                $payments[] = [
-                    'id' => $i + 1,
-                    'case_id' => $caseId,
-                    'paid_amount' => $eventAmount,
-                    'pay_time' => (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
-                    'payer' => '0001-00000001-XXXX',
-                ];
-            }
-        }
+        $this->setupInitialPaymentsWithEqualEventAmount($idsMap, $payingBannerIds, $eventAmount);
 
-        $this->setupCases($cases);
-        $this->setupPayments($payments);
-        $this->updateStatisticsOrFail();
+        $results = $this->findBanners();
 
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
-
-        foreach ($paidBannerIds as $paidBannerId) {
+        foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
                 $results,
@@ -438,49 +341,16 @@ final class SelectTest extends IntegrationTestCase
         }
         $this->setupCampaigns($campaignsData);
 
-        $initialEventsCount = 33;
-        $cases = [];
-        $payments = [];
-        $findRequest = FindRequestBuilder::default();
-        for ($j = 0; $j < count($idsMap); $j++) {
-            $campaignId = array_keys($idsMap)[$j];
-            $bannerId = $idsMap[$campaignId];
-            for ($i = 0; $i < $initialEventsCount; $i++) {
-                $caseId = $i * 100 + $j;
-                $cases[] = $this->getCase($caseId, $campaignId, $bannerId, $findRequest);
-                $payments[] = [
-                    'id' => $i + 1,
-                    'case_id' => $caseId,
-                    'paid_amount' => (int)floor($campaignBudget / $initialEventsCount),
-                    'pay_time' => (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
-                    'payer' => '0001-00000001-XXXX',
-                ];
-            }
-        }
-
-        $this->setupCases($cases);
-        $this->setupPayments($payments);
-        $this->updateStatisticsOrFail();
-
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
-
-        $paidBannerIds = [
+        $payingBannerIds = [
             '11111111111111111111111111111111',
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
-        foreach ($paidBannerIds as $paidBannerId) {
+        $this->setupInitialPaymentsWithWholeBudgetSpent($idsMap, $payingBannerIds, $campaignBudget);
+
+        $results = $this->findBanners();
+
+        foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
                 $results,
@@ -514,51 +384,15 @@ final class SelectTest extends IntegrationTestCase
         }
         $this->setupCampaigns($campaignsData);
 
-        $initialEventsCount = 33;
-        $cases = [];
-        $payments = [];
-        $paidBannerIds = [
+        $payingBannerIds = [
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
-        $findRequest = FindRequestBuilder::default();
-        for ($j = 0; $j < count($idsMap); $j++) {
-            $campaignId = array_keys($idsMap)[$j];
-            $bannerId = $idsMap[$campaignId];
-            if (!in_array($bannerId, $paidBannerIds)) {
-                continue;
-            }
-            for ($i = 0; $i < $initialEventsCount; $i++) {
-                $caseId = $i * 100 + $j;
-                $cases[] = $this->getCase($caseId, $campaignId, $bannerId, $findRequest);
-                $payments[] = [
-                    'id' => $i + 1,
-                    'case_id' => $caseId,
-                    'paid_amount' => (int)floor($campaignBudget / $initialEventsCount),
-                    'pay_time' => (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
-                    'payer' => '0001-00000001-XXXX',
-                ];
-            }
-        }
+        $this->setupInitialPaymentsWithWholeBudgetSpent($idsMap, $payingBannerIds, $campaignBudget);
 
-        $this->setupCases($cases);
-        $this->setupPayments($payments);
-        $this->updateStatisticsOrFail();
+        $results = $this->findBanners();
 
-        $results = [];
-        for ($i = 0; $i < 1000; $i++) {
-            $this->find([FindRequestBuilder::default()]);
-            self::assertResponseIsSuccessful();
-            $banners = $this->getResponseAsArray()[0];
-            $bannerId = $banners[0]['banner_id'];
-            if (!isset($results[$bannerId])) {
-                $results[$bannerId] = 1;
-            } else {
-                $results[$bannerId]++;
-            }
-        }
-
-        foreach ($paidBannerIds as $paidBannerId) {
+        foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
                 $results,
@@ -677,7 +511,83 @@ final class SelectTest extends IntegrationTestCase
         } while (!$updated);
     }
 
-    private function getCase(int $caseId, string $campaignId, string $bannerId, array $findRequest): array
+    private function setupInitialPaymentsWithEqualEventAmount(
+        array $idsMap,
+        array $payingBannerIds,
+        int $eventAmount
+    ): void {
+        $initialEventsCount = 50;
+        $cases = [];
+        $payments = [];
+        $findRequest = FindRequestBuilder::default();
+        for ($j = 0; $j < count($idsMap); $j++) {
+            $campaignId = array_keys($idsMap)[$j];
+            $bannerId = $idsMap[$campaignId];
+            if (!in_array($bannerId, $payingBannerIds)) {
+                continue;
+            }
+            for ($i = 0; $i < $initialEventsCount; $i++) {
+                $caseId = $i * 100 + $j;
+                $cases[] = self::getCase($caseId, $campaignId, $bannerId, $findRequest);
+                $payments[] = self::getPayment($i + 1, $caseId, $eventAmount);
+            }
+        }
+
+        $this->setupCases($cases);
+        $this->setupPayments($payments);
+        $this->updateStatisticsOrFail();
+    }
+
+    private function setupInitialPaymentsWithWholeBudgetSpent(
+        array $idsMap,
+        array $payingBannerIds,
+        int $campaignBudget
+    ): void {
+        $initialEventsCount = 50;
+        $cases = [];
+        $payments = [];
+        $findRequest = FindRequestBuilder::default();
+        for ($j = 0; $j < count($idsMap); $j++) {
+            $campaignId = array_keys($idsMap)[$j];
+            $bannerId = $idsMap[$campaignId];
+            if (!in_array($bannerId, $payingBannerIds)) {
+                continue;
+            }
+            $availableBudget = $campaignBudget;
+            for ($i = 0; $i < $initialEventsCount; $i++) {
+                $caseId = $i * 100 + $j;
+                $cases[] = self::getCase($caseId, $campaignId, $bannerId, $findRequest);
+                $amount = $i === $initialEventsCount - 1
+                    ? $availableBudget
+                    : (int)floor($availableBudget * lcg_value());
+                $availableBudget -= $amount;
+                $payments[] = self::getPayment($i + 1, $caseId, $amount);
+            }
+        }
+
+        $this->setupCases($cases);
+        $this->setupPayments($payments);
+        $this->updateStatisticsOrFail();
+    }
+
+    private function findBanners(): array
+    {
+        $results = [];
+        for ($i = 0; $i < 1000; $i++) {
+            $this->find([FindRequestBuilder::default()]);
+            self::assertResponseIsSuccessful();
+            $banners = $this->getResponseAsArray()[0];
+            $bannerId = $banners[0]['banner_id'];
+            if (!isset($results[$bannerId])) {
+                $results[$bannerId] = 1;
+            } else {
+                $results[$bannerId]++;
+            }
+        }
+        return $results;
+    }
+
+    private static function getCase(int $caseId, string $campaignId, string $bannerId, array $findRequest): array
     {
         $keywords = $findRequest['keywords'];
         $humanScore = $keywords['human_score'];
@@ -697,6 +607,17 @@ final class SelectTest extends IntegrationTestCase
             'human_score' => $humanScore,
             'page_rank' => $pageRank,
             'keywords' => $keywords,
+        ];
+    }
+
+    private static function getPayment(int $id, int $caseId, int $amount): array
+    {
+        return [
+            'id' => $id,
+            'case_id' => $caseId,
+            'paid_amount' => $amount,
+            'pay_time' => (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
+            'payer' => '0001-00000001-XXXX',
         ];
     }
 }
