@@ -17,8 +17,9 @@ class Clicks
         'case_id',
         'created_at',
     ];
-    protected $events;
-    protected $failedEvents = [];
+    protected EventCollection $events;
+    /** @var array|Click[] */
+    protected array $failedEvents = [];
 
     public function __construct(array $events)
     {

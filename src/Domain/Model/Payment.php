@@ -8,17 +8,11 @@ use Adshares\AdSelect\Lib\DateTimeInterface;
 
 final class Payment
 {
-    /** @var int */
-    private $id;
-    /** @var DateTimeInterface */
-    private $payTime;
-    /** @var int */
-    private $caseId;
-    /** @var int */
-    private $paidAmount;
-    /** @var string */
-    private $payer;
-
+    private int $id;
+    private DateTimeInterface $payTime;
+    private int $caseId;
+    private int $paidAmount;
+    private string $payer;
 
     public function __construct(
         int $id,

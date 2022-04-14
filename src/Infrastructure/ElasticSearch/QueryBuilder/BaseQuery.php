@@ -21,10 +21,8 @@ return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 100.0) +
     (doc['stats.zone_id'].value == params['zone_id'] ? 200.0 : 0.0);
 PAINLESS;
 
-    /** @var QueryDto */
-    private $bannerFinderDto;
-    /** @var array */
-    private $definedRequireFilters;
+    private QueryDto $bannerFinderDto;
+    private array $definedRequireFilters;
 
     public function __construct(QueryDto $bannerFinderDto, array $definedRequireFilters = [])
     {

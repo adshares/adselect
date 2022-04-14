@@ -19,12 +19,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CampaignController
 {
-    /** @var CampaignUpdater */
-    private $campaignUpdater;
-    /** @var BannerFinder */
-    private $bannerFinder;
-    /** @var LoggerInterface */
-    private $logger;
+    private CampaignUpdater $campaignUpdater;
+    private BannerFinder $bannerFinder;
+    private LoggerInterface $logger;
 
     public function __construct(CampaignUpdater $campaignUpdater, BannerFinder $bannerFinder, LoggerInterface $logger)
     {

@@ -8,6 +8,7 @@ use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
 use DateTime;
+use DateTimeInterface;
 
 class BannerMapper
 {
@@ -120,8 +121,7 @@ PAINLESS;
         float $capRpm,
         array $path = [],
         array $stats = []
-    ) {
-
+    ): array {
         $id = sha1(
             implode(
                 ":",
@@ -178,8 +178,8 @@ PAINLESS;
         $cWeight,
         $cViews,
         $cBanners,
-        \DateTimeInterface $time
-    ) {
+        DateTimeInterface $time
+    ): array {
         $mapped = [];
         $mapped['index'] = $index;
         $mapped['type'] = '_doc';
@@ -226,8 +226,8 @@ PAINLESS;
 
     public static function mapClearExperiments(
         string $index,
-        \DateTimeInterface $timeStale
-    ) {
+        DateTimeInterface $timeStale
+    ): array {
         $mapped = [];
         $mapped['index'] = $index;
         $mapped['type'] = '_doc';

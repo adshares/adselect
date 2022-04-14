@@ -19,8 +19,9 @@ class Payments
         'paid_amount',
         'payer'
     ];
-    protected $events;
-    protected $failedEvents = [];
+    protected EventCollection $events;
+    /** @var array|Payment[] */
+    protected array $failedEvents = [];
 
     public function __construct(array $events)
     {
