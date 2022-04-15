@@ -37,6 +37,18 @@ final class FindRequestBuilder
         return $this;
     }
 
+    public function trackingId(string $uuid): self
+    {
+        $this->data['tracking_id'] = $uuid;
+        return $this;
+    }
+
+    public function userId(string $uuid): self
+    {
+        $this->data['user_id'] = $uuid;
+        return $this;
+    }
+
     public function build(): array
     {
         return $this->data;

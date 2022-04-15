@@ -16,12 +16,9 @@ class ExperimentsUpdater
 
     private Client $client;
 
-    private int $bulkLimit;
-
-    public function __construct(Client $client, int $bulkLimit = 100)
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->bulkLimit = 2 * $bulkLimit;
     }
 
     public function recalculateExperiments(DateTimeImmutable $from): void

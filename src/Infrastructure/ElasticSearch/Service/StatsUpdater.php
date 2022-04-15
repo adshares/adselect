@@ -34,7 +34,7 @@ class StatsUpdater
 
     private $globalAverageRpm = null;
 
-    public function __construct(Client $client, int $bulkLimit = 100)
+    public function __construct(Client $client, int $bulkLimit = 500)
     {
         $this->client = $client;
         $this->bulkLimit = 2 * $bulkLimit;

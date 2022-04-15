@@ -24,7 +24,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
     private Client $client;
     private int $bulkLimit;
 
-    public function __construct(Client $client, int $bulkLimit = 2)
+    public function __construct(Client $client, int $bulkLimit = 500)
     {
         $this->client = $client;
         $this->bulkLimit = $bulkLimit * 2; // regard to the additional items - 'index' for every campaign

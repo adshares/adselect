@@ -136,7 +136,7 @@ class BannerFinder implements BannerFinderInterface
                 $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
             }
         }
-        $this->logger->debug(sprintf('[BANNER FINDER] seen'), $seen);
+        $this->logger->debug(sprintf('[BANNER FINDER] seen: %s', json_encode($seen)));
         return $seen;
     }
 

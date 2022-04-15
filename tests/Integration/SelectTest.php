@@ -18,13 +18,17 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 final class SelectTest extends IntegrationTestCase
 {
+    private const DEFAULT_EXPERIMENTS_CHANCE = 0.05;
+
     private KernelBrowser $client;
 
     protected function setUp(): void
     {
         parent::setUp();
+        self::enableEsClientRandomness();
+        self::setExperimentChance(self::DEFAULT_EXPERIMENTS_CHANCE);
         $this->client = self::createClient();
-        $this->runCommand('ops:es:create-index');
+        self::runCommand('ops:es:create-index');
     }
 
     public function testFind(): void
@@ -239,6 +243,109 @@ final class SelectTest extends IntegrationTestCase
         }
     }
 
+    public function testSelectDifferentCampaignsForSameUser3of3CampaignsPaid(): void
+    {
+        self::disableEsClientRandomness();
+        self::disableExperiments();
+
+        $idsMap = [
+            '10000000000000000000000000000000' => '11111111111111111111111111111111',
+            '20000000000000000000000000000000' => '22222222222222222222222222222222',
+            '30000000000000000000000000000000' => '33333333333333333333333333333333',
+        ];
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
+        $eventAmount = 100_000_000;
+        $payingBannerIds = array_values($idsMap);
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount
+        );
+        $findRequest = (new FindRequestBuilder())
+            ->trackingId('01010101010101010101010101010101')
+            ->userId('10101010101010101010101010101010')
+            ->build();
+
+        $results = [];
+        for ($i = 0; $i < 3; $i++) {
+            $this->find([$findRequest]);
+            self::assertResponseIsSuccessful();
+            $banners = $this->getResponseAsArray()[0];
+            $bannerId = $banners[0]['banner_id'];
+            if (!isset($results[$bannerId])) {
+                $results[$bannerId] = 1;
+            } else {
+                $results[$bannerId]++;
+            }
+        }
+
+        foreach ($payingBannerIds as $paidBannerId) {
+            self::assertArrayHasKey(
+                $paidBannerId,
+                $results,
+                sprintf('Missing id "%s". Results: %s', $paidBannerId, print_r($results, true))
+            );
+        }
+    }
+
+    public function testSelectDifferentCampaignsForSameUser2of3CampaignsPaid(): void
+    {
+        self::disableEsClientRandomness();
+        self::disableExperiments();
+
+        $idsMap = [
+            '10000000000000000000000000000000' => '11111111111111111111111111111111',
+            '20000000000000000000000000000000' => '22222222222222222222222222222222',
+            '30000000000000000000000000000000' => '33333333333333333333333333333333',
+        ];
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
+        $eventAmount = 100_000_000;
+        $payingBannerIds = [
+            '22222222222222222222222222222222',
+            '33333333333333333333333333333333',
+        ];
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount
+        );
+        $findRequest = (new FindRequestBuilder())
+            ->trackingId('01010101010101010101010101010101')
+            ->userId('10101010101010101010101010101010')
+            ->build();
+
+        $results = [];
+        for ($i = 0; $i < 3; $i++) {
+            $this->find([$findRequest]);
+            self::assertResponseIsSuccessful();
+            $banners = $this->getResponseAsArray()[0];
+            $bannerId = $banners[0]['banner_id'];
+            if (!isset($results[$bannerId])) {
+                $results[$bannerId] = 1;
+            } else {
+                $results[$bannerId]++;
+            }
+        }
+
+        $bannerIdWhichHasNotBeenPaid = '11111111111111111111111111111111';
+        self::assertArrayNotHasKey(
+            $bannerIdWhichHasNotBeenPaid,
+            $results,
+            sprintf(
+                'Banner id "%s" which has not been paid is present in results. Results: %s',
+                $bannerIdWhichHasNotBeenPaid,
+                print_r($results, true)
+            )
+        );
+        foreach ($payingBannerIds as $paidBannerId) {
+            self::assertArrayHasKey(
+                $paidBannerId,
+                $results,
+                sprintf('Missing id "%s". Results: %s', $paidBannerId, print_r($results, true))
+            );
+        }
+    }
+
     /**
      * @dataProvider eventAmountProvider
      */
@@ -249,14 +356,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = array_values($idsMap);
         $this->setupInitialPaymentsWithEqualEventAmount($idsMap, $payingBannerIds, $eventAmount);
@@ -287,14 +387,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = [
             '22222222222222222222222222222222',
@@ -339,14 +432,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = array_values($idsMap);
         $this->setupInitialPaymentsWithEventAmountIncreasingLinearlyPerCampaign(
@@ -388,14 +474,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = array_values($idsMap);
         $this->setupInitialPaymentsWithEventAmountIncreasingExponentiallyPerCampaign(
@@ -434,14 +513,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = array_values($idsMap);
         $this->setupInitialPaymentsWithEqualEventAmount(
@@ -503,15 +575,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->budget($campaignBudget)
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsDataWithBudget($idsMap, $campaignBudget));
 
         $payingBannerIds = array_values($idsMap);
         $this->setupInitialPaymentsWithWholeBudgetSpent($idsMap, $payingBannerIds, $campaignBudget);
@@ -542,15 +606,7 @@ final class SelectTest extends IntegrationTestCase
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
             '30000000000000000000000000000000' => '33333333333333333333333333333333',
         ];
-        $campaignsData = [];
-        foreach ($idsMap as $campaignId => $bannerId) {
-            $campaignsData[] = (new CampaignBuilder())
-                ->id($campaignId)
-                ->banners([(new BannerBuilder())->id($bannerId)->build()])
-                ->budget($campaignBudget)
-                ->build();
-        }
-        $this->setupCampaigns($campaignsData);
+        $this->setupCampaigns(self::getCampaignsDataWithBudget($idsMap, $campaignBudget));
 
         $payingBannerIds = [
             '22222222222222222222222222222222',
@@ -661,7 +717,7 @@ final class SelectTest extends IntegrationTestCase
         return json_decode($this->client->getResponse()->getContent(), true);
     }
 
-    private function runCommand(string $command): ?string
+    private static function runCommand(string $command): ?string
     {
         $application = new Application(self::$kernel);
         $application->setAutoExit(false);
@@ -687,7 +743,7 @@ final class SelectTest extends IntegrationTestCase
         do {
             self::assertLessThan($maxTries, $try, 'Statistics were not updated');
             sleep(1);
-            $content = $this->runCommand('ops:es:update-stats');
+            $content = self::runCommand('ops:es:update-stats');
             $updated = str_starts_with($content, 'Finished');
             $try++;
         } while (!$updated);
@@ -833,6 +889,31 @@ final class SelectTest extends IntegrationTestCase
         return $results;
     }
 
+    private static function getCampaignsData(array $idsMap): array
+    {
+        $campaignsData = [];
+        foreach ($idsMap as $campaignId => $bannerId) {
+            $campaignsData[] = (new CampaignBuilder())
+                ->id($campaignId)
+                ->banners([(new BannerBuilder())->id($bannerId)->build()])
+                ->build();
+        }
+        return $campaignsData;
+    }
+
+    private static function getCampaignsDataWithBudget(array $idsMap, int $campaignBudget): array
+    {
+        $campaignsData = [];
+        foreach ($idsMap as $campaignId => $bannerId) {
+            $campaignsData[] = (new CampaignBuilder())
+                ->id($campaignId)
+                ->banners([(new BannerBuilder())->id($bannerId)->build()])
+                ->budget($campaignBudget)
+                ->build();
+        }
+        return $campaignsData;
+    }
+
     private static function getCase(
         int $caseId,
         string $campaignId,
@@ -874,5 +955,25 @@ final class SelectTest extends IntegrationTestCase
             'pay_time' => ($creationDateTime ?: new DateTimeImmutable())->format(DateTimeInterface::ATOM),
             'payer' => '0001-00000001-XXXX',
         ];
+    }
+
+    private static function enableEsClientRandomness(): void
+    {
+        $_ENV['DISABLE_RANDOMNESS'] = 0;
+    }
+
+    private static function disableEsClientRandomness(): void
+    {
+        $_ENV['DISABLE_RANDOMNESS'] = 1;
+    }
+
+    private static function setExperimentChance(float $chance): void
+    {
+        $_ENV['ES_EXPERIMENT_CHANCE'] = $chance;
+    }
+
+    private static function disableExperiments(): void
+    {
+        self::setExperimentChance(-1.0);
     }
 }
