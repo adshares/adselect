@@ -740,17 +740,17 @@ final class SelectTest extends IntegrationTestCase
     private function updateStatisticsOrFail(): void
     {
         $maxTries = 5;
-        $commands = ['ops:es:update-stats', 'ops:es:update-exp'];
-        foreach ($commands as $command) {
-            $try = 0;
-            do {
-                self::assertLessThan($maxTries, $try, sprintf('Statistics %s were not updated', $command));
-                sleep(1);
-                $content = self::runCommand($command);
-                $updated = str_starts_with($content, 'Finished');
-                $try++;
-            } while (!$updated);
-        }
+        $try = 0;
+        do {
+            self::assertLessThan($maxTries, $try, 'Statistics were not updated');
+            usleep(850_000);
+            $content = self::runCommand('ops:es:update-stats');
+            $updated = str_starts_with($content, 'Finished');
+            $try++;
+        } while (!$updated);
+
+        $content = self::runCommand('ops:es:update-exp');
+        self::assertStringStartsWith('Finished', $content);
     }
 
     private function setupInitialPaymentsWithEqualEventAmount(
