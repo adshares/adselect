@@ -351,6 +351,7 @@ final class SelectTest extends IntegrationTestCase
      */
     public function testSelectDifferentCampaignsWithEqualPaymentsPerEvent3of3(int $eventAmount): void
     {
+        self::setExperimentChance(2.0);
         $idsMap = [
             '10000000000000000000000000000000' => '11111111111111111111111111111111',
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
@@ -739,14 +740,17 @@ final class SelectTest extends IntegrationTestCase
     private function updateStatisticsOrFail(): void
     {
         $maxTries = 5;
-        $try = 0;
-        do {
-            self::assertLessThan($maxTries, $try, 'Statistics were not updated');
-            sleep(1);
-            $content = self::runCommand('ops:es:update-stats');
-            $updated = str_starts_with($content, 'Finished');
-            $try++;
-        } while (!$updated);
+        $commands = ['ops:es:update-stats', 'ops:es:update-exp'];
+        foreach ($commands as $command) {
+            $try = 0;
+            do {
+                self::assertLessThan($maxTries, $try, sprintf('Statistics %s were not updated', $command));
+                sleep(1);
+                $content = self::runCommand($command);
+                $updated = str_starts_with($content, 'Finished');
+                $try++;
+            } while (!$updated);
+        }
     }
 
     private function setupInitialPaymentsWithEqualEventAmount(

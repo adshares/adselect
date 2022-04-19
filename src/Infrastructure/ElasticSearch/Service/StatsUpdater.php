@@ -12,10 +12,12 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use Psr\Log\LoggerInterface;
 
 class StatsUpdater
 {
     private Client $client;
+    private LoggerInterface $logger;
 
     public const MAX_HOURLY_RPM_GROWTH = 1.30;
 
@@ -34,9 +36,10 @@ class StatsUpdater
 
     private $globalAverageRpm = null;
 
-    public function __construct(Client $client, int $bulkLimit = 500)
+    public function __construct(Client $client, LoggerInterface $logger, int $bulkLimit = 500)
     {
         $this->client = $client;
+        $this->logger = $logger;
         $this->bulkLimit = 2 * $bulkLimit;
     }
 
@@ -106,8 +109,7 @@ class StatsUpdater
             );
 
             $this->globalAverageRpm = $result['aggregations']['avg_rpm']['value'] ?? 0;
-
-            printf("globalAverageRpm = %f\n", $this->globalAverageRpm);
+            $this->logger->debug(sprintf('globalAverageRpm = %f', $this->globalAverageRpm));
         }
         return $this->globalAverageRpm;
     }
@@ -448,9 +450,17 @@ class StatsUpdater
             $this->commitUpdates();
         }
 
-        echo "save B:$bannerId C:$campaignId banner:" . (($keyMap['banner_id'] ?? '') ? 'yes' : '') . " S:"
-            . ($keyMap['site_id'] ?? '') . " Z:" . ($keyMap['zone_id'] ?? '')
-            . " => ", json_encode($stats), "\n";
+        $this->logger->debug(
+            sprintf(
+                'save B:%s C:%s banner:%s S:%s Z:%s => %s',
+                $bannerId,
+                $campaignId,
+                ($keyMap['banner_id'] ?? '') ? 'yes' : '',
+                $keyMap['site_id'] ?? '',
+                $keyMap['zone_id'] ?? '',
+                json_encode($stats)
+            )
+        );
     }
 
     private function getPartialBucketStats(array $terms, DateTimeInterface $from, DateTimeInterface $to)

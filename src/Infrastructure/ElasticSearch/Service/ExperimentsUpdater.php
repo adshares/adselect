@@ -9,16 +9,19 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 
 class ExperimentsUpdater
 {
     private const ES_BUCKET_PAGE_SIZE = 500;
 
     private Client $client;
+    private LoggerInterface $logger;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, LoggerInterface $logger)
     {
         $this->client = $client;
+        $this->logger = $logger;
     }
 
     public function recalculateExperiments(DateTimeImmutable $from): void
@@ -26,7 +29,7 @@ class ExperimentsUpdater
         $adserverStats = $this->getAdserverStats($from->modify('-12 hours'), $from);
         $this->client->refreshIndex(BannerIndex::name());
 
-        $allViews = $sumRevenue = array_reduce(
+        $allViews = array_reduce(
             $adserverStats,
             function ($carry, $item) {
                 return $carry + $item['count'];
@@ -35,7 +38,7 @@ class ExperimentsUpdater
         );
         $allMod = 1 + log(1 + $allViews);
 
-        printf("allViews = %d; log = %.2f\n", $allViews, $allMod);
+        $this->logger->debug(sprintf('allViews = %d; log = %.2f', $allViews, $allMod));
 
         $cTime = new DateTimeImmutable();
 
@@ -92,12 +95,14 @@ class ExperimentsUpdater
         );
         $result = $this->client->getClient()->updateByQuery($mapped);
 
-        printf(
-            "C=%s, W=%.2f, V=%d, B=%d\n",
-            $cId,
-            $cWeight,
-            $cViews,
-            $cBanners
+        $this->logger->debug(
+            sprintf(
+                'C=%s, W=%.2f, V=%d, B=%d',
+                $cId,
+                $cWeight,
+                $cViews,
+                $cBanners
+            )
         );
 //        if ($result['updated']) {
 //            print_r($result);
