@@ -40,6 +40,12 @@ final class CampaignBuilder
         return $this;
     }
 
+    public function noTimeEnd(): self
+    {
+        $this->data['time_end'] = null;
+        return $this;
+    }
+
     public function timeEnd(DateTimeInterface $dateTime): self
     {
         $this->data['time_end'] = $dateTime->getTimestamp();

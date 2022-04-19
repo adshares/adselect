@@ -162,6 +162,21 @@ final class SelectTest extends IntegrationTestCase
         self::assertEmpty($banners);
     }
 
+    public function testInfiniteCampaign(): void
+    {
+        $campaignData = (new CampaignBuilder())
+            ->timeStart(new DateTimeImmutable('-1 day'))
+            ->noTimeEnd()
+            ->build();
+        $this->setupCampaigns([$campaignData]);
+
+        $this->find([FindRequestBuilder::default()]);
+
+        self::assertResponseIsSuccessful();
+        $banners = $this->getResponseAsArray()[0];
+        self::assertNotEmpty($banners);
+    }
+
     public function testSelectDifferentCampaignsWhenNoPayments(): void
     {
         $campaignsData = [
@@ -351,7 +366,6 @@ final class SelectTest extends IntegrationTestCase
      */
     public function testSelectDifferentCampaignsWithEqualPaymentsPerEvent3of3(int $eventAmount): void
     {
-        self::setExperimentChance(2.0);
         $idsMap = [
             '10000000000000000000000000000000' => '11111111111111111111111111111111',
             '20000000000000000000000000000000' => '22222222222222222222222222222222',
@@ -400,14 +414,13 @@ final class SelectTest extends IntegrationTestCase
 
         $bannerIdWhichHasNotBeenPaid = '11111111111111111111111111111111';
         self::assertTrue(
-            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] < 10,
+            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] <= 50,
             sprintf(
                 'Banner id "%s" which has not been paid occurs more often than experiments allow. Results: %s',
                 $bannerIdWhichHasNotBeenPaid,
                 print_r($results, true)
             )
         );
-
         foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
@@ -544,14 +557,13 @@ final class SelectTest extends IntegrationTestCase
 
         $bannerIdWhichHasNotBeenPaid = '11111111111111111111111111111111';
         self::assertTrue(
-            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] < 10,
+            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] <= 50,
             sprintf(
                 'Banner id "%s" which has not been paid occurs more often than experiments allow. Results: %s',
                 $bannerIdWhichHasNotBeenPaid,
                 print_r($results, true)
             )
         );
-
         foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
@@ -620,14 +632,13 @@ final class SelectTest extends IntegrationTestCase
 
         $bannerIdWhichHasNotBeenPaid = '11111111111111111111111111111111';
         self::assertTrue(
-            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] < 10,
+            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] <= 50,
             sprintf(
                 'Banner id "%s" which has not been paid occurs more often than experiments allow. Results: %s',
                 $bannerIdWhichHasNotBeenPaid,
                 print_r($results, true)
             )
         );
-
         foreach ($payingBannerIds as $paidBannerId) {
             self::assertArrayHasKey(
                 $paidBannerId,
