@@ -489,7 +489,7 @@ final class SelectTest extends IntegrationTestCase
         self::assertResultsPresent($payingBannerIds, $results, 250);
     }
 
-    public function testSelectDifferentCampaignsWithEqualPaymentsPerEventOneStopsToPay(): void
+    public function testSelectDifferentCampaignsWithEqualPaymentsPerEventOneStopsToExportCases(): void
     {
         $eventAmount = 100_000_000;
         $idsMap = [
@@ -531,6 +531,118 @@ final class SelectTest extends IntegrationTestCase
             sprintf(
                 'Banner id "%s" which has not been paid occurs more often than experiments allow. Results: %s',
                 $bannerIdWhichHasNotBeenPaid,
+                print_r($results, true)
+            )
+        );
+        self::assertResultsPresent($payingBannerIds, $results, 400);
+    }
+
+    public function testSelectDifferentCampaignsWithEqualPaymentsPerEventOneStopsToExportPayments(): void
+    {
+        $eventAmount = 100_000_000;
+        $idsMap = [
+            '10000000000000000000000000000000' => '11111111111111111111111111111111',
+            '20000000000000000000000000000000' => '22222222222222222222222222222222',
+            '30000000000000000000000000000000' => '33333333333333333333333333333333',
+        ];
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
+
+        $payingBannerIds = array_values($idsMap);
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount,
+            new DateTimeImmutable('-40 days')
+        );
+        $bannerIdWhichDoesNotPay = '11111111111111111111111111111111';
+        $payingBannerIds = [
+            '22222222222222222222222222222222',
+            '33333333333333333333333333333333',
+        ];
+        $this->setupInitialCases($idsMap, [$bannerIdWhichDoesNotPay], new DateTimeImmutable('-20 days'));
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount,
+            new DateTimeImmutable('-20 days')
+        );
+        $this->setupInitialCases($idsMap, [$bannerIdWhichDoesNotPay], new DateTimeImmutable());
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount,
+            new DateTimeImmutable()
+        );
+
+        $results = $this->findBanners();
+
+        $bannerIdWhichHasNotBeenPaid = '11111111111111111111111111111111';
+        self::assertTrue(
+            !array_key_exists($bannerIdWhichHasNotBeenPaid, $results) || $results[$bannerIdWhichHasNotBeenPaid] <= 50,
+            sprintf(
+                'Banner id "%s" which has not been paid occurs more often than experiments allow. Results: %s',
+                $bannerIdWhichHasNotBeenPaid,
+                print_r($results, true)
+            )
+        );
+        self::assertResultsPresent($payingBannerIds, $results, 400);
+    }
+
+    public function testSelectDifferentCampaignsWithEqualPaymentsPerEventOneLimitsPaymentsToZero(): void
+    {
+        $eventAmount = 100_000_000;
+        $idsMap = [
+            '10000000000000000000000000000000' => '11111111111111111111111111111111',
+            '20000000000000000000000000000000' => '22222222222222222222222222222222',
+            '30000000000000000000000000000000' => '33333333333333333333333333333333',
+        ];
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
+
+        $payingBannerIds = array_values($idsMap);
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount,
+            new DateTimeImmutable('-40 days')
+        );
+
+        $bannerIdWhichPaysZero = '11111111111111111111111111111111';
+        $payingBannerIds = [
+            '22222222222222222222222222222222',
+            '33333333333333333333333333333333',
+        ];
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            [$bannerIdWhichPaysZero],
+            0,
+            new DateTimeImmutable('-20 days')
+        );
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount,
+            new DateTimeImmutable('-20 days')
+        );
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            [$bannerIdWhichPaysZero],
+            0,
+            new DateTimeImmutable()
+        );
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            $payingBannerIds,
+            $eventAmount,
+            new DateTimeImmutable()
+        );
+
+        $results = $this->findBanners();
+
+        self::assertTrue(
+            !array_key_exists($bannerIdWhichPaysZero, $results) || $results[$bannerIdWhichPaysZero] <= 50,
+            sprintf(
+                'Banner id "%s" which has not been paid occurs more often than experiments allow. Results: %s',
+                $bannerIdWhichPaysZero,
                 print_r($results, true)
             )
         );
@@ -711,7 +823,6 @@ final class SelectTest extends IntegrationTestCase
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
-        $findRequest = FindRequestBuilder::default();
         for ($j = 0; $j < count($idsMap); $j++) {
             $campaignId = array_keys($idsMap)[$j];
             $bannerId = $idsMap[$campaignId];
@@ -720,13 +831,38 @@ final class SelectTest extends IntegrationTestCase
             }
             for ($i = 0; $i < $initialEventsCount; $i++) {
                 $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, $findRequest, $startDateTime);
+                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default(), $startDateTime);
                 $payments[] = self::getPayment($id, $id, $eventAmount, $startDateTime);
             }
         }
 
         $this->setupCases($cases);
         $this->setupPayments($payments);
+        $this->updateStatisticsOrFail();
+    }
+
+    private function setupInitialCases(
+        array $idsMap,
+        array $bannerIds,
+        ?DateTimeInterface $dateTime = null
+    ): void {
+        $startDateTime = $dateTime ?: new DateTimeImmutable();
+        $baseId = $startDateTime->getTimestamp() * 1000;
+        $initialEventsCount = 50;
+        $cases = [];
+        for ($j = 0; $j < count($idsMap); $j++) {
+            $campaignId = array_keys($idsMap)[$j];
+            $bannerId = $idsMap[$campaignId];
+            if (!in_array($bannerId, $bannerIds)) {
+                continue;
+            }
+            for ($i = 0; $i < $initialEventsCount; $i++) {
+                $id = $baseId + $j * 100 + $i;
+                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default(), $startDateTime);
+            }
+        }
+
+        $this->setupCases($cases);
         $this->updateStatisticsOrFail();
     }
 
@@ -740,7 +876,6 @@ final class SelectTest extends IntegrationTestCase
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
-        $findRequest = FindRequestBuilder::default();
         for ($j = 0; $j < count($idsMap); $j++) {
             $campaignId = array_keys($idsMap)[$j];
             $bannerId = $idsMap[$campaignId];
@@ -750,7 +885,7 @@ final class SelectTest extends IntegrationTestCase
             $paidAmount = (int)($eventAmount * (1 + $increaseFactor * $j));
             for ($i = 0; $i < $initialEventsCount; $i++) {
                 $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, $findRequest);
+                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
                 $payments[] = self::getPayment($id, $id, $paidAmount);
             }
         }
@@ -770,7 +905,6 @@ final class SelectTest extends IntegrationTestCase
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
-        $findRequest = FindRequestBuilder::default();
         for ($j = 0; $j < count($idsMap); $j++) {
             $campaignId = array_keys($idsMap)[$j];
             $bannerId = $idsMap[$campaignId];
@@ -780,7 +914,7 @@ final class SelectTest extends IntegrationTestCase
             $paidAmount = (int)($eventAmount * $increaseFactor ** $j);
             for ($i = 0; $i < $initialEventsCount; $i++) {
                 $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, $findRequest);
+                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
                 $payments[] = self::getPayment($id, $id, $paidAmount);
             }
         }
@@ -799,7 +933,6 @@ final class SelectTest extends IntegrationTestCase
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
-        $findRequest = FindRequestBuilder::default();
         for ($j = 0; $j < count($idsMap); $j++) {
             $campaignId = array_keys($idsMap)[$j];
             $bannerId = $idsMap[$campaignId];
@@ -809,7 +942,7 @@ final class SelectTest extends IntegrationTestCase
             $availableBudget = $campaignBudget;
             for ($i = 0; $i < $initialEventsCount; $i++) {
                 $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, $findRequest);
+                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
                 $amount = $i === $initialEventsCount - 1
                     ? $availableBudget
                     : (int)floor($availableBudget * lcg_value());
