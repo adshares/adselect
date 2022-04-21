@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 use Adshares\AdSelect\Application\Dto\QueryDto;
+use DateTimeImmutable;
 
 class BaseQuery implements QueryInterface
 {
@@ -64,7 +65,12 @@ PAINLESS;
                 'term' => [
                     'searchable' => true,
                 ]
-            ]
+            ],
+            [
+                'term' => [
+                    'time_range' => (new DateTimeImmutable())->getTimestamp(),
+                ]
+            ],
         ];
 
         $filter[] = $sizeFilter;
