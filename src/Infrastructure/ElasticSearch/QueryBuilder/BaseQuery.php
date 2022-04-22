@@ -16,7 +16,7 @@ class BaseQuery implements QueryInterface
 
     private const SCORE_SCRIPT
         = <<<PAINLESS
-double rpm = Math.min(99.9, doc['stats.rpm'].value);
+double rpm = Math.min(99.99, doc['stats.rpm'].value);
 return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 100.0) +
     (doc['stats.site_id'].value == params['site_id'] ? 200.0 : 0.0) +
     (doc['stats.zone_id'].value == params['zone_id'] ? 200.0 : 0.0);

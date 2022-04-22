@@ -20,6 +20,7 @@ class StatsUpdater
     private LoggerInterface $logger;
 
     public const MAX_HOURLY_RPM_GROWTH = 1.30;
+    public const MAX_RPM = 99.99;
 
     private const ES_BUCKET_PAGE_SIZE = 500;
 
@@ -438,7 +439,7 @@ class StatsUpdater
         if (count($keyMap) == 0 || $stats['time_active'] < 4 * 3600) {
             $capRPM = $this->getAverageRpm();
         } else {
-            $capRPM = 99.9;
+            $capRPM = self::MAX_RPM;
         }
 
         $mapped = BannerMapper::mapStats(BannerIndex::name(), $campaignId, $bannerId, $capRPM, $keyMap, $stats);

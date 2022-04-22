@@ -46,7 +46,50 @@ final class SelectTest extends IntegrationTestCase
         self::assertResponseIsSuccessful();
         $banners = $this->getResponseAsArray()[0];
         self::assertCount(1, $banners);
-        self::assertEquals('fedcba9876543210fedcba9876543210', $banners[0]['banner_id']);
+        $banner = $banners[0];
+        $bannerKeys = [
+            'campaign_id',
+            'banner_id',
+            'size',
+            'rpm',
+        ];
+        foreach ($bannerKeys as $key) {
+            self::assertArrayHasKey($key, $banner);
+        }
+        self::assertEquals('fedcba9876543210fedcba9876543210', $banner['banner_id']);
+        self::assertEquals(0, $banner['rpm']);
+    }
+
+    public function testFindWithPayments(): void
+    {
+        $bannerId = 'fedcba9876543210fedcba9876543210';
+        $idsMap = [
+            '10001000100010001000100010001000' => $bannerId,
+        ];
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
+        $this->setupInitialPaymentsWithEqualEventAmount(
+            $idsMap,
+            [$bannerId],
+            10_000_000
+        );
+
+        $this->find([FindRequestBuilder::default()]);
+
+        self::assertResponseIsSuccessful();
+        $banners = $this->getResponseAsArray()[0];
+        self::assertCount(1, $banners);
+        $banner = $banners[0];
+        $bannerKeys = [
+            'campaign_id',
+            'banner_id',
+            'size',
+            'rpm',
+        ];
+        foreach ($bannerKeys as $key) {
+            self::assertArrayHasKey($key, $banner);
+        }
+        self::assertEquals($bannerId, $banner['banner_id']);
+        self::assertEquals(0.1, $banner['rpm']);
     }
 
     public function testRequestFilterExcludeMatchesCampaignBannerMimeType(): void
