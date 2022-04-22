@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
@@ -17,6 +18,7 @@ use Psr\Log\LoggerInterface;
 class StatsUpdater
 {
     private Client $client;
+    private TimeService $timeService;
     private LoggerInterface $logger;
 
     public const MAX_HOURLY_RPM_GROWTH = 1.30;
@@ -37,9 +39,10 @@ class StatsUpdater
 
     private $globalAverageRpm = null;
 
-    public function __construct(Client $client, LoggerInterface $logger, int $bulkLimit = 500)
+    public function __construct(Client $client, TimeService $timeService, LoggerInterface $logger, int $bulkLimit = 500)
     {
         $this->client = $client;
+        $this->timeService = $timeService;
         $this->logger = $logger;
         $this->bulkLimit = 2 * $bulkLimit;
     }
@@ -442,7 +445,15 @@ class StatsUpdater
             $capRPM = self::MAX_RPM;
         }
 
-        $mapped = BannerMapper::mapStats(BannerIndex::name(), $campaignId, $bannerId, $capRPM, $keyMap, $stats);
+        $mapped = BannerMapper::mapStats(
+            BannerIndex::name(),
+            $campaignId,
+            $bannerId,
+            $this->timeService->getDateTime(),
+            $capRPM,
+            $keyMap,
+            $stats
+        );
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];
@@ -533,7 +544,7 @@ class StatsUpdater
         $query = [
             'range' => [
                 'stats.last_update' => [
-                    'lt' => (new DateTime('-4 hours'))->format('Y-m-d H:i:s')
+                    'lt' => $this->timeService->getDateTime('-4 hours')->format('Y-m-d H:i:s')
                 ]
             ]
         ];

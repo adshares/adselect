@@ -70,6 +70,9 @@ services:
 
 when@test:
     services:
+        Adshares\AdSelect\Application\Service\TimeService:
+            class: Adshares\AdSelect\Tests\Integration\Services\TimeServiceWithTimeTravel
+
         Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
             class: Adshares\AdSelect\Tests\Integration\Services\EsClientWrapper
             arguments:

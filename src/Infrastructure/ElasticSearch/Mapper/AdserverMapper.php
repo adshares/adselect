@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
-use DateTime;
+use DateTimeInterface;
 
 class AdserverMapper
 {
@@ -15,7 +15,8 @@ class AdserverMapper
         float $count,
         float $revenue_weight,
         float $count_weight,
-        float $weight
+        float $weight,
+        DateTimeInterface $updateDateTime
     ): array {
         $mapped = [];
         $mapped['index'] = [
@@ -28,14 +29,13 @@ class AdserverMapper
 
         $mapped['data'] = [
             'doc' => [
-
                 'source_address' => $address,
                 'revenue' => $revenue,
                 'revenue_weight' => $revenue_weight,
                 'count' => $count,
                 'count_weight' => $count_weight,
                 'weight' => $weight,
-                'last_update' => (new DateTime())->format('Y-m-d H:i:s'),
+                'last_update' => $updateDateTime->format('Y-m-d H:i:s'),
             ],
             'doc_as_upsert' => true,
         ];

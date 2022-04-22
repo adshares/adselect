@@ -8,6 +8,7 @@ use Adshares\AdSelect\Tests\Integration\Builders\BannerBuilder;
 use Adshares\AdSelect\Tests\Integration\Builders\CampaignBuilder;
 use Adshares\AdSelect\Tests\Integration\Builders\FindRequestBuilder;
 use Adshares\AdSelect\Tests\Integration\Builders\Uuid;
+use Adshares\AdSelect\Tests\Integration\Services\TimeServiceWithTimeTravel;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
@@ -21,6 +22,8 @@ final class SelectTest extends IntegrationTestCase
     private const DEFAULT_EXPERIMENTS_CHANCE = 0.05;
 
     private KernelBrowser $client;
+    private TimeServiceWithTimeTravel $timeService;
+    private int $uniqueId = 1;
 
     protected function setUp(): void
     {
@@ -29,6 +32,8 @@ final class SelectTest extends IntegrationTestCase
         self::setExperimentChance(self::DEFAULT_EXPERIMENTS_CHANCE);
         $this->client = self::createClient();
         self::runCommand('ops:es:create-index');
+        $this->timeService = self::getContainer()->get('Adshares\AdSelect\Application\Service\TimeService');
+        $this->timeService->setModify();
     }
 
     public function testFind(): void
@@ -546,24 +551,23 @@ final class SelectTest extends IntegrationTestCase
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable('-40 days')
+            $eventAmount
         );
         $payingBannerIds = [
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
+        $this->timeService->setModify('+20 days');
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable('-20 days')
+            $eventAmount
         );
+        $this->timeService->setModify('+40 days');
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable()
+            $eventAmount
         );
 
         $results = $this->findBanners();
@@ -594,27 +598,26 @@ final class SelectTest extends IntegrationTestCase
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable('-40 days')
+            $eventAmount
         );
         $bannerIdWhichDoesNotPay = '11111111111111111111111111111111';
         $payingBannerIds = [
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
-        $this->setupInitialCases($idsMap, [$bannerIdWhichDoesNotPay], new DateTimeImmutable('-20 days'));
+        $this->timeService->setModify('+20 days');
+        $this->setupInitialCases($idsMap, [$bannerIdWhichDoesNotPay]);
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable('-20 days')
+            $eventAmount
         );
-        $this->setupInitialCases($idsMap, [$bannerIdWhichDoesNotPay], new DateTimeImmutable());
+        $this->timeService->setModify('+40 days');
+        $this->setupInitialCases($idsMap, [$bannerIdWhichDoesNotPay]);
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable()
+            $eventAmount
         );
 
         $results = $this->findBanners();
@@ -645,8 +648,7 @@ final class SelectTest extends IntegrationTestCase
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable('-40 days')
+            $eventAmount
         );
 
         $bannerIdWhichPaysZero = '11111111111111111111111111111111';
@@ -654,29 +656,27 @@ final class SelectTest extends IntegrationTestCase
             '22222222222222222222222222222222',
             '33333333333333333333333333333333',
         ];
+        $this->timeService->setModify('+20 days');
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             [$bannerIdWhichPaysZero],
-            0,
-            new DateTimeImmutable('-20 days')
+            0
         );
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable('-20 days')
+            $eventAmount
         );
+        $this->timeService->setModify('+40 days');
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             [$bannerIdWhichPaysZero],
-            0,
-            new DateTimeImmutable()
+            0
         );
         $this->setupInitialPaymentsWithEqualEventAmount(
             $idsMap,
             $payingBannerIds,
-            $eventAmount,
-            new DateTimeImmutable()
+            $eventAmount
         );
 
         $results = $this->findBanners();
@@ -845,7 +845,7 @@ final class SelectTest extends IntegrationTestCase
         $try = 0;
         do {
             self::assertLessThan($maxTries, $try, 'Statistics were not updated');
-            usleep(850_000);
+            sleep(1);
             $content = self::runCommand('ops:es:update-stats');
             $updated = str_starts_with($content, 'Finished');
             $try++;
@@ -858,11 +858,9 @@ final class SelectTest extends IntegrationTestCase
     private function setupInitialPaymentsWithEqualEventAmount(
         array $idsMap,
         array $payingBannerIds,
-        int $eventAmount,
-        ?DateTimeInterface $dateTime = null
+        int $eventAmount
     ): void {
-        $startDateTime = $dateTime ?: new DateTimeImmutable();
-        $baseId = $startDateTime->getTimestamp() * 1000;
+        $startDateTime = $this->timeService->getDateTime();
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
@@ -873,9 +871,9 @@ final class SelectTest extends IntegrationTestCase
                 continue;
             }
             for ($i = 0; $i < $initialEventsCount; $i++) {
-                $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default(), $startDateTime);
-                $payments[] = self::getPayment($id, $id, $eventAmount, $startDateTime);
+                $id = $this->getUniqueId();
+                $cases[] = $this->getCase($id, $campaignId, $bannerId, FindRequestBuilder::default(), $startDateTime);
+                $payments[] = $this->getPayment($id, $id, $eventAmount, $startDateTime);
             }
         }
 
@@ -886,11 +884,9 @@ final class SelectTest extends IntegrationTestCase
 
     private function setupInitialCases(
         array $idsMap,
-        array $bannerIds,
-        ?DateTimeInterface $dateTime = null
+        array $bannerIds
     ): void {
-        $startDateTime = $dateTime ?: new DateTimeImmutable();
-        $baseId = $startDateTime->getTimestamp() * 1000;
+        $startDateTime = $this->timeService->getDateTime();
         $initialEventsCount = 50;
         $cases = [];
         for ($j = 0; $j < count($idsMap); $j++) {
@@ -900,8 +896,8 @@ final class SelectTest extends IntegrationTestCase
                 continue;
             }
             for ($i = 0; $i < $initialEventsCount; $i++) {
-                $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default(), $startDateTime);
+                $id = $this->getUniqueId();
+                $cases[] = $this->getCase($id, $campaignId, $bannerId, FindRequestBuilder::default(), $startDateTime);
             }
         }
 
@@ -915,7 +911,6 @@ final class SelectTest extends IntegrationTestCase
         int $eventAmount,
         float $increaseFactor
     ): void {
-        $baseId = (new DateTimeImmutable())->getTimestamp() * 1000;
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
@@ -927,9 +922,9 @@ final class SelectTest extends IntegrationTestCase
             }
             $paidAmount = (int)($eventAmount * (1 + $increaseFactor * $j));
             for ($i = 0; $i < $initialEventsCount; $i++) {
-                $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
-                $payments[] = self::getPayment($id, $id, $paidAmount);
+                $id = $this->getUniqueId();
+                $cases[] = $this->getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
+                $payments[] = $this->getPayment($id, $id, $paidAmount);
             }
         }
 
@@ -944,7 +939,6 @@ final class SelectTest extends IntegrationTestCase
         int $eventAmount,
         float $increaseFactor
     ): void {
-        $baseId = (new DateTimeImmutable())->getTimestamp() * 1000;
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
@@ -956,9 +950,9 @@ final class SelectTest extends IntegrationTestCase
             }
             $paidAmount = (int)($eventAmount * $increaseFactor ** $j);
             for ($i = 0; $i < $initialEventsCount; $i++) {
-                $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
-                $payments[] = self::getPayment($id, $id, $paidAmount);
+                $id = $this->getUniqueId();
+                $cases[] = $this->getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
+                $payments[] = $this->getPayment($id, $id, $paidAmount);
             }
         }
 
@@ -972,7 +966,6 @@ final class SelectTest extends IntegrationTestCase
         array $payingBannerIds,
         int $campaignBudget
     ): void {
-        $baseId = (new DateTimeImmutable())->getTimestamp() * 1000;
         $initialEventsCount = 50;
         $cases = [];
         $payments = [];
@@ -984,13 +977,13 @@ final class SelectTest extends IntegrationTestCase
             }
             $availableBudget = $campaignBudget;
             for ($i = 0; $i < $initialEventsCount; $i++) {
-                $id = $baseId + $j * 100 + $i;
-                $cases[] = self::getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
+                $id = $this->getUniqueId();
+                $cases[] = $this->getCase($id, $campaignId, $bannerId, FindRequestBuilder::default());
                 $amount = $i === $initialEventsCount - 1
                     ? $availableBudget
                     : (int)floor($availableBudget * lcg_value());
                 $availableBudget -= $amount;
-                $payments[] = self::getPayment($id, $id, $amount);
+                $payments[] = $this->getPayment($id, $id, $amount);
             }
         }
 
@@ -1022,6 +1015,7 @@ final class SelectTest extends IntegrationTestCase
         foreach ($idsMap as $campaignId => $bannerId) {
             $campaignsData[] = (new CampaignBuilder())
                 ->id($campaignId)
+                ->noTimeEnd()
                 ->banners([(new BannerBuilder())->id($bannerId)->build()])
                 ->build();
         }
@@ -1041,7 +1035,7 @@ final class SelectTest extends IntegrationTestCase
         return $campaignsData;
     }
 
-    private static function getCase(
+    private function getCase(
         int $caseId,
         string $campaignId,
         string $bannerId,
@@ -1054,7 +1048,7 @@ final class SelectTest extends IntegrationTestCase
         unset($keywords['human_score'], $keywords['page_rank']);
         return [
             'id' => $caseId,
-            'created_at' => ($creationDateTime ?: new DateTimeImmutable())->format(DateTimeInterface::ATOM),
+            'created_at' => ($creationDateTime ?: $this->timeService->getDateTime())->format(DateTimeInterface::ATOM),
             'publisher_id' => $findRequest['publisher_id'],
             'site_id' => $findRequest['site_id'],
             'zone_id' => $findRequest['zone_id'],
@@ -1069,7 +1063,7 @@ final class SelectTest extends IntegrationTestCase
         ];
     }
 
-    private static function getPayment(
+    private function getPayment(
         int $id,
         int $caseId,
         int $amount,
@@ -1079,7 +1073,7 @@ final class SelectTest extends IntegrationTestCase
             'id' => $id,
             'case_id' => $caseId,
             'paid_amount' => $amount,
-            'pay_time' => ($creationDateTime ?: new DateTimeImmutable())->format(DateTimeInterface::ATOM),
+            'pay_time' => ($creationDateTime ?: $this->timeService->getDateTime())->format(DateTimeInterface::ATOM),
             'payer' => '0001-00000001-XXXX',
         ];
     }
@@ -1102,6 +1096,11 @@ final class SelectTest extends IntegrationTestCase
     private static function disableExperiments(): void
     {
         self::setExperimentChance(-1.0);
+    }
+
+    private function getUniqueId(): int
+    {
+        return $this->uniqueId++;
     }
 
     protected static function assertResultsIncrease(array $payingBannerIds, array $results): void

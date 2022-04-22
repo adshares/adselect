@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
@@ -16,11 +17,13 @@ class ExperimentsUpdater
     private const ES_BUCKET_PAGE_SIZE = 500;
 
     private Client $client;
+    private TimeService $timeService;
     private LoggerInterface $logger;
 
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(Client $client, TimeService $timeService, LoggerInterface $logger)
     {
         $this->client = $client;
+        $this->timeService = $timeService;
         $this->logger = $logger;
     }
 
@@ -40,7 +43,7 @@ class ExperimentsUpdater
 
         $this->logger->debug(sprintf('allViews = %d; log = %.2f', $allViews, $allMod));
 
-        $cTime = new DateTimeImmutable();
+        $cTime = $this->timeService->getDateTime();
 
         $cCount = 0;
         $bCount = 0;

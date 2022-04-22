@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Domain\Model\CampaignCollection;
 use Adshares\AdSelect\Application\Service\CampaignUpdater;
@@ -13,7 +14,7 @@ use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignDeleteMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use DateTime;
+use DateTimeInterface;
 
 class ElasticSearchCampaignUpdater implements CampaignUpdater
 {
@@ -22,11 +23,13 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
     private const ES_INITIALIZE_STATS_TYPE = 'INITIALIZE_CAMPAIGN_STATS';
 
     private Client $client;
+    private TimeService $timeService;
     private int $bulkLimit;
 
-    public function __construct(Client $client, int $bulkLimit = 500)
+    public function __construct(Client $client, TimeService $timeService, int $bulkLimit = 500)
     {
         $this->client = $client;
+        $this->timeService = $timeService;
         $this->bulkLimit = $bulkLimit * 2; // regard to the additional items - 'index' for every campaign
     }
 
@@ -36,13 +39,13 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
             $this->client->createIndex(BannerIndex::name());
         }
 
-        $staleTime = (new DateTime('-5 minute'));
+        $staleTime = $this->timeService->getDateTime('-5 minutes');
 
         $mappedBanners = [];
         /* @var $campaign Campaign */
         foreach ($campaigns as $campaign) {
             foreach ($campaign->getBanners() as $banner) {
-                $mapped = BannerMapper::map($campaign, $banner, BannerIndex::name());
+                $mapped = BannerMapper::map($campaign, $banner, BannerIndex::name(), $this->timeService->getDateTime());
                 $mappedBanners[] = $mapped['index'];
                 $mappedBanners[] = $mapped['data'];
                 if (count($mappedBanners) >= $this->bulkLimit) {
@@ -75,7 +78,7 @@ class ElasticSearchCampaignUpdater implements CampaignUpdater
         }
     }
 
-    private function removeStaleBanners(DateTime $staleTime): void
+    private function removeStaleBanners(DateTimeInterface $staleTime): void
     {
         $query = [
             'range' => [

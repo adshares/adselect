@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
 
 use Adshares\AdSelect\Application\Dto\QueryDto;
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Domain\ValueObject\Id;
 use Adshares\AdSelect\Domain\ValueObject\Size;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
@@ -19,6 +20,7 @@ final class QueryBuilderTest extends TestCase
 {
     public function testWhenKeywordsAndFiltersAreEmpty(): void
     {
+        $timeService = new TimeService();
         $publisherId = new Id('43c567e1396b4cadb52223a51796fd01');
         $userId = new Id('43c567e1396b4cadb52223a51796fd01');
         $siteId = new Id('43c567e1396b4cadb52223a51796fd04');
@@ -35,7 +37,7 @@ final class QueryBuilderTest extends TestCase
             $campaignId => 2,
         ];
 
-        $baseQuery = new BaseQuery($dto, $defined);
+        $baseQuery = new BaseQuery($timeService, $dto, $defined);
         $queryBuilder = new QueryBuilder($baseQuery, 0.0, $userHistory);
 
         $result = $queryBuilder->build();
@@ -118,6 +120,7 @@ PAINLESS;
 
     public function testWhenFiltersExist(): void
     {
+        $timeService = new TimeService();
         $publisherId = new Id('85f115636b384744949300571aad2a4f');
         $siteId = new Id('43c567e1396b4cadb52223a51796fd04');
         $zoneId = new Id('43c567e1396b4cadb52223a51796fd03');
@@ -169,7 +172,7 @@ PAINLESS;
             $campaignId => 2,
         ];
 
-        $baseQuery = new BaseQuery($dto, $defined);
+        $baseQuery = new BaseQuery($timeService, $dto, $defined);
         $queryBuilder = new QueryBuilder($baseQuery, 0.0, $userHistory);
 
         $result = $queryBuilder->build();
