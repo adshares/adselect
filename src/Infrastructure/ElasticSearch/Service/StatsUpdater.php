@@ -22,7 +22,7 @@ class StatsUpdater
     private LoggerInterface $logger;
 
     public const MAX_HOURLY_RPM_GROWTH = 1.30;
-    public const MAX_RPM = 99.99;
+    public const MAX_RPM = 999.99;
 
     private const ES_BUCKET_PAGE_SIZE = 500;
 

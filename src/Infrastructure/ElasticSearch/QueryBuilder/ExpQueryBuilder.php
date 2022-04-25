@@ -14,10 +14,10 @@ class ExpQueryBuilder
 
     private const SCORE_SCRIPT
         = <<<PAINLESS
-double real_rpm = _score % 100.0;
+double real_rpm = _score % 1000.0;
 double weight = doc['exp.weight'].value;
 weight = Math.pow(Math.random(), 1.0 / weight);
-return Math.round(1000.0 * weight) * 100000 + Math.round(real_rpm * 1000);
+return Math.round(1000.0 * weight) * 100000 + Math.round(real_rpm * 100);
 PAINLESS;
 
     public function __construct(QueryInterface $query)
