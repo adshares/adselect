@@ -449,12 +449,15 @@ final class SelectTest extends IntegrationTestCase
         $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = array_values($idsMap);
-        $this->setupInitialPaymentsWithEventAmountIncreasingLinearlyPerCampaign(
-            $idsMap,
-            $payingBannerIds,
-            $eventAmount,
-            $increaseFactor
-        );
+        for ($hourOffset = 0; $hourOffset < 6; $hourOffset++) {
+            $this->timeService->setModify(sprintf('+%d hours', $hourOffset));
+            $this->setupInitialPaymentsWithEventAmountIncreasingLinearlyPerCampaign(
+                $idsMap,
+                $payingBannerIds,
+                $eventAmount,
+                $increaseFactor
+            );
+        }
 
         $results = $this->findBanners();
 
@@ -474,12 +477,15 @@ final class SelectTest extends IntegrationTestCase
         $this->setupCampaigns(self::getCampaignsData($idsMap));
 
         $payingBannerIds = array_values($idsMap);
-        $this->setupInitialPaymentsWithEventAmountIncreasingLinearlyPerCampaign(
-            $idsMap,
-            $payingBannerIds,
-            $eventAmount,
-            $increaseFactor
-        );
+        for ($hourOffset = 0; $hourOffset < 6; $hourOffset++) {
+            $this->timeService->setModify(sprintf('+%d hours', $hourOffset));
+            $this->setupInitialPaymentsWithEventAmountIncreasingLinearlyPerCampaign(
+                $idsMap,
+                $payingBannerIds,
+                $eventAmount,
+                $increaseFactor
+            );
+        }
 
         $results = $this->findBanners();
 
