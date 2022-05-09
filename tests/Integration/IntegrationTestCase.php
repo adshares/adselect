@@ -8,13 +8,13 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class IntegrationTestCase extends WebTestCase
+abstract class IntegrationTestCase extends WebTestCase
 {
     private ?Client $esClient = null;
 
     public function getEsClient(): Client
     {
-        if ($this->esClient === null) {
+        if (null === $this->esClient) {
             $this->esClient = ClientBuilder::create()->build();
         }
         return $this->esClient;
