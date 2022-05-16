@@ -4,24 +4,27 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 
 class ExperimentsUpdater
 {
     private const ES_BUCKET_PAGE_SIZE = 500;
 
     private Client $client;
+    private TimeService $timeService;
+    private LoggerInterface $logger;
 
-    private int $bulkLimit;
-
-    public function __construct(Client $client, int $bulkLimit = 100)
+    public function __construct(Client $client, TimeService $timeService, LoggerInterface $logger)
     {
         $this->client = $client;
-        $this->bulkLimit = 2 * $bulkLimit;
+        $this->timeService = $timeService;
+        $this->logger = $logger;
     }
 
     public function recalculateExperiments(DateTimeImmutable $from): void
@@ -29,7 +32,7 @@ class ExperimentsUpdater
         $adserverStats = $this->getAdserverStats($from->modify('-12 hours'), $from);
         $this->client->refreshIndex(BannerIndex::name());
 
-        $allViews = $sumRevenue = array_reduce(
+        $allViews = array_reduce(
             $adserverStats,
             function ($carry, $item) {
                 return $carry + $item['count'];
@@ -38,9 +41,9 @@ class ExperimentsUpdater
         );
         $allMod = 1 + log(1 + $allViews);
 
-        printf("allViews = %d; log = %.2f\n", $allViews, $allMod);
+        $this->logger->debug(sprintf('allViews = %d; log = %.2f', $allViews, $allMod));
 
-        $cTime = new DateTimeImmutable();
+        $cTime = $this->timeService->getDateTime();
 
         $cCount = 0;
         $bCount = 0;
@@ -95,12 +98,14 @@ class ExperimentsUpdater
         );
         $result = $this->client->getClient()->updateByQuery($mapped);
 
-        printf(
-            "C=%s, W=%.2f, V=%d, B=%d\n",
-            $cId,
-            $cWeight,
-            $cViews,
-            $cBanners
+        $this->logger->debug(
+            sprintf(
+                'C=%s, W=%.2f, V=%d, B=%d',
+                $cId,
+                $cWeight,
+                $cViews,
+                $cBanners
+            )
         );
 //        if ($result['updated']) {
 //            print_r($result);

@@ -8,6 +8,7 @@ use Adshares\AdSelect\Application\Dto\FoundBanner;
 use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
 use Adshares\AdSelect\Application\Dto\QueryDto;
 use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
@@ -28,15 +29,18 @@ class BannerFinder implements BannerFinderInterface
     private const HISTORY_MAXENTRIES = 50;
 
     private Client $client;
+    private TimeService $timeService;
     private LoggerInterface $logger;
     private float $experimentChance;
 
     public function __construct(
         Client $client,
+        TimeService $timeService,
         float $experimentChance,
         LoggerInterface $logger
     ) {
         $this->client = $client;
+        $this->timeService = $timeService;
         $this->logger = $logger;
         $this->experimentChance = $experimentChance;
     }
@@ -47,7 +51,7 @@ class BannerFinder implements BannerFinderInterface
     ): FoundBannersCollection {
         $userHistory = $this->loadUserHistory($queryDto);
         $defined = $this->getDefinedRequireKeywords();
-        $query = new BaseQuery($queryDto, $defined);
+        $query = new BaseQuery($this->timeService, $queryDto, $defined);
 
         $params = [
             'index'  => BannerIndex::name(),
@@ -109,7 +113,7 @@ class BannerFinder implements BannerFinderInterface
                     $hit['_id'],
                     in_array($queryDto->getSize(), $hit['fields']['banner.size'], true)
                         ? $queryDto->getSize() : $hit['fields']['banner.size'][0],
-                    (($hit['_score'] - floor($hit['_score'] / 100000) * 100000) / 1000)
+                    fmod($hit['_score'], 100_000) / 100
                 )
             );
         }
@@ -136,7 +140,7 @@ class BannerFinder implements BannerFinderInterface
                 $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
             }
         }
-        $this->logger->debug(sprintf('[BANNER FINDER] seen'), $seen);
+        $this->logger->debug(sprintf('[BANNER FINDER] seen: %s', json_encode($seen)));
         return $seen;
     }
 
@@ -160,7 +164,7 @@ class BannerFinder implements BannerFinderInterface
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
         $val = apcu_fetch($key);
         $history = $val ?: [];
-        self::clearStaleEntries($history);
+        $this->clearStaleEntries($history);
         return $history;
     }
 
@@ -169,16 +173,16 @@ class BannerFinder implements BannerFinderInterface
         array $history
     ): void {
         $key = self::HISTORY_APC_KEY_PREFIX . ':' . $queryDto->getTrackingId();
-        self::clearStaleEntries($history);
+        $this->clearStaleEntries($history);
         apcu_store($key, $history, self::HISTORY_MAXAGE);
     }
 
-    private static function clearStaleEntries(array &$history): void
+    private function clearStaleEntries(array &$history): void
     {
         $history = array_slice($history, -self::HISTORY_MAXENTRIES);
-        $maxage = time() - self::HISTORY_MAXAGE;
+        $maxAge = $this->timeService->getDateTime()->getTimestamp() - self::HISTORY_MAXAGE;
         for ($i = 0, $n = count($history); $i < $n; $i++) {
-            if ($history[$i][self::HISTORY_ENTRY_TIME] >= $maxage) {
+            if ($history[$i][self::HISTORY_ENTRY_TIME] >= $maxAge) {
                 break;
             }
         }
@@ -192,7 +196,7 @@ class BannerFinder implements BannerFinderInterface
         // It can be implemented only when we return one banner. Otherwise, we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [
-                self::HISTORY_ENTRY_TIME      => time(),
+                self::HISTORY_ENTRY_TIME      => $this->timeService->getDateTime()->getTimestamp(),
                 self::HISTORY_ENTRY_BANNER_ID => $collection[0]->getBannerId(),
             ];
         }

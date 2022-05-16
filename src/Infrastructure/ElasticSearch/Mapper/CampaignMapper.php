@@ -6,7 +6,7 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
-use DateTime;
+use DateTimeInterface;
 
 class CampaignMapper
 {
@@ -82,6 +82,7 @@ EOF;
     public static function mapStats(
         $campaignId,
         string $index,
+        DateTimeInterface $updateDateTime,
         array $stats,
         string $publisher_id = '',
         string $site_id = '',
@@ -114,7 +115,7 @@ EOF;
                     'total_count' => $stats['count'] ?? 0,
                     'used_count' => $stats['used_count'] ?? 0,
                     'count_sign' => $stats['count_sign'] ?? 0,
-                    'last_update' => (new DateTime())->format('Y-m-d H:i:s'),
+                    'last_update' => $updateDateTime->format('Y-m-d H:i:s'),
                 ]
             ],
             'doc_as_upsert' => true,

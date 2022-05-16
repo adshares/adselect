@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
 
+use Adshares\AdSelect\Application\Service\TimeService;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
@@ -12,12 +13,16 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use Psr\Log\LoggerInterface;
 
 class StatsUpdater
 {
     private Client $client;
+    private TimeService $timeService;
+    private LoggerInterface $logger;
 
     public const MAX_HOURLY_RPM_GROWTH = 1.30;
+    public const MAX_RPM = 999.99;
 
     private const ES_BUCKET_PAGE_SIZE = 500;
 
@@ -34,9 +39,11 @@ class StatsUpdater
 
     private $globalAverageRpm = null;
 
-    public function __construct(Client $client, int $bulkLimit = 100)
+    public function __construct(Client $client, TimeService $timeService, LoggerInterface $logger, int $bulkLimit = 500)
     {
         $this->client = $client;
+        $this->timeService = $timeService;
+        $this->logger = $logger;
         $this->bulkLimit = 2 * $bulkLimit;
     }
 
@@ -106,8 +113,7 @@ class StatsUpdater
             );
 
             $this->globalAverageRpm = $result['aggregations']['avg_rpm']['value'] ?? 0;
-
-            printf("globalAverageRpm = %f\n", $this->globalAverageRpm);
+            $this->logger->debug(sprintf('globalAverageRpm = %f', $this->globalAverageRpm));
         }
         return $this->globalAverageRpm;
     }
@@ -436,10 +442,18 @@ class StatsUpdater
         if (count($keyMap) == 0 || $stats['time_active'] < 4 * 3600) {
             $capRPM = $this->getAverageRpm();
         } else {
-            $capRPM = 99.9;
+            $capRPM = self::MAX_RPM;
         }
 
-        $mapped = BannerMapper::mapStats(BannerIndex::name(), $campaignId, $bannerId, $capRPM, $keyMap, $stats);
+        $mapped = BannerMapper::mapStats(
+            BannerIndex::name(),
+            $campaignId,
+            $bannerId,
+            $this->timeService->getDateTime(),
+            $capRPM,
+            $keyMap,
+            $stats
+        );
 
         $this->updateCache[] = $mapped['index'];
         $this->updateCache[] = $mapped['data'];
@@ -448,9 +462,17 @@ class StatsUpdater
             $this->commitUpdates();
         }
 
-        echo "save B:$bannerId C:$campaignId banner:" . (($keyMap['banner_id'] ?? '') ? 'yes' : '') . " S:"
-            . ($keyMap['site_id'] ?? '') . " Z:" . ($keyMap['zone_id'] ?? '')
-            . " => ", json_encode($stats), "\n";
+        $this->logger->debug(
+            sprintf(
+                'save B:%s C:%s banner:%s S:%s Z:%s => %s',
+                $bannerId,
+                $campaignId,
+                ($keyMap['banner_id'] ?? '') ? 'yes' : '',
+                $keyMap['site_id'] ?? '',
+                $keyMap['zone_id'] ?? '',
+                json_encode($stats)
+            )
+        );
     }
 
     private function getPartialBucketStats(array $terms, DateTimeInterface $from, DateTimeInterface $to)
@@ -522,7 +544,7 @@ class StatsUpdater
         $query = [
             'range' => [
                 'stats.last_update' => [
-                    'lt' => (new DateTime('-4 hours'))->format('Y-m-d H:i:s')
+                    'lt' => $this->timeService->getDateTime('-4 hours')->format('Y-m-d H:i:s')
                 ]
             ]
         ];
