@@ -22,17 +22,11 @@ services:
         resource: '../src/UI/Controller'
         tags: ['controller.service_arguments']
 
-    Adshares\AdSelect\UI\Command\CreateIndex:
-        arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
+    Adshares\AdSelect\Application\Service\:
+        resource: '../src/Application/Service/*'
 
-    Adshares\AdSelect\UI\Command\CleanUserHistory:
-        arguments:
-            $dataCleaner: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\DataCleaner'
-
-    Adshares\AdSelect\UI\Command\CleanEvents:
-        arguments:
-            $dataCleaner: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\DataCleaner'
+    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\:
+        resource: '../src/Infrastructure/ElasticSearch/Service/*'
 
     Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
         arguments:
@@ -40,38 +34,12 @@ services:
                 - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
             $logger: '@logger'
 
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\DataCleaner:
-        arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater:
-        arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-            $bulkLimit: 500
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ExperimentsUpdater:
-        arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-            $bulkLimit: 500
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater:
-        arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-            $bulkLimit: 500
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventCollector:
-        arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
-            $bulkLimit: 500
-
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder:
         arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $logger: '@logger'
 
     Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
         arguments:
-            $client: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Client'
             $experimentChance: '%env(ES_EXPERIMENT_CHANCE)%'
             $logger: '@logger'
 
@@ -99,3 +67,15 @@ services:
             $eventCollector: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventCollector'
             $eventFinder: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder'
             $logger: '@logger'
+
+when@test:
+    services:
+        Adshares\AdSelect\Application\Service\TimeService:
+            class: Adshares\AdSelect\Tests\Integration\Services\TimeServiceWithTimeTravel
+
+        Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
+            class: Adshares\AdSelect\Tests\Integration\Services\EsClientWrapper
+            arguments:
+                $hosts:
+                    - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
+                $logger: '@logger'

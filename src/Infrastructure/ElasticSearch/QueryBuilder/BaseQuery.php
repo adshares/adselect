@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
 
 use Adshares\AdSelect\Application\Dto\QueryDto;
+use Adshares\AdSelect\Application\Service\TimeService;
 
 class BaseQuery implements QueryInterface
 {
@@ -15,17 +16,19 @@ class BaseQuery implements QueryInterface
 
     private const SCORE_SCRIPT
         = <<<PAINLESS
-double rpm = Math.min(99.9, doc['stats.rpm'].value);
-return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 100.0) +
-    (doc['stats.site_id'].value == params['site_id'] ? 200.0 : 0.0) +
-    (doc['stats.zone_id'].value == params['zone_id'] ? 200.0 : 0.0);
+double rpm = Math.min(999.99, doc['stats.rpm'].value);
+return rpm + (doc['stats.banner_id'].value.isEmpty() ? 0 : 1000.0) +
+    (doc['stats.site_id'].value == params['site_id'] ? 2000.0 : 0.0) +
+    (doc['stats.zone_id'].value == params['zone_id'] ? 2000.0 : 0.0);
 PAINLESS;
 
+    private TimeService $timeService;
     private QueryDto $bannerFinderDto;
     private array $definedRequireFilters;
 
-    public function __construct(QueryDto $bannerFinderDto, array $definedRequireFilters = [])
+    public function __construct(TimeService $timeService, QueryDto $bannerFinderDto, array $definedRequireFilters = [])
     {
+        $this->timeService = $timeService;
         $this->bannerFinderDto = $bannerFinderDto;
         $this->definedRequireFilters = $definedRequireFilters;
     }
@@ -64,7 +67,12 @@ PAINLESS;
                 'term' => [
                     'searchable' => true,
                 ]
-            ]
+            ],
+            [
+                'term' => [
+                    'time_range' => $this->timeService->getDateTime()->getTimestamp(),
+                ]
+            ],
         ];
 
         $filter[] = $sizeFilter;

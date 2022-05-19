@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2022-05-19
+### Added
+- Integration tests
+### Changed
+- RPM range up to 999.99
+### Fixed
+- Check campaign time range
+
 ## [1.1.1] - 2022-04-14
 ### Fixed
 - Banner selection on low RPM
@@ -62,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-19
 Last python version
 
-[Unreleased]: https://github.com/adshares/adselect/compare/v1.1.1...develop
+[Unreleased]: https://github.com/adshares/adselect/compare/v1.1.2...develop
+[1.1.2]: https://github.com/adshares/adselect/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/adshares/adselect/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/adshares/adselect/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/adshares/adselect/compare/v0.3.0...v1.0.0

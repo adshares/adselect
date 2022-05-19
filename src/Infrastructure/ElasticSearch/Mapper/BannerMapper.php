@@ -7,7 +7,6 @@ namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
 use Adshares\AdSelect\Domain\Model\Banner;
 use Adshares\AdSelect\Domain\Model\Campaign;
 use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
-use DateTime;
 use DateTimeInterface;
 
 class BannerMapper
@@ -49,8 +48,12 @@ ctx._source.exp.weight = params.weight * sWeight;
 PAINLESS;
 
 
-    public static function map(Campaign $campaign, Banner $banner, string $index): array
-    {
+    public static function map(
+        Campaign $campaign,
+        Banner $banner,
+        string $index,
+        DateTimeInterface $updateDateTime
+    ): array {
         $mapped['index'] = [
             'update' => [
                 '_index'  => $index,
@@ -89,12 +92,12 @@ PAINLESS;
                 'budget'         => $campaign->getBudget(),
                 'max_cpc'        => $campaign->getMaxCpc(),
                 'max_cpm'        => $campaign->getMaxCpm(),
-                'last_update'    => (new DateTime())->format('Y-m-d H:i:s'),
+                'last_update'    => $updateDateTime->format('Y-m-d H:i:s'),
                 'exp'            => [
                     'weight'      => 0.0,
                     'views'       => 0,
                     'banners'     => 0,
-                    'last_update' => time(),
+                    'last_update' => $updateDateTime->getTimestamp(),
                 ]
             ],
             Helper::keywords('filters:exclude', $campaign->getExcludeFilters(), true),
@@ -118,6 +121,7 @@ PAINLESS;
         string $index,
         $campaignId,
         $bannerId,
+        DateTimeInterface $updateDateTime,
         float $capRpm,
         array $path = [],
         array $stats = []
@@ -164,7 +168,7 @@ PAINLESS;
                     'total_count' => $stats['count'] ?? 0,
                     'used_count'  => $stats['used_count'] ?? 0,
                     'count_sign'  => $stats['count_sign'] ?? 0,
-                    'last_update' => (new DateTime())->format('Y-m-d H:i:s'),
+                    'last_update' => $updateDateTime->format('Y-m-d H:i:s'),
                 ]
             ],
         ];
@@ -226,7 +230,8 @@ PAINLESS;
 
     public static function mapClearExperiments(
         string $index,
-        DateTimeInterface $timeStale
+        DateTimeInterface $timeStale,
+        DateTimeInterface $updateDateTime
     ): array {
         $mapped = [];
         $mapped['index'] = $index;
@@ -249,7 +254,7 @@ PAINLESS;
                 ",
                 "lang"   => "painless",
                 "params" => [
-                    "time" => time()
+                    "time" => $updateDateTime->getTimestamp(),
                 ]
             ],
         ];
