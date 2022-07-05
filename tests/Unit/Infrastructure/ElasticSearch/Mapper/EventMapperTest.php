@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\Mapper;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Event;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Domain\Model\Event;
+use App\Domain\ValueObject\Id;
+use App\Infrastructure\ElasticSearch\Mapper\EventMapper;
+use App\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
 
 class EventMapperTest extends TestCase

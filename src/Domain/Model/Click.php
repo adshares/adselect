@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\Model;
+namespace App\Domain\Model;
 
-use Adshares\AdSelect\Lib\DateTimeInterface;
+use App\Lib\DateTimeInterface;
 
 final class Click
 {

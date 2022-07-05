@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\ValueObject;
+namespace App\Domain\ValueObject;
 
 final class Size
 {

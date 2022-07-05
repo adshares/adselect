@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
+namespace App\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Dto\FoundBanner;
-use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
-use Adshares\AdSelect\Application\Dto\QueryDto;
-use Adshares\AdSelect\Application\Service\BannerFinder as BannerFinderInterface;
-use Adshares\AdSelect\Application\Service\TimeService;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
+use App\Application\Dto\FoundBanner;
+use App\Application\Dto\FoundBannersCollection;
+use App\Application\Dto\QueryDto;
+use App\Application\Service\BannerFinder as BannerFinderInterface;
+use App\Application\Service\TimeService;
+use App\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use App\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
+use App\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
+use App\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Psr\Log\LoggerInterface;
 
 class BannerFinder implements BannerFinderInterface

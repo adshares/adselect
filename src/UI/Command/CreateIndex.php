@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Command;
+namespace App\UI\Command;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

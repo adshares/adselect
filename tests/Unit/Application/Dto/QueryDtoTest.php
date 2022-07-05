@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Application\Dto;
+namespace App\Tests\Unit\Application\Dto;
 
-use Adshares\AdSelect\Application\Dto\QueryDto;
-use Adshares\AdSelect\Application\Exception\ValidationDtoException;
+use App\Application\Dto\QueryDto;
+use App\Application\Exception\ValidationDtoException;
 use PHPUnit\Framework\TestCase;
 
 final class QueryDtoTest extends TestCase

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\UI\Dto;
+namespace App\Tests\Unit\UI\Dto;
 
-use Adshares\AdSelect\Application\Dto\FoundBanner;
-use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
-use Adshares\AdSelect\UI\Dto\FoundBannerResponse;
+use App\Application\Dto\FoundBanner;
+use App\Application\Dto\FoundBannersCollection;
+use App\UI\Dto\FoundBannerResponse;
 use PHPUnit\Framework\TestCase;
 
 final class FoundBannerResponseTest extends TestCase

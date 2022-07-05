@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Service;
+namespace App\Application\Service;
 
-use Adshares\AdSelect\Application\Dto\FoundEvent;
+use App\Application\Dto\FoundEvent;
 
 interface EventFinder
 {

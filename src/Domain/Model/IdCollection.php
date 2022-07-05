@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\Model;
+namespace App\Domain\Model;
 
-use Adshares\AdSelect\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Id;
 
 final class IdCollection extends Collection
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\Mapper;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\Helper;
+use App\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use App\Infrastructure\ElasticSearch\Mapper\Helper;
 use PHPUnit\Framework\TestCase;
 
 final class HelperTest extends TestCase

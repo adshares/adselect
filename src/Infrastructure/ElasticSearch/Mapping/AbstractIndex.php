@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
+namespace App\Infrastructure\ElasticSearch\Mapping;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use App\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
 
 abstract class AbstractIndex
 {

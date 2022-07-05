@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Domain\Model;
+namespace App\Tests\Unit\Domain\Model;
 
-use Adshares\AdSelect\Domain\Model\IdCollection;
-use Adshares\AdSelect\Domain\ValueObject\Id;
+use App\Domain\Model\IdCollection;
+use App\Domain\ValueObject\Id;
 use PHPUnit\Framework\TestCase;
 
 final class IdCollectionTest extends TestCase

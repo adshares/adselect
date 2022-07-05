@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Banner;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
+use App\Domain\Model\Banner;
+use App\Domain\Model\Campaign;
+use App\Infrastructure\ElasticSearch\Service\StatsUpdater;
 use DateTimeInterface;
 
 class BannerMapper

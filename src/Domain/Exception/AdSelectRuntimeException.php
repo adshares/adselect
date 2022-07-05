@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\Exception;
+namespace App\Domain\Exception;
 
 use RuntimeException;
 

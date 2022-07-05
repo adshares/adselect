@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Infrastructure\ElasticSearch\QueryBuilder;
 
 class ExpQueryBuilder
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Lib;
+namespace App\Lib;
 
-use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
+use App\Lib\Exception\LibraryRuntimeException;
 use DateTimeImmutable;
 use Exception;
 

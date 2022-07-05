@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Id;
 
 class IdDeleteMapper
 {

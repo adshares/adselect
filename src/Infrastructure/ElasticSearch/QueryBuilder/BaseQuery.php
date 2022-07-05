@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Application\Dto\QueryDto;
-use Adshares\AdSelect\Application\Service\TimeService;
+use App\Application\Dto\QueryDto;
+use App\Application\Service\TimeService;
 
 class BaseQuery implements QueryInterface
 {

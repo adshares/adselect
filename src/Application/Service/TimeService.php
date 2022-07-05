@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Service;
+namespace App\Application\Service;
 
 use DateTimeImmutable;
 

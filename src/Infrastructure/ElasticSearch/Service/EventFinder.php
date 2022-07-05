@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
+namespace App\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Dto\FoundEvent;
-use Adshares\AdSelect\Application\Exception\EventNotFound;
-use Adshares\AdSelect\Application\Service\EventFinder as EventFinderInterface;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Application\Dto\FoundEvent;
+use App\Application\Exception\EventNotFound;
+use App\Application\Service\EventFinder as EventFinderInterface;
+use App\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Psr\Log\LoggerInterface;
 
 class EventFinder implements EventFinderInterface
