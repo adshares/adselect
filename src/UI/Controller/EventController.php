@@ -11,13 +11,14 @@ use App\Application\Exception\EventNotFound;
 use App\Application\Service\EventCollector;
 use App\Application\Service\EventFinder;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class EventController
+class EventController extends AbstractController
 {
     private EventCollector $eventCollector;
     private LoggerInterface $logger;

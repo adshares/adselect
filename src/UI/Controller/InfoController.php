@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\UI\Controller;
 
 use App\Lib\InfoHelper;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class InfoController
+class InfoController extends AbstractController
 {
     public function info(Request $request): Response
     {
