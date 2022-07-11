@@ -23,7 +23,6 @@ PAINLESS;
         $mapped['index'] = [
             'update' => [
                 '_index'            => $index,
-                '_type'             => '_doc',
                 '_id'               => $event->getCaseId(),
                 'retry_on_conflict' => 5,
             ],

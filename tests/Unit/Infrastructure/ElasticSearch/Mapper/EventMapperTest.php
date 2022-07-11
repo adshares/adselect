@@ -38,7 +38,6 @@ class EventMapperTest extends TestCase
             'index' => [
                 'index' => [
                     '_index' => 'index-name',
-                    '_type' => '_doc',
                     '_id' => '1',
                 ]
             ],

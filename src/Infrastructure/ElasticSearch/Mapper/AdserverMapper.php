@@ -22,7 +22,6 @@ class AdserverMapper
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $address,
             ],
         ];

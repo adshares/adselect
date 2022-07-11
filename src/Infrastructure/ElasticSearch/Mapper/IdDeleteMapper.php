@@ -13,7 +13,6 @@ class IdDeleteMapper
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $id->toString(),
             ],
         ];

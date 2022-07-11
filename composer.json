@@ -31,7 +31,7 @@
         "ext-json": "*",
         "ext-pcntl": "*",
         "doctrine/collections": "^1.6",
-        "elasticsearch/elasticsearch": "^6.8",
+        "elasticsearch/elasticsearch": "^7.17",
         "psr/log": "^1.1",
         "symfony/console": "5.4.*",
         "symfony/dotenv": "5.4.*",

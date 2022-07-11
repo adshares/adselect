@@ -15,7 +15,6 @@ class KeywordMapper
             $mapped[] = [
                 'update' => [
                     '_index' => $index,
-                    '_type' => '_doc',
                     '_id' => $id,
                     'retry_on_conflict' => 5,
                 ],

@@ -17,7 +17,6 @@ class UserHistoryMapper
         $mapped['index'] = [
             'index' => [
                 '_index' => $index,
-                '_type' => '_doc',
             ],
         ];
 

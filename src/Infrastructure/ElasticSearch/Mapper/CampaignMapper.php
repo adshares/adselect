@@ -22,7 +22,6 @@ EOF;
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $campaign->getId(),
                 'routing' => $campaign->getId(),
             ],
@@ -93,7 +92,6 @@ EOF;
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $id,
                 'routing' => $campaignId,
             ],

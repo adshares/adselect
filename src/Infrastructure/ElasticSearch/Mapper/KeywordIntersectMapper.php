@@ -13,7 +13,6 @@ class KeywordIntersectMapper
         $mapped[] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => sha1($keywordA . '--' . $keywordB),
                 'retry_on_conflict' => 5,
             ],

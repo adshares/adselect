@@ -57,7 +57,6 @@ PAINLESS;
         $mapped['index'] = [
             'update' => [
                 '_index'  => $index,
-                '_type'   => '_doc',
                 '_id'     => $banner->getBannerId(),
                 'routing' => $campaign->getId(),
             ],
@@ -136,7 +135,6 @@ PAINLESS;
         $mapped['index'] = [
             'update' => [
                 '_index'  => $index,
-                '_type'   => '_doc',
                 '_id'     => $id,
                 'routing' => $campaignId,
             ],
@@ -186,7 +184,6 @@ PAINLESS;
     ): array {
         $mapped = [];
         $mapped['index'] = $index;
-        $mapped['type'] = '_doc';
 
         if ($campaignId) {
             $query = [
@@ -235,7 +232,6 @@ PAINLESS;
     ): array {
         $mapped = [];
         $mapped['index'] = $index;
-        $mapped['type'] = '_doc';
 
         $mapped['body'] = [
             'query'  => [

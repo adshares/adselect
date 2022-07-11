@@ -10,7 +10,6 @@ class CampaignDeleteMapper
     {
         $mapped = [];
         $mapped['index'] = $index;
-        $mapped['type'] = '_doc';
 
         $mapped['body'] = [
             'query'  => [

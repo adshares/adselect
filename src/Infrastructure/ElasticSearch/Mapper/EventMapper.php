@@ -13,7 +13,6 @@ class EventMapper
         $mapped['index'] = [
             'index' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $event->getId(),
             ],
         ];
