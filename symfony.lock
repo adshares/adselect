@@ -154,15 +154,15 @@
         "version": "1.1.0"
     },
     "qossmic/deptrac-shim": {
-        "version": "0.7",
+        "version": "0.23",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "0.7",
-            "ref": "2d7d934257e33fd83c72f5da5b5b1393efa7e0c6"
+            "branch": "main",
+            "version": "0.19",
+            "ref": "3c3daab46226c37fc14e10faf81df737a3039d96"
         },
         "files": [
-            "depfile.yaml"
+            "deptrac.yaml"
         ]
     },
     "react/promise": {
