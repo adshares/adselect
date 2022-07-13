@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Domain\Model;
+namespace App\Tests\Unit\Domain\Model;
 
-use Adshares\AdSelect\Domain\Model\BannerCollection;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use Adshares\AdSelect\Domain\ValueObject\Budget;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
 
 final class CampaignTest extends TestCase

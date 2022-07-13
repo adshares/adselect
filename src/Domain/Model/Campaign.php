@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\Model;
+namespace App\Domain\Model;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\ValueObject\Budget;
-use Adshares\Adselect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Lib\DateTimeInterface;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Lib\DateTimeInterface;
 
 final class Campaign
 {

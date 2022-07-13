@@ -14,68 +14,34 @@ services:
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
-    Adshares\AdSelect\UI\:
-        resource: '../src/UI/*'
-        exclude: '../src/UI/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
 
-    Adshares\AdSelect\UI\Controller\:
-        resource: '../src/UI/Controller'
-        tags: ['controller.service_arguments']
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\Infrastructure\ElasticSearch\Client:
+      arguments:
+        $hosts:
+          - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
+        $logger: '@logger'
 
-    Adshares\AdSelect\Application\Service\:
-        resource: '../src/Application/Service/*'
+    App\Infrastructure\ElasticSearch\Service\BannerFinder:
+      arguments:
+        $experimentChance: '%env(ES_EXPERIMENT_CHANCE)%'
+        $logger: '@logger'
 
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\:
-        resource: '../src/Infrastructure/ElasticSearch/Service/*'
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
-        arguments:
-            $hosts:
-                - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
-            $logger: '@logger'
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder:
-        arguments:
-            $logger: '@logger'
-
-    Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder:
-        arguments:
-            $experimentChance: '%env(ES_EXPERIMENT_CHANCE)%'
-            $logger: '@logger'
-
-    Adshares\AdSelect\UI\EventListener\ApiExceptionListenerSubscriber:
-        arguments:
-            $env: '%env(APP_ENV)%'
-            $logger: '@logger'
-        tags:
-            - { name: kernel.event_subscriber }
-
-    Adshares\AdSelect\UI\Controller\CampaignController:
-        public: true
-        autowire: false
-        autoconfigure: false
-        arguments:
-            $campaignUpdater: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ElasticSearchCampaignUpdater'
-            $bannerFinder: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\BannerFinder'
-            $logger: '@logger'
-
-    Adshares\AdSelect\UI\Controller\EventController:
-        public: true
-        autowire: false
-        autoconfigure: false
-        arguments:
-            $eventCollector: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventCollector'
-            $eventFinder: '@Adshares\AdSelect\Infrastructure\ElasticSearch\Service\EventFinder'
-            $logger: '@logger'
+    App\UI\EventListener\ApiExceptionListenerSubscriber:
+      arguments:
+        $env: '%env(APP_ENV)%'
+        $logger: '@logger'
+      tags:
+        - { name: kernel.event_subscriber }
 
 when@test:
-    services:
-        Adshares\AdSelect\Application\Service\TimeService:
-            class: Adshares\AdSelect\Tests\Integration\Services\TimeServiceWithTimeTravel
-
-        Adshares\AdSelect\Infrastructure\ElasticSearch\Client:
-            class: Adshares\AdSelect\Tests\Integration\Services\EsClientWrapper
-            arguments:
-                $hosts:
-                    - { host: '%env(ES_HOST)%', port: '%env(ES_PORT)%' }
-                $logger: '@logger'
+  services:
+    App\Application\Service\TimeService:
+      class: App\Tests\Integration\Services\TimeServiceWithTimeTravel

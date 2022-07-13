@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
+namespace App\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Service\TimeService;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Application\Service\TimeService;
+use App\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Mapper\BannerMapper;
+use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;

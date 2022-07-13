@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Command;
+namespace App\UI\Command;
 
 use DateTime;
 use Exception;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Event;
+use App\Domain\Model\Event;
 
 class EventMapper
 {
@@ -13,7 +13,6 @@ class EventMapper
         $mapped['index'] = [
             'index' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $event->getId(),
             ],
         ];

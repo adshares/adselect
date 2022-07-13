@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
+namespace App\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Service\EventCollector as EventCollectorInterface;
-use Adshares\AdSelect\Domain\Model\Click;
-use Adshares\AdSelect\Domain\Model\Event;
-use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\Model\Payment;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\ClickMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\EventMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\PaymentMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Application\Service\EventCollector as EventCollectorInterface;
+use App\Domain\Model\Click;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\Model\Payment;
+use App\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use App\Infrastructure\ElasticSearch\Mapper\ClickMapper;
+use App\Infrastructure\ElasticSearch\Mapper\EventMapper;
+use App\Infrastructure\ElasticSearch\Mapper\PaymentMapper;
+use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
 
 class EventCollector implements EventCollectorInterface
 {

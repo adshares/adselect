@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Application\Dto\QueryDto;
-use Adshares\AdSelect\Application\Service\TimeService;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Domain\ValueObject\Size;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
+use App\Application\Dto\QueryDto;
+use App\Application\Service\TimeService;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Size;
+use App\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
+use App\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
 final class QueryBuilderTest extends TestCase

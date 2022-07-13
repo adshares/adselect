@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Domain\ValueObject;
+namespace App\Tests\Unit\Domain\ValueObject;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\ValueObject\Id;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\ValueObject\Id;
 use PHPUnit\Framework\TestCase;
 
 final class IdTest extends TestCase

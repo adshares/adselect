@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Banner;
-use Adshares\AdSelect\Domain\Model\Campaign;
+use App\Domain\Model\Banner;
+use App\Domain\Model\Campaign;
 use DateTimeInterface;
 
 class CampaignMapper
@@ -22,7 +22,6 @@ EOF;
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $campaign->getId(),
                 'routing' => $campaign->getId(),
             ],
@@ -93,7 +92,6 @@ EOF;
         $mapped['index'] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => $id,
                 'routing' => $campaignId,
             ],

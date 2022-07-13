@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\Model;
+namespace App\Domain\Model;
 
 final class CampaignCollection extends Collection
 {

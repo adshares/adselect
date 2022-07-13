@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
 class KeywordMapper
 {
@@ -15,7 +15,6 @@ class KeywordMapper
             $mapped[] = [
                 'update' => [
                     '_index' => $index,
-                    '_type' => '_doc',
                     '_id' => $id,
                     'retry_on_conflict' => 5,
                 ],

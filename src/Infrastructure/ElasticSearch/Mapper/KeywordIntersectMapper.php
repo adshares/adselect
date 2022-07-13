@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
 class KeywordIntersectMapper
 {
@@ -13,7 +13,6 @@ class KeywordIntersectMapper
         $mapped[] = [
             'update' => [
                 '_index' => $index,
-                '_type' => '_doc',
                 '_id' => sha1($keywordA . '--' . $keywordB),
                 'retry_on_conflict' => 5,
             ],

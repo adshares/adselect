@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\Helper;
+use App\Infrastructure\ElasticSearch\Mapper\Helper;
 
 class FilterClause
 {

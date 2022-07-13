@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Integration\Services;
+namespace App\Tests\Integration\Services;
 
-use Adshares\AdSelect\Application\Service\TimeService;
+use App\Application\Service\TimeService;
 use DateTimeImmutable;
 
 class TimeServiceWithTimeTravel extends TimeService

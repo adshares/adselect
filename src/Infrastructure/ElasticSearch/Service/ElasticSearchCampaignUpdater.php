@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
+namespace App\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Service\TimeService;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use Adshares\AdSelect\Domain\Model\CampaignCollection;
-use Adshares\AdSelect\Application\Service\CampaignUpdater;
-use Adshares\AdSelect\Domain\Model\IdCollection;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\BannerMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignDeleteMapper;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use App\Application\Service\TimeService;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\CampaignCollection;
+use App\Application\Service\CampaignUpdater;
+use App\Domain\Model\IdCollection;
+use App\Domain\ValueObject\Id;
+use App\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Mapper\BannerMapper;
+use App\Infrastructure\ElasticSearch\Mapper\CampaignDeleteMapper;
+use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use DateTimeInterface;
 
 class ElasticSearchCampaignUpdater implements CampaignUpdater

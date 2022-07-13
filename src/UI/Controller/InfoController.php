@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdSelect\Lib\InfoHelper;
+use App\Lib\InfoHelper;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class InfoController
+class InfoController extends AbstractController
 {
     public function info(Request $request): Response
     {

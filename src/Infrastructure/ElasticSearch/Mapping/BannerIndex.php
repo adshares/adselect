@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping;
+namespace App\Infrastructure\ElasticSearch\Mapping;
 
 class BannerIndex extends AbstractIndex implements Index
 {

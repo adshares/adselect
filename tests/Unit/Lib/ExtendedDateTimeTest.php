@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Lib;
+namespace App\Tests\Unit\Lib;
 
-use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Lib\Exception\LibraryRuntimeException;
+use App\Lib\ExtendedDateTime;
 use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 

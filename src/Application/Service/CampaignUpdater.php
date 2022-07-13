@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Service;
+namespace App\Application\Service;
 
-use Adshares\AdSelect\Domain\Model\CampaignCollection;
-use Adshares\AdSelect\Domain\Model\IdCollection;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\Model\IdCollection;
 
 interface CampaignUpdater
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
+namespace App\Infrastructure\ElasticSearch;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use App\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
+use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use App\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
+use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;

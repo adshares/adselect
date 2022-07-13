@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
 class UserHistoryMapper
 {
@@ -17,7 +17,6 @@ class UserHistoryMapper
         $mapped['index'] = [
             'index' => [
                 '_index' => $index,
-                '_type' => '_doc',
             ],
         ];
 

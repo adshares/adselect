@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Integration;
+namespace App\Tests\Integration;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
