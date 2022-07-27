@@ -5,18 +5,21 @@
 </p>
 <h3 align="center"><small>Adshares / AdSelect</small></h3>
 <p align="center">
-    <a href="https://travis-ci.org/adshares/adselect" title="Build Status" target="_blank">
-        <img src="https://travis-ci.org/adshares/adselect.svg?branch=master" alt="Build Status">
-    </a>
-    <a href="https://sonarcloud.io/dashboard?id=adshares-adselect" title="Code Quality" target="_blank">
-        <img src="https://sonarcloud.io/api/project_badges/measure?project=adshares-adselect&metric=alert_status" alt="Code Quality">
-    </a>
+    <a href="https://github.com/adshares/adselect/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
+    ·
+    <a href="https://github.com/adshares/adselect/issues/new?template=feature_request.md&labels=New%20Feature">Request feature</a>
+    ·
+    <a href="https://github.com/adshares/adselect/wiki">Wiki</a>
 </p>
 
 AdSelect is a back-end service for ad selection.
 It accepts requests from [AdServer](https://github.com/adshares/adserver) internally.
 
 
+[![Quality Status](https://sonarcloud.io/api/project_badges/measure?project=adshares-adselect&metric=alert_status)](https://sonarcloud.io/dashboard?id=adshares-adselect)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-adselect&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=adshares-adselect)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=adshares-adselect&metric=security_rating)](https://sonarcloud.io/dashboard?id=adshares-adselect)
+[![Build Status](https://app.travis-ci.com/adshares/adselect.svg?branch=master)](https://app.travis-ci.com/github/adshares/adselect)
 
 ## Quick start
 
@@ -46,8 +49,8 @@ composer dev
 - [AdUser](https://github.com/adshares/aduser)
 - [AdPay](https://github.com/adshares/adpay)
 - [AdPanel](https://github.com/adshares/adpanel)
+- [AdController](https://github.com/adshares/adcontroller)
 - [ADS](https://github.com/adshares/ads)
-- [INSTALLER](https://github.com/adshares/installer)
 
 ## License
 
