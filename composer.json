@@ -104,7 +104,7 @@
         ],
         "test": "phpunit --testsuite Unit",
         "test-coverage": "@php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text",
-        "test-ci": "phpunit --configuration phpunit.xml.dist",
+        "test-ci": "@test-coverage --coverage-clover ./var/phpunit/coverage.xml --log-junit ./var/phpunit/logfile.xml",
         "test-integration": "phpunit --testsuite Integration",
         "dev": [
             "Composer\\Config::disableProcessTimeout",
