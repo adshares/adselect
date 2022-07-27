@@ -102,10 +102,22 @@
             "phpcs -s config src tests",
             "deptrac --no-ansi"
         ],
-        "test": "phpunit --testsuite Unit",
-        "test-coverage": "@php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text",
-        "test-ci": "@test-coverage --coverage-clover ./var/phpunit/coverage.xml --log-junit ./var/phpunit/logfile.xml",
-        "test-integration": "phpunit --testsuite Integration",
+        "test":  [
+            "Composer\\Config::disableProcessTimeout",
+            "phpunit --testsuite Unit"
+        ],
+        "test-coverage": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text"
+        ],
+        "test-ci": [
+            "Composer\\Config::disableProcessTimeout",
+            "@test-coverage --coverage-clover ./var/phpunit/coverage.xml --log-junit ./var/phpunit/logfile.xml"
+        ],
+        "test-integration": [
+            "Composer\\Config::disableProcessTimeout",
+            "phpunit --testsuite Integration"
+        ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -S ${APP_HOST:-localhost}:${APP_PORT:-8011} -t public dev-router.php)'"
