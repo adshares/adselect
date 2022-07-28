@@ -19,9 +19,6 @@ use Psr\Log\LoggerInterface;
 class BannerFinder implements BannerFinderInterface
 {
     private const BANNER_SIZE_RETURNED = 1;
-
-    private const SOURCE_WEIGHTS_APC_KEY = 'Adselect.SourceWeights';
-
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
     private const HISTORY_ENTRY_BANNER_ID = 1;

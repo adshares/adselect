@@ -28,6 +28,8 @@ class StatsUpdater
 
     private const CONFIDENCE_Z = 1.96; // 95%
     private const TIME_PERCENTILES = [0, 25, 50, 60, 70, 80, 90, 95, 97.5, 99, 99.5, 100];
+    private const TIME_FORMAT = 'Y-m-d H:i:s';
+    private const PAID_AMOUNT_FORMULA = "doc['paid_amount'].value/(double)1e8";
 
     private array $updateCache = [];
     private int $bulkLimit;
@@ -93,8 +95,8 @@ class StatsUpdater
                             'range' => [
                                 "time" => [
                                     "time_zone" => $from->format('P'),
-                                    "gte"       => $from->format('Y-m-d H:i:s'),
-                                    "lte"       => $this->timeTo->format('Y-m-d H:i:s')
+                                    "gte"       => $from->format(self::TIME_FORMAT),
+                                    "lte"       => $this->timeTo->format(self::TIME_FORMAT)
                                 ],
                             ]
                         ],
@@ -102,7 +104,7 @@ class StatsUpdater
                             'avg_rpm' => [
                                 'avg' => [
                                     "script" => [
-                                        "source" => "doc['paid_amount'].value/(double)1e8",
+                                        "source" => self::PAID_AMOUNT_FORMULA,
                                         "lang"   => "painless",
                                     ]
                                 ]
@@ -133,8 +135,8 @@ class StatsUpdater
                     "range" => [
                         "time" => [
                             "time_zone" => $this->timeFrom->format('P'),
-                            "gte"       => $this->timeFrom->format('Y-m-d H:i:s'),
-                            "lte"       => $this->timeTo->format('Y-m-d H:i:s')
+                            "gte"       => $this->timeFrom->format(self::TIME_FORMAT),
+                            "lte"       => $this->timeTo->format(self::TIME_FORMAT)
                         ],
                     ]
                 ],
@@ -180,7 +182,7 @@ class StatsUpdater
                                 "rpm"  => [
                                     ($upstream ? "stats" : "extended_stats") => [
                                         "script" => [
-                                            "source" => "doc['paid_amount'].value/(double)1e8",
+                                            "source" => self::PAID_AMOUNT_FORMULA,
                                             "lang"   => "painless",
                                         ]
                                     ],
@@ -330,8 +332,6 @@ class StatsUpdater
         $this->timeFrom = $from;
         $this->timeTo = $to;
 
-//        printf("Global average RPM = $%.3f\n", $this->getAverageRpm());
-
         $path = [
             'campaign_id' => [
                 'banner_id' => null,
@@ -439,7 +439,7 @@ class StatsUpdater
 
     private function saveBannerStats($campaignId, $bannerId, array $keyMap, array $stats): void
     {
-        if (count($keyMap) == 0 || $stats['time_active'] < 4 * 3600) {
+        if (empty($keyMap) || $stats['time_active'] < 4 * 3600) {
             $capRPM = $this->getAverageRpm();
         } else {
             $capRPM = self::MAX_RPM;
@@ -482,8 +482,8 @@ class StatsUpdater
                 "range" => [
                     "time" => [
                         "time_zone" => $from->format('P'),
-                        "gte"       => $from->format('Y-m-d H:i:s'),
-                        "lte"       => $to->format('Y-m-d H:i:s')
+                        "gte"       => $from->format(self::TIME_FORMAT),
+                        "lte"       => $to->format(self::TIME_FORMAT)
                     ],
                 ]
             ],
@@ -511,7 +511,7 @@ class StatsUpdater
                 "rpm" => [
                     "stats" => [
                         "script" => [
-                            "source" => "doc['paid_amount'].value/(double)1e8",
+                            "source" => self::PAID_AMOUNT_FORMULA,
                             "lang"   => "painless",
                         ]
                     ],
@@ -544,7 +544,7 @@ class StatsUpdater
         $query = [
             'range' => [
                 'stats.last_update' => [
-                    'lt' => $this->timeService->getDateTime('-4 hours')->format('Y-m-d H:i:s')
+                    'lt' => $this->timeService->getDateTime('-4 hours')->format(self::TIME_FORMAT)
                 ]
             ]
         ];

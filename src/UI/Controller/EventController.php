@@ -10,12 +10,12 @@ use App\Application\Dto\Payments;
 use App\Application\Exception\EventNotFound;
 use App\Application\Service\EventCollector;
 use App\Application\Service\EventFinder;
+use App\UI\Controller\Exception\IncorrectDataException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EventController extends AbstractController
@@ -68,7 +68,7 @@ class EventController extends AbstractController
     {
         $content = json_decode($request->getContent(), true);
         if ($content === null || !isset($content['cases'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new IncorrectDataException();
         }
 
         $dto = new Cases($content['cases']);
@@ -110,7 +110,7 @@ class EventController extends AbstractController
     {
         $content = json_decode($request->getContent(), true);
         if ($content === null || !isset($content['clicks'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new IncorrectDataException();
         }
 
         $dto = new Clicks($content['clicks']);
@@ -152,7 +152,7 @@ class EventController extends AbstractController
     {
         $content = json_decode($request->getContent(), true);
         if ($content === null || !isset($content['payments'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new IncorrectDataException();
         }
 
         $dto = new Payments($content['payments']);

@@ -15,26 +15,26 @@ final class Size
 
     public function getWidth(): int
     {
-        $size = explode('x', $this->size);
-        if (!isset($size[0], $size[1])) {
+        $parts = explode('x', $this->size);
+        if (!isset($parts[0], $parts[1])) {
             return 0;
         }
-        if (!is_numeric($size[0])) {
+        if (!is_numeric($parts[0])) {
             return 0;
         }
-        return (int)$size[0];
+        return (int)$parts[0];
     }
 
     public function getHeight(): int
     {
-        $size = explode('x', $this->size);
-        if (!isset($size[0], $size[1])) {
+        $parts = explode('x', $this->size);
+        if (!isset($parts[0], $parts[1])) {
             return 0;
         }
-        if (!is_numeric($size[1])) {
+        if (!is_numeric($parts[1])) {
             return 0;
         }
-        return (int)$size[1];
+        return (int)$parts[1];
     }
 
     public function toString(): string

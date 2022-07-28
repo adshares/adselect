@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 class ExperimentsUpdater
 {
     private const ES_BUCKET_PAGE_SIZE = 500;
+    private const TIME_FORMAT = 'Y-m-d H:i:s';
 
     private Client $client;
     private TimeService $timeService;
@@ -68,7 +69,6 @@ class ExperimentsUpdater
         // all others with 0 views
         $cBanners = max(1, floor(max(1, $bCount) / max(1, $cCount)) / 2);
         $cWeight = $allMod * (count($adserverStats) + 1) / $cBanners;
-//        printf("%f %f %f\n", $allMod, count($adserverStats), $cBanners);
         $this->updateCampaignExp(
             $adserverStats,
             false,
@@ -96,7 +96,7 @@ class ExperimentsUpdater
             $cBanners,
             $cTime
         );
-        $result = $this->client->getClient()->updateByQuery($mapped);
+        $this->client->getClient()->updateByQuery($mapped);
 
         $this->logger->debug(
             sprintf(
@@ -107,9 +107,6 @@ class ExperimentsUpdater
                 $cBanners
             )
         );
-//        if ($result['updated']) {
-//            print_r($result);
-//        }
     }
 
     private function getCampaignIterator(DateTimeImmutable $from)
@@ -125,7 +122,7 @@ class ExperimentsUpdater
                             "range" => [
                                 "time" => [
                                     "time_zone" => $from->format('P'),
-                                    "gte"       => $from->format('Y-m-d H:i:s'),
+                                    "gte"       => $from->format(self::TIME_FORMAT),
                                 ],
                             ]
                         ]
@@ -193,8 +190,8 @@ class ExperimentsUpdater
                             "range" => [
                                 "time" => [
                                     "time_zone" => $from->format('P'),
-                                    "gte"       => $from->format('Y-m-d H:i:s'),
-                                    "lte"       => $to->format('Y-m-d H:i:s')
+                                    "gte"       => $from->format(self::TIME_FORMAT),
+                                    "lte"       => $to->format(self::TIME_FORMAT)
                                 ],
                             ]
                         ]
@@ -236,7 +233,6 @@ class ExperimentsUpdater
             $result = $this->client->search($mapped);
 
             $after = $result['aggregations']['adservers']['after_key'] ?? null;
-            $found = count($result['aggregations']['adservers']['buckets']);
 
             foreach ($result['aggregations']['adservers']['buckets'] as $bucket) {
                 if ($bucket['key']['address'] != $currentAdserver['address']) {

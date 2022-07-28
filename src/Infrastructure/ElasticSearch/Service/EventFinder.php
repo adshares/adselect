@@ -55,25 +55,21 @@ class EventFinder implements EventFinderInterface
             ],
         ];
 
-        $params = $this->params;
-        $params['body']['query'] = $query;
-        $params['body']['sort'] = $sort;
+        $localParams = $this->params;
+        $localParams['body']['query'] = $query;
+        $localParams['body']['sort'] = $sort;
 
-        $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($params)));
+        $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($localParams)));
 
-        $response = $this->client->search($params);
+        $response = $this->client->search($localParams);
         $data = $response['hits']['hits'][0]['fields'] ?? null;
 
         if (!$data) {
-            throw new EventNotFound('No unpaid events.');
+            throw new EventNotFound('No unpaid events');
         }
 
         return new FoundEvent(
-            $data['id'][0],
-            $data['case_id'][0],
-            $data['publisher_id'][0],
-            $data['paid_amount'][0],
-            $data['time'][0]
+            $data['id'][0]
         );
     }
 
@@ -97,26 +93,21 @@ class EventFinder implements EventFinderInterface
             ],
         ];
 
-        $params = $this->params;
-        $params['body']['query'] = $query;
-        $params['body']['sort'] = $sort;
+        $localParams = $this->params;
+        $localParams['body']['query'] = $query;
+        $localParams['body']['sort'] = $sort;
 
-        $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($params)));
+        $this->logger->debug(sprintf('[EVENT FINDER] (paid) sending a query: %s', json_encode($localParams)));
 
-        $response = $this->client->search($params);
+        $response = $this->client->search($localParams);
         $data = $response['hits']['hits'][0]['fields'] ?? null;
 
         if (!$data) {
-            throw new EventNotFound('No paid events.');
+            throw new EventNotFound('No paid events');
         }
 
         return new FoundEvent(
-            $data['id'][0],
-            $data['case_id'][0],
-            $data['publisher_id'][0],
-            $data['paid_amount'][0],
-            $data['time'][0],
-            $data['payment_id'][0]
+            $data['id'][0]
         );
     }
 
@@ -144,17 +135,17 @@ class EventFinder implements EventFinderInterface
                 ],
             ];
 
-            $params = $this->params;
-            $params['body']['query'] = $query;
-            $params['body']['sort'] = $sort;
+            $localParams = $this->params;
+            $localParams['body']['query'] = $query;
+            $localParams['body']['sort'] = $sort;
 
-            $this->logger->debug(sprintf('[EVENT FINDER] (last case) sending a query: %s', json_encode($params)));
+            $this->logger->debug(sprintf('[EVENT FINDER] (last case) sending a query: %s', json_encode($localParams)));
 
-            $response = $this->client->search($params);
+            $response = $this->client->search($localParams);
             $data = $response['hits']['hits'][0]['fields'] ?? null;
 
             if (!$data) {
-                throw new EventNotFound('No events.');
+                throw new EventNotFound();
             }
 
             $found_id = $data['id'][0];
@@ -188,17 +179,17 @@ class EventFinder implements EventFinderInterface
                 ],
             ];
 
-            $params = $this->params;
-            $params['body']['query'] = $query;
-            $params['body']['sort'] = $sort;
+            $localParams = $this->params;
+            $localParams['body']['query'] = $query;
+            $localParams['body']['sort'] = $sort;
 
-            $this->logger->debug(sprintf('[EVENT FINDER] (last click) sending a query: %s', json_encode($params)));
+            $this->logger->debug(sprintf('[EVENT FINDER] (last click) sending a query: %s', json_encode($localParams)));
 
-            $response = $this->client->search($params);
+            $response = $this->client->search($localParams);
             $data = $response['hits']['hits'][0]['fields'] ?? null;
 
             if (!$data) {
-                throw new EventNotFound('No events.');
+                throw new EventNotFound();
             }
 
             $found_id = $data['click_id'][0];
@@ -232,17 +223,17 @@ class EventFinder implements EventFinderInterface
                 ],
             ];
 
-            $params = $this->params;
-            $params['body']['query'] = $query;
-            $params['body']['sort'] = $sort;
+            $localParams = $this->params;
+            $localParams['body']['query'] = $query;
+            $localParams['body']['sort'] = $sort;
 
-            $this->logger->debug(sprintf('[EVENT FINDER] (last case) sending a query: %s', json_encode($params)));
+            $this->logger->debug(sprintf('[EVENT FINDER] (last case) sending a query: %s', json_encode($localParams)));
 
-            $response = $this->client->search($params);
+            $response = $this->client->search($localParams);
             $data = $response['hits']['hits'][0]['fields'] ?? null;
 
             if (!$data) {
-                throw new EventNotFound('No events.');
+                throw new EventNotFound();
             }
             $found_id = $data['last_payment_id'][0];
             apcu_store($key, $found_id, 300);

@@ -61,24 +61,23 @@ class Client
 
     private function findMappingsForIndex(string $indexName): array
     {
-        if ($indexName === CampaignIndex::INDEX) {
-            return CampaignIndex::mappings();
+        switch ($indexName) {
+            case CampaignIndex::INDEX:
+                $mappings = CampaignIndex::mappings();
+                break;
+            case BannerIndex::INDEX:
+                $mappings = BannerIndex::mappings();
+                break;
+            case EventIndex::INDEX:
+                $mappings = EventIndex::mappings();
+                break;
+            case AdserverIndex::INDEX:
+                $mappings = AdserverIndex::mappings();
+                break;
+            default:
+                throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
         }
-
-        if ($indexName === BannerIndex::INDEX) {
-            return BannerIndex::mappings();
-        }
-
-        if ($indexName === EventIndex::INDEX) {
-            return EventIndex::mappings();
-        }
-
-        if ($indexName === AdserverIndex::INDEX) {
-            return AdserverIndex::mappings();
-        }
-
-
-        throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
+        return $mappings;
     }
 
     public function createIndexes(bool $force = false): void
@@ -158,7 +157,7 @@ class Client
     {
         $params = [
             'index' => $indexName,
-            'body'  => [
+            'body' => [
                 'query' => $query,
             ],
         ];
