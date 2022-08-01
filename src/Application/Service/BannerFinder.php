@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Service;
+namespace App\Application\Service;
 
-use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
-use Adshares\AdSelect\Application\Dto\QueryDto;
+use App\Application\Dto\FoundBannersCollection;
+use App\Application\Dto\QueryDto;
 
 interface BannerFinder
 {

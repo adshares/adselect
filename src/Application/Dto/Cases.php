@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Dto;
+namespace App\Application\Dto;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\Model\Event;
-use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\Model\Event;
+use App\Domain\Model\EventCollection;
+use App\Domain\ValueObject\Id;
+use App\Lib\Exception\LibraryRuntimeException;
+use App\Lib\ExtendedDateTime;
 
 class Cases
 {

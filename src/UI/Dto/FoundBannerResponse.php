@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Dto;
+namespace App\UI\Dto;
 
-use Adshares\AdSelect\Application\Dto\FoundBanner;
-use Adshares\AdSelect\Application\Dto\FoundBannersCollection;
+use App\Application\Dto\FoundBanner;
+use App\Application\Dto\FoundBannersCollection;
 
 class FoundBannerResponse
 {

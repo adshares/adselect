@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdSelect\Application\Dto\CampaignDeleteDto;
-use Adshares\AdSelect\Application\Dto\CampaignUpdateDto;
-use Adshares\AdSelect\Application\Dto\QueryDto;
-use Adshares\AdSelect\Application\Exception\ValidationDtoException;
-use Adshares\AdSelect\Application\Service\BannerFinder;
-use Adshares\AdSelect\Application\Service\CampaignUpdater;
-use Adshares\AdSelect\UI\Dto\FoundBannerResponse;
+use App\Application\Dto\CampaignDeleteDto;
+use App\Application\Dto\CampaignUpdateDto;
+use App\Application\Dto\QueryDto;
+use App\Application\Exception\ValidationDtoException;
+use App\Application\Service\BannerFinder;
+use App\Application\Service\CampaignUpdater;
+use App\UI\Dto\FoundBannerResponse;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class CampaignController
+class CampaignController extends AbstractController
 {
     private CampaignUpdater $campaignUpdater;
     private BannerFinder $bannerFinder;

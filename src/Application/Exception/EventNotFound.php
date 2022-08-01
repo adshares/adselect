@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Exception;
+namespace App\Application\Exception;
 
 use RuntimeException;
+use Throwable;
 
 class EventNotFound extends RuntimeException
 {
+    public function __construct($message = null, $code = 0, Throwable $previous = null)
+    {
+        parent::__construct($message ?? 'No events', $code, $previous);
+    }
 }

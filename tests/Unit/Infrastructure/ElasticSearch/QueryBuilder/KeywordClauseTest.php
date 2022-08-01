@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\KeywordClause;
+use App\Infrastructure\ElasticSearch\QueryBuilder\KeywordClause;
 use PHPUnit\Framework\TestCase;
 
 final class KeywordClauseTest extends TestCase

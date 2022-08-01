@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Lib;
+namespace App\Lib;
 
 final class InfoHelper
 {

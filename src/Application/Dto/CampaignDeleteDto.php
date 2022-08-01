@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Dto;
+namespace App\Application\Dto;
 
-use Adshares\AdSelect\Application\Exception\ValidationDtoException;
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\Model\IdCollection;
-use Adshares\AdSelect\Domain\ValueObject\Id;
+use App\Application\Exception\ValidationDtoException;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\Model\IdCollection;
+use App\Domain\ValueObject\Id;
 
 final class CampaignDeleteDto
 {

@@ -1,12 +1,9 @@
-os: linux
 dist: bionic
 language: php
-
-services:
-  - elasticsearch
+services: elasticsearch
 
 php:
-  - 7.4
+  - 8.1
 
 cache:
   directories:
@@ -16,26 +13,26 @@ before_install:
   - composer self-update
   - echo "extension = apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "apc.enable_cli = '1'" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - wget -O local-php-security-checker https://github.com/fabpot/local-php-security-checker/releases/download/v2.0.3/local-php-security-checker_2.0.3_linux_amd64
+  - wget -O local-php-security-checker https://github.com/fabpot/local-php-security-checker/releases/download/v2.0.4/local-php-security-checker_2.0.4_linux_amd64
   - chmod +x local-php-security-checker
 
 install:
-  - composer install
+  - composer install --no-interaction
 
 before_script:
   - sleep 10
 
-jobs:
-  include:
-    - script:
-      - ./local-php-security-checker
-      - ./bin/console lint:yaml config
-      - ./vendor/bin/parallel-lint --exclude app --exclude vendor .
-      - ./vendor/bin/phpcs -s src tests
-      - ./vendor/bin/deptrac
-      - ./vendor/bin/phpunit --testsuite Unit -c phpunit.xml.dist
-    - script:
-      - ./vendor/bin/phpunit --testsuite Integration -c phpunit.xml.dist
+script:
+  - ./local-php-security-checker
+  - composer qa-check
+  - composer test-ci
+  - sonar-scanner
 
 notifications:
   email: false
+
+addons:
+  sonarcloud:
+    organization: "adshares-github"
+    token:
+      secure: "qRve/aNDPVYWrmzm1hTOrODUzr1jAAUKUENQ85N1lV3XwmFwxXJeF3MDPgXw+gK/+Fk2q0bhPcgs1C9fXtQoeE7TG+5od/vjgYGkj1G5sqpcoC0jVNTYIa9VvHJUik/CxnvZD+y8udbVuK4mE6ozawcXrWebnQai1ng2hkAY9a2sVmgU7jxPjMh26g8lQwky/LgHE93Ln2emnLnEwHrHDLh9a3VL5RrhsAI15Mxc/xJ62kPfFvmcCbCfd5eDhPMrCJ5B1xCItLBBuFz4CBOMmKg6TGBT96JprOYOHY+iRViGO4ga4VlJ38GzzA+WbHweIUf1GajYnSHVpok9bDahlltG3h1W2+AYX57dm47J41w0DRgGq3Etkbahq2ohPeLIbmPk1YPmObVK/zRsBx3gVG948Y8F3eGM+IWzxXtMG5vyg0ku8uaY+1z0jpfzYHWLoOuLEprIReBXIT8itpASIBuF5RIHaz/fQZNJvnHXWAAAYNrb0UEKstoGlN1rBWDLGf0PGe9EqiUgb7Tp9D60tSHhEEj2tGkx9mtTmVeHgmsrc/In8DbnwPkB91xFjJ7Xc93P1YNINmT3MKogilFHgVjkaZthPynq0MCr2uviJFF/cLjQSbyqazB4OU3EDVyfIeKJXtHF2Mitax3lBUsYaTtDETQcUm6z4N1ii8Brtl8="

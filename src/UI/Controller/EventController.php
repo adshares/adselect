@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Controller;
+namespace App\UI\Controller;
 
-use Adshares\AdSelect\Application\Dto\Cases;
-use Adshares\AdSelect\Application\Dto\Clicks;
-use Adshares\AdSelect\Application\Dto\Payments;
-use Adshares\AdSelect\Application\Exception\EventNotFound;
-use Adshares\AdSelect\Application\Service\EventCollector;
-use Adshares\AdSelect\Application\Service\EventFinder;
+use App\Application\Dto\Cases;
+use App\Application\Dto\Clicks;
+use App\Application\Dto\Payments;
+use App\Application\Exception\EventNotFound;
+use App\Application\Service\EventCollector;
+use App\Application\Service\EventFinder;
+use App\UI\Controller\Exception\IncorrectDataException;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class EventController
+class EventController extends AbstractController
 {
     private EventCollector $eventCollector;
     private LoggerInterface $logger;
@@ -67,7 +68,7 @@ class EventController
     {
         $content = json_decode($request->getContent(), true);
         if ($content === null || !isset($content['cases'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new IncorrectDataException();
         }
 
         $dto = new Cases($content['cases']);
@@ -109,7 +110,7 @@ class EventController
     {
         $content = json_decode($request->getContent(), true);
         if ($content === null || !isset($content['clicks'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new IncorrectDataException();
         }
 
         $dto = new Clicks($content['clicks']);
@@ -151,7 +152,7 @@ class EventController
     {
         $content = json_decode($request->getContent(), true);
         if ($content === null || !isset($content['payments'])) {
-            throw new BadRequestHttpException('Incorrect data');
+            throw new IncorrectDataException();
         }
 
         $dto = new Payments($content['payments']);

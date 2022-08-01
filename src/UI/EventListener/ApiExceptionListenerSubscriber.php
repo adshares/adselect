@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\EventListener;
+namespace App\UI\EventListener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

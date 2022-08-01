@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Dto;
+namespace App\Application\Dto;
 
-use Adshares\AdSelect\Application\Exception\ValidationDtoException;
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Domain\ValueObject\Size;
+use App\Application\Exception\ValidationDtoException;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Size;
 
 final class QueryDto
 {

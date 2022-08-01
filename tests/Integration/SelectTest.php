@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Integration;
+namespace App\Tests\Integration;
 
-use Adshares\AdSelect\Tests\Integration\Builders\BannerBuilder;
-use Adshares\AdSelect\Tests\Integration\Builders\CampaignBuilder;
-use Adshares\AdSelect\Tests\Integration\Builders\FindRequestBuilder;
-use Adshares\AdSelect\Tests\Integration\Builders\Uuid;
-use Adshares\AdSelect\Tests\Integration\Services\TimeServiceWithTimeTravel;
+use App\Tests\Integration\Builders\BannerBuilder;
+use App\Tests\Integration\Builders\CampaignBuilder;
+use App\Tests\Integration\Builders\FindRequestBuilder;
+use App\Tests\Integration\Builders\Uuid;
+use App\Tests\Integration\Services\TimeServiceWithTimeTravel;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
@@ -32,7 +32,7 @@ final class SelectTest extends IntegrationTestCase
         self::setExperimentChance(self::DEFAULT_EXPERIMENTS_CHANCE);
         $this->client = self::createClient();
         self::runCommand('ops:es:create-index');
-        $this->timeService = self::getContainer()->get('Adshares\AdSelect\Application\Service\TimeService');
+        $this->timeService = self::getContainer()->get('App\Application\Service\TimeService');
         $this->timeService->setModify();
     }
 

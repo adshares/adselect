@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\KeywordsToExclude;
+use App\Infrastructure\ElasticSearch\QueryBuilder\KeywordsToExclude;
 use PHPUnit\Framework\TestCase;
 
 final class KeywordsToExcludeTest extends TestCase

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Integration;
+namespace App\Tests\Integration;
 
-use Adshares\AdSelect\Tests\Integration\Builders\BannerBuilder;
-use Adshares\AdSelect\Tests\Integration\Builders\CampaignBuilder;
+use App\Tests\Integration\Builders\BannerBuilder;
+use App\Tests\Integration\Builders\CampaignBuilder;
 
 final class UploadTest extends IntegrationTestCase
 {

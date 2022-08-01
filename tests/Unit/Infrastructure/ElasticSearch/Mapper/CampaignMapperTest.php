@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\Mapper;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Banner;
-use Adshares\AdSelect\Domain\Model\BannerCollection;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use Adshares\AdSelect\Domain\ValueObject\Budget;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Domain\ValueObject\Size;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Size;
+use App\Infrastructure\ElasticSearch\Mapper\CampaignMapper;
+use App\Lib\ExtendedDateTime;
 use PHPUnit\Framework\TestCase;
 
 final class CampaignMapperTest extends TestCase

@@ -1,52 +1,52 @@
 campaign_update:
     path: /api/%api_version%/campaigns
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\CampaignController::update
+    controller: App\UI\Controller\CampaignController::update
     defaults:
 
 campaign_delete:
     path: /api/%api_version%/campaigns
     methods: [DELETE]
-    controller: Adshares\AdSelect\UI\Controller\CampaignController::delete
+    controller: App\UI\Controller\CampaignController::delete
     defaults:
 
 campaign_find_banners:
     path: /api/%api_version%/find
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\CampaignController::findBanners
+    controller: App\UI\Controller\CampaignController::findBanners
     defaults:
         _format: json
 
 new_cases:
     path: /api/%api_version%/cases
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\EventController::newCases
+    controller: App\UI\Controller\EventController::newCases
 last_case:
     path: /api/%api_version%/cases/last
     methods: [GET]
-    controller: Adshares\AdSelect\UI\Controller\EventController::lastCase
+    controller: App\UI\Controller\EventController::lastCase
 
 new_clicks:
     path: /api/%api_version%/clicks
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\EventController::newClicks
+    controller: App\UI\Controller\EventController::newClicks
 last_click:
     path: /api/%api_version%/clicks/last
     methods: [GET]
-    controller: Adshares\AdSelect\UI\Controller\EventController::lastClick
+    controller: App\UI\Controller\EventController::lastClick
 
 new_payments:
     path: /api/%api_version%/payments
     methods: [POST]
-    controller: Adshares\AdSelect\UI\Controller\EventController::newPayments
+    controller: App\UI\Controller\EventController::newPayments
 last_payment:
     path: /api/%api_version%/payments/last
     methods: [GET]
-    controller: Adshares\AdSelect\UI\Controller\EventController::lastPayment
+    controller: App\UI\Controller\EventController::lastPayment
 
 info:
     path: /info.{_format}
-    controller: Adshares\AdSelect\UI\Controller\InfoController::info
+    controller: App\UI\Controller\InfoController::info
     methods: GET
     defaults:
         _format: 'json'

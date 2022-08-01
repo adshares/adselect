@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\ValueObject;
+namespace App\Domain\ValueObject;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\Exception\AdSelectRuntimeException;
 
 final class Budget
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Dto;
+namespace App\Application\Dto;
 
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\Model\Payment;
-use Adshares\AdSelect\Domain\Model\EventCollection;
-use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\Model\Payment;
+use App\Domain\Model\EventCollection;
+use App\Lib\Exception\LibraryRuntimeException;
+use App\Lib\ExtendedDateTime;
 
 class Payments
 {

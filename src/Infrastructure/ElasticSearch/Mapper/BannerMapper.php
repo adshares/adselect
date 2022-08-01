@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Mapper;
+namespace App\Infrastructure\ElasticSearch\Mapper;
 
-use Adshares\AdSelect\Domain\Model\Banner;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\StatsUpdater;
+use App\Domain\Model\Banner;
+use App\Domain\Model\Campaign;
+use App\Infrastructure\ElasticSearch\Service\StatsUpdater;
 use DateTimeInterface;
 
 class BannerMapper
@@ -57,7 +57,6 @@ PAINLESS;
         $mapped['index'] = [
             'update' => [
                 '_index'  => $index,
-                '_type'   => '_doc',
                 '_id'     => $banner->getBannerId(),
                 'routing' => $campaign->getId(),
             ],
@@ -136,7 +135,6 @@ PAINLESS;
         $mapped['index'] = [
             'update' => [
                 '_index'  => $index,
-                '_type'   => '_doc',
                 '_id'     => $id,
                 'routing' => $campaignId,
             ],
@@ -186,7 +184,6 @@ PAINLESS;
     ): array {
         $mapped = [];
         $mapped['index'] = $index;
-        $mapped['type'] = '_doc';
 
         if ($campaignId) {
             $query = [
@@ -235,7 +232,6 @@ PAINLESS;
     ): array {
         $mapped = [];
         $mapped['index'] = $index;
-        $mapped['type'] = '_doc';
 
         $mapped['body'] = [
             'query'  => [

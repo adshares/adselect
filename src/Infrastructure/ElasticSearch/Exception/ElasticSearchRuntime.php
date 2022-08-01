@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Exception;
+namespace App\Infrastructure\ElasticSearch\Exception;
 
 use RuntimeException;
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Domain\ValueObject;
+namespace App\Tests\Unit\Domain\ValueObject;
 
-use Adshares\AdSelect\Domain\ValueObject\Size;
+use App\Domain\ValueObject\Size;
 use PHPUnit\Framework\TestCase;
 
 final class SizeTest extends TestCase

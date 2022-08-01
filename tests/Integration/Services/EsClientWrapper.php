@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Integration\Services;
+namespace App\Tests\Integration\Services;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Client;
 
 class EsClientWrapper extends Client
 {

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Application\Dto;
+namespace App\Application\Dto;
 
-use Adshares\AdSelect\Application\Exception\ValidationDtoException;
-use Adshares\AdSelect\Domain\Exception\AdSelectRuntimeException;
-use Adshares\AdSelect\Domain\Model\Banner;
-use Adshares\AdSelect\Domain\Model\BannerCollection;
-use Adshares\AdSelect\Domain\Model\Campaign;
-use Adshares\AdSelect\Domain\Model\CampaignCollection;
-use Adshares\AdSelect\Domain\ValueObject\Budget;
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Domain\ValueObject\Size;
-use Adshares\AdSelect\Lib\Exception\LibraryRuntimeException;
-use Adshares\AdSelect\Lib\ExtendedDateTime;
+use App\Application\Exception\ValidationDtoException;
+use App\Domain\Exception\AdSelectRuntimeException;
+use App\Domain\Model\Banner;
+use App\Domain\Model\BannerCollection;
+use App\Domain\Model\Campaign;
+use App\Domain\Model\CampaignCollection;
+use App\Domain\ValueObject\Budget;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Size;
+use App\Lib\Exception\LibraryRuntimeException;
+use App\Lib\ExtendedDateTime;
 
 final class CampaignUpdateDto
 {

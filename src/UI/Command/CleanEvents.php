@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Command;
+namespace App\UI\Command;
 
-use Adshares\AdSelect\Application\Service\DataCleaner;
+use App\Application\Service\DataCleaner;
 use DateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch;
+namespace App\Infrastructure\ElasticSearch;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\BannerIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Infrastructure\ElasticSearch\Exception\ElasticSearchRuntime;
+use App\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
+use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
+use App\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
+use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
@@ -61,24 +61,23 @@ class Client
 
     private function findMappingsForIndex(string $indexName): array
     {
-        if ($indexName === CampaignIndex::INDEX) {
-            return CampaignIndex::mappings();
+        switch ($indexName) {
+            case CampaignIndex::INDEX:
+                $mappings = CampaignIndex::mappings();
+                break;
+            case BannerIndex::INDEX:
+                $mappings = BannerIndex::mappings();
+                break;
+            case EventIndex::INDEX:
+                $mappings = EventIndex::mappings();
+                break;
+            case AdserverIndex::INDEX:
+                $mappings = AdserverIndex::mappings();
+                break;
+            default:
+                throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
         }
-
-        if ($indexName === BannerIndex::INDEX) {
-            return BannerIndex::mappings();
-        }
-
-        if ($indexName === EventIndex::INDEX) {
-            return EventIndex::mappings();
-        }
-
-        if ($indexName === AdserverIndex::INDEX) {
-            return AdserverIndex::mappings();
-        }
-
-
-        throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
+        return $mappings;
     }
 
     public function createIndexes(bool $force = false): void
@@ -158,7 +157,7 @@ class Client
     {
         $params = [
             'index' => $indexName,
-            'body'  => [
+            'body' => [
                 'query' => $query,
             ],
         ];

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Domain\Model;
+namespace App\Domain\Model;
 
-use Adshares\AdSelect\Domain\ValueObject\Id;
-use Adshares\AdSelect\Domain\ValueObject\Size;
+use App\Domain\ValueObject\Id;
+use App\Domain\ValueObject\Size;
 
 final class Banner
 {

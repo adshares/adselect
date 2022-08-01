@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Infrastructure\ElasticSearch\Service;
+namespace App\Infrastructure\ElasticSearch\Service;
 
-use Adshares\AdSelect\Application\Service\DataCleaner as BaseDataCleaner;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Client;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\EventIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\CleanQuery;
+use App\Application\Service\DataCleaner as BaseDataCleaner;
+use App\Infrastructure\ElasticSearch\Client;
+use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Infrastructure\ElasticSearch\Mapping\UserHistoryIndex;
+use App\Infrastructure\ElasticSearch\QueryBuilder\CleanQuery;
 use DateTime;
 
 class DataCleaner implements BaseDataCleaner

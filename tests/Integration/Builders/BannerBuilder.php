@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Integration\Builders;
+namespace App\Tests\Integration\Builders;
 
 final class BannerBuilder
 {

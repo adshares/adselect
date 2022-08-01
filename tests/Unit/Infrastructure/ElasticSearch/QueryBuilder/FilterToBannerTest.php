@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
+namespace App\Tests\Unit\Infrastructure\ElasticSearch\QueryBuilder;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\QueryBuilder\FilterToBanner;
+use App\Infrastructure\ElasticSearch\QueryBuilder\FilterToBanner;
 use PHPUnit\Framework\TestCase;
 
 use function array_keys;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Adshares\AdSelect\UI\Command;
+namespace App\UI\Command;
 
-use Adshares\AdSelect\Infrastructure\ElasticSearch\Service\ExperimentsUpdater;
+use App\Infrastructure\ElasticSearch\Service\ExperimentsUpdater;
 use DateTime;
 use DateTimeImmutable;
 use Symfony\Component\Console\Command\Command;
