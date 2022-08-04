@@ -43,8 +43,8 @@ class UpdateStats extends Command
         $perThread = 256 / $n;
 
         for ($i = 0; round($i) < 256; $i += $perThread) {
-            $min = round($i);
-            $max = round($i + $perThread);
+            $min = (int)round($i);
+            $max = (int)round($i + $perThread);
             $campaignRange = [
                 'gte' => \str_pad(\dechex($min), 2, "0", STR_PAD_LEFT),
             ];

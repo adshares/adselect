@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2022-08-04
+### Fixed
+- Types error
+
 ## [1.2.0] - 2022-07-27
 ### Changed
 - Support PHP 8.1
@@ -74,7 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-19
 Last python version
 
-[Unreleased]: https://github.com/adshares/adselect/compare/v1.2.0...develop
+[Unreleased]: https://github.com/adshares/adselect/compare/v1.2.1...develop
+[1.2.1]: https://github.com/adshares/adselect/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/adshares/adselect/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/adshares/adselect/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/adshares/adselect/compare/v1.1.0...v1.1.1
