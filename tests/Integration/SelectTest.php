@@ -386,6 +386,75 @@ final class SelectTest extends IntegrationTestCase
     /**
      * @dataProvider eventAmountProvider
      */
+    public function testSelectDifferentBannersWithEqualPaymentsPerEvent3of3(int $eventAmount): void
+    {
+        $campaignId = '10000000000000000000000000000000';
+        $bannerIds = [
+            '11111111111111111111111111111111',
+            '22222222222222222222222222222222',
+            '33333333333333333333333333333333',
+        ];
+        $campaignData = [
+            (new CampaignBuilder())
+                ->id($campaignId)
+                ->banners(array_map(fn($id) => (new BannerBuilder())->id($id)->build(), $bannerIds))
+                ->build(),
+        ];
+        $this->setupCampaigns($campaignData);
+
+        $payingBannerIds = $bannerIds;
+        foreach ($payingBannerIds as $payingBannerId) {
+            $this->setupInitialPaymentsWithEqualEventAmount(
+                [$campaignId => $payingBannerId],
+                $payingBannerIds,
+                $eventAmount
+            );
+        }
+
+        $results = $this->findBanners();
+
+        self::assertResultsPresent($payingBannerIds, $results, 250);
+    }
+
+    /**
+     * @dataProvider eventAmountProvider
+     */
+    public function testSelectDifferentBannersWithEqualPaymentsPerEvent2of3(int $eventAmount): void
+    {
+        $campaignId = '10000000000000000000000000000000';
+        $bannerIds = [
+            '11111111111111111111111111111111',
+            '22222222222222222222222222222222',
+            '33333333333333333333333333333333',
+        ];
+        $campaignData = [
+            (new CampaignBuilder())
+                ->id($campaignId)
+                ->banners(array_map(fn($id) => (new BannerBuilder())->id($id)->build(), $bannerIds))
+                ->build(),
+        ];
+        $this->setupCampaigns($campaignData);
+
+        $payingBannerIds = [
+            '22222222222222222222222222222222',
+            '33333333333333333333333333333333',
+        ];
+        foreach ($payingBannerIds as $payingBannerId) {
+            $this->setupInitialPaymentsWithEqualEventAmount(
+                [$campaignId => $payingBannerId],
+                $payingBannerIds,
+                $eventAmount
+            );
+        }
+
+        $results = $this->findBanners();
+
+        self::assertResultsPresent($payingBannerIds, $results, 250);
+    }
+
+    /**
+     * @dataProvider eventAmountProvider
+     */
     public function testSelectDifferentCampaignsWithEqualPaymentsPerEvent3of3(int $eventAmount): void
     {
         $idsMap = [
