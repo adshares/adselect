@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\UI\Controller\Exception;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
