@@ -44,7 +44,7 @@ class BannerFinder implements BannerFinderInterface
 
     public function find(
         QueryDto $queryDto,
-        int $size
+        int $size = 1
     ): FoundBannersCollection {
         $userHistory = $this->loadUserHistory($queryDto);
         $defined = $this->getDefinedRequireKeywords();
@@ -110,7 +110,7 @@ class BannerFinder implements BannerFinderInterface
                     $hit['_id'],
                     in_array($queryDto->getSize(), $hit['fields']['banner.size'], true)
                         ? $queryDto->getSize() : $hit['fields']['banner.size'][0],
-                    fmod($hit['_score'], 100_000) / 100
+                    fmod(floor($hit['_score']), 100_000) / 100
                 )
             );
         }

@@ -97,18 +97,6 @@
     "phpcompatibility/php-compatibility": {
         "version": "9.3.5"
     },
-    "phpdocumentor/reflection-common": {
-        "version": "1.0.1"
-    },
-    "phpdocumentor/reflection-docblock": {
-        "version": "4.3.1"
-    },
-    "phpdocumentor/type-resolver": {
-        "version": "0.4.0"
-    },
-    "phpspec/prophecy": {
-        "version": "1.8.0"
-    },
     "phpstan/phpdoc-parser": {
         "version": "0.5.4"
     },
@@ -421,8 +409,5 @@
     },
     "theseer/tokenizer": {
         "version": "1.1.2"
-    },
-    "webmozart/assert": {
-        "version": "1.4.0"
     }
 }

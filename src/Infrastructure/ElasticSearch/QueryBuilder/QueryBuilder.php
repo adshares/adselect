@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @phpcs:disable Generic.Files.LineLength.TooLong
- */
-
 declare(strict_types=1);
 
 namespace App\Infrastructure\ElasticSearch\QueryBuilder;
@@ -29,7 +25,7 @@ class QueryBuilder
             = <<<PAINLESS
 double real_rpm = _score % 1000.0;
 if (params.min_rpm > real_rpm) {
-    return 0;
+    return Math.random();
 }
 return Math.round(
         100.0
@@ -38,7 +34,8 @@ return Math.round(
         * (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]]) : 1)
     )
     * 100000
-    + Math.round(real_rpm * 100);
+    + Math.round(real_rpm * 100)
+    + Math.random();
 PAINLESS;
 
         return [

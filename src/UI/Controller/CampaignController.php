@@ -72,7 +72,6 @@ class CampaignController extends AbstractController
     public function findBanners(Request $request): JsonResponse
     {
         $queries = json_decode($request->getContent(), true);
-        $size = 1;
 
         $results = [];
         foreach ($queries as $query) {
@@ -80,7 +79,7 @@ class CampaignController extends AbstractController
 
             try {
                 $queryDto = QueryDto::fromArray($query);
-                $banners = $this->bannerFinder->find($queryDto, $size);
+                $banners = $this->bannerFinder->find($queryDto);
                 $results[$requestId] = (new FoundBannerResponse($banners))->toArray();
             } catch (ValidationDtoException $exception) {
                 $results[$requestId] = [];
@@ -89,7 +88,6 @@ class CampaignController extends AbstractController
                     sprintf('[Find] Invalid input data (%s).', $exception->getMessage()),
                     $query
                 );
-                // think about adding a referer and more data related to a server which asks
             }
         }
 
