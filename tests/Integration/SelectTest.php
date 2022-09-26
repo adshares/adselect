@@ -264,6 +264,13 @@ final class SelectTest extends IntegrationTestCase
         self::assertResultsPresent($bannerIds, $results, 250);
     }
 
+    public function testSelectDifferentBannersWhenNoPaymentsAndFullRandomness(): void
+    {
+        self::enableEsClientRandomness();
+        self::setExperimentChance(1);
+        $this->testSelectDifferentBannersWhenNoPayments();
+    }
+
     public function testSelectOnlyMatchingCampaignsWhenNoPayments(): void
     {
         $campaignsData = [
