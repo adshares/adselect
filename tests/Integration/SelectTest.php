@@ -919,7 +919,7 @@ final class SelectTest extends IntegrationTestCase
             self::assertLessThan($maxTries, $try, 'Statistics were not updated');
             sleep(1);
             $content = self::runCommand('ops:es:update-stats');
-            $updated = str_starts_with($content, 'Finished');
+            $updated = str_starts_with($content, 'Finished') || str_starts_with($content, 'No events to process');
             $try++;
         } while (!$updated);
 
@@ -1076,6 +1076,9 @@ final class SelectTest extends IntegrationTestCase
                 $results[$bannerId] = 1;
             } else {
                 $results[$bannerId]++;
+            }
+            if ($i % 83 === 82) {
+                $this->updateStatisticsOrFail();
             }
         }
         return $results;
