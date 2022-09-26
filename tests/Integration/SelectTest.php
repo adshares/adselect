@@ -227,7 +227,6 @@ final class SelectTest extends IntegrationTestCase
 
     public function testSelectDifferentCampaignsWhenNoPayments(): void
     {
-        self::markTestSkipped('Not paying campaigns are not handled yet.');
         $bannerIds = [
             '00000000000000000000000000000001',
             '00000000000000000000000000000002',
@@ -248,7 +247,6 @@ final class SelectTest extends IntegrationTestCase
 
     public function testSelectDifferentBannersWhenNoPayments(): void
     {
-        self::markTestSkipped('Not paying campaigns are not handled yet.');
         $bannerIds = [
             '00000000000000000000000000000001',
             '00000000000000000000000000000002',
@@ -268,7 +266,6 @@ final class SelectTest extends IntegrationTestCase
 
     public function testSelectOnlyMatchingCampaignsWhenNoPayments(): void
     {
-        self::markTestSkipped('Not paying campaigns are not handled yet.');
         $campaignsData = [
             (new CampaignBuilder())
                 ->banners([(new BannerBuilder())->id('11111111111111111111111111111111')->build()])
