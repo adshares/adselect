@@ -44,7 +44,7 @@ class BannerFinder implements BannerFinderInterface
 
     public function find(
         QueryDto $queryDto,
-        int $size = 1
+        int $resultCount = 1
     ): FoundBannersCollection {
         $userHistory = $this->loadUserHistory($queryDto);
         $defined = $this->getDefinedRequireKeywords();
@@ -52,7 +52,7 @@ class BannerFinder implements BannerFinderInterface
 
         $params = [
             'index'  => BannerIndex::name(),
-            'size'   => $size,
+            'size'   => $resultCount,
             'client' => [
                 'timeout'         => 0.5,
                 'connect_timeout' => 0.2
@@ -104,12 +104,18 @@ class BannerFinder implements BannerFinderInterface
         }
 
         foreach ($response['hits']['hits'] as $hit) {
+            $size = $hit['fields']['banner.size'][0];
+            foreach ($queryDto->getScopes() as $scope) {
+                if (in_array($scope, $hit['fields']['banner.size'], true)) {
+                    $size = $scope;
+                    break;
+                }
+            }
             $collection->add(
                 new FoundBanner(
                     $hit['fields']['campaign_id'][0],
                     $hit['_id'],
-                    in_array($queryDto->getSize(), $hit['fields']['banner.size'], true)
-                        ? $queryDto->getSize() : $hit['fields']['banner.size'][0],
+                    $size,
                     fmod(floor($hit['_score']), 100_000) / 100
                 )
             );
