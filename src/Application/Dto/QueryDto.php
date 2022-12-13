@@ -15,7 +15,7 @@ final class QueryDto
     private Id $siteId;
     private Id $zoneId;
     private Id $userId;
-    private Size $size;
+    private array $scopes;
     private array $requireFilters;
     private array $excludeFilters;
     private array $keywords;
@@ -28,7 +28,7 @@ final class QueryDto
         Id $zoneId,
         Id $userId,
         Id $trackingId,
-        Size $size,
+        array $scopes,
         array $zone_options = [],
         array $filters = [],
         array $keywords = []
@@ -38,7 +38,7 @@ final class QueryDto
         $this->zoneId = $zoneId;
         $this->userId = $userId;
         $this->trackingId = $trackingId;
-        $this->size = $size;
+        $this->scopes = $scopes;
         $this->requireFilters = $filters['require'] ?? [];
         $this->excludeFilters = $filters['exclude'] ?? [];
         $this->keywords = $keywords;
@@ -90,9 +90,9 @@ final class QueryDto
         return $this->trackingId->toString();
     }
 
-    public function getSize(): string
+    public function getScopes(): array
     {
-        return $this->size->toString();
+        return $this->scopes;
     }
 
     public static function fromArray(array $input): self
@@ -117,8 +117,11 @@ final class QueryDto
             throw new ValidationDtoException('Field `tracking_id` is required.');
         }
 
-        if (!isset($input['banner_size'])) {
-            throw new ValidationDtoException('Field `banner_size` is required.');
+        if (!isset($input['scopes'])) {
+            if (!isset($input['banner_size'])) {
+                throw new ValidationDtoException('Field `scopes` is required.');
+            }
+            $input['scopes'] = [$input['banner_size']];
         }
 
         if (!isset($input['keywords'])) {
@@ -136,7 +139,7 @@ final class QueryDto
                 new Id($input['zone_id']),
                 new Id($input['user_id']),
                 new Id($input['tracking_id']),
-                new Size($input['banner_size']),
+                $input['scopes'],
                 $input['zone_options'] ?? [],
                 $input['banner_filters'],
                 $input['keywords']

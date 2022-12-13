@@ -42,7 +42,7 @@ PAINLESS;
         );
 
         $excludes = KeywordsToExclude::build(self::PREFIX_FILTER_EXCLUDE, $this->bannerFinderDto->getKeywords());
-        $sizeFilter = FilterClause::build('banner.size', [$this->bannerFinderDto->getSize()]);
+        $sizeFilter = FilterClause::build('banner.size', $this->bannerFinderDto->getScopes());
 
         $requireFilter = FilterToBanner::build(
             self::PREFIX_BANNER_REQUIRE,
@@ -141,7 +141,6 @@ PAINLESS;
                                         ]
                                     ],
                                     "boost_mode"   => "replace",
-                                    //"score_mode" => "max",
                                 ],
                             ],
                             "score_mode" => "max",

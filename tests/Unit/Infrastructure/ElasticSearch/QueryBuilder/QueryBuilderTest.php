@@ -26,7 +26,8 @@ final class QueryBuilderTest extends TestCase
         $siteId = new Id('43c567e1396b4cadb52223a51796fd04');
         $zoneId = new Id('43c567e1396b4cadb52223a51796fd03');
         $trackingId = new Id('43c567e1396b4cadb52223a51796fd02');
-        $dto = new QueryDto($publisherId, $siteId, $zoneId, $userId, $trackingId, new Size("200x100"));
+        $scopes = ["200x100"];
+        $dto = new QueryDto($publisherId, $siteId, $zoneId, $userId, $trackingId, $scopes);
         $defined = [
             'one',
             'two',
@@ -126,6 +127,7 @@ PAINLESS;
         $zoneId = new Id('43c567e1396b4cadb52223a51796fd03');
         $userId = new Id('85f115636b384744949300571aad2a4f');
         $trackingId = new Id('85f115636b384744949300571aad2a4d');
+        $scopes = ["160x600"];
 
         $keywords = [
             'device:type'    => ['mobile'],
@@ -154,7 +156,7 @@ PAINLESS;
             $zoneId,
             $userId,
             $trackingId,
-            new Size("160x600"),
+            $scopes,
             $filters,
             $keywords
         );
