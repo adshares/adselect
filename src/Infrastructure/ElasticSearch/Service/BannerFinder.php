@@ -12,6 +12,7 @@ use App\Application\Service\TimeService;
 use App\Infrastructure\ElasticSearch\Client;
 use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use App\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
+use App\Infrastructure\ElasticSearch\QueryBuilder\DirectDealQueryBuilder;
 use App\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use App\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -63,35 +64,28 @@ class BannerFinder implements BannerFinderInterface
             ],
         ];
 
-        $chance = (mt_rand(0, 999) / 1000);
-
-        if ($chance < $this->experimentChance) {
-            $this->logger->debug(
-                sprintf(
-                    '[BANNER FINDER] experiment < %s',
-                    $this->experimentChance
-                )
-            );
-            $queryBuilder = new ExpQueryBuilder($query);
+        $isDirectDeal = (bool)$queryDto->getZoneOption('direct_deal', false);
+        if ($isDirectDeal) {
+            $this->logger->debug('[BANNER FINDER] direct deal');
+            $queryBuilder = new DirectDealQueryBuilder($query, $this->getSeenOrder($userHistory));
         } else {
-            $queryBuilder = new QueryBuilder(
-                $query,
-                (float)$queryDto->getZoneOption('min_cpm', 0.0),
-                $this->getSeenOrder($userHistory)
-            );
-            $this->logger->debug('[BANNER FINDER] regular');
+            $chance = (mt_rand(0, 999) / 1000);
+            if ($chance < $this->experimentChance) {
+                $this->logger->debug(sprintf('[BANNER FINDER] experiment %s < %s', $chance, $this->experimentChance));
+                $queryBuilder = new ExpQueryBuilder($query);
+            } else {
+                $this->logger->debug(sprintf('[BANNER FINDER] regular %s >= %s', $chance, $this->experimentChance));
+                $queryBuilder = new QueryBuilder(
+                    $query,
+                    (float)$queryDto->getZoneOption('min_cpm', 0.0),
+                    $this->getSeenOrder($userHistory),
+                );
+            }
         }
 
         $params['body']['query'] = $queryBuilder->build();
 
-        $this->logger->debug(
-            sprintf(
-                '[BANNER FINDER] sending a query: %s %s %s',
-                $chance,
-                $this->experimentChance,
-                json_encode($params)
-            )
-        );
+        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s', json_encode($params)));
 
         $response = $this->client->search($params);
 
