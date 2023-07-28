@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @phpcs:disable Generic.Files.LineLength.TooLong
+ */
+
 declare(strict_types=1);
 
 namespace App\Infrastructure\ElasticSearch\QueryBuilder;
@@ -17,7 +21,8 @@ return Math.round(
         100.0
         * real_rpm
         * Math.random()
-        * (params.last_seen.containsKey(doc._id[0]) ? (params.last_seen[doc._id[0]]) : 1)
+        * (params.last_seen_banners.containsKey(doc._id[0]) ? (params.last_seen_banners[doc._id[0]]) : 1)
+        * (params.last_seen_campaigns.containsKey(doc['campaign_id'][0]) ? (params.last_seen_campaigns[doc['campaign_id'][0]]) : 1)
     )
     * 100000
     + Math.round(real_rpm * 100)
@@ -45,7 +50,8 @@ PAINLESS;
                     'script' => [
                         'lang'   => 'painless',
                         'params' => [
-                            'last_seen' => (object)$this->userHistory,
+                            'last_seen_banners' => (object)$this->userHistory['banners'],
+                            'last_seen_campaigns' => (object)$this->userHistory['campaigns'],
                             'min_rpm'   => $this->minCpm,
                         ],
                         'source' => self::SCRIPT_SCORE,

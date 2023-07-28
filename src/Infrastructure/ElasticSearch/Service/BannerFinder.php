@@ -23,6 +23,7 @@ class BannerFinder implements BannerFinderInterface
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
     private const HISTORY_ENTRY_BANNER_ID = 1;
+    private const HISTORY_ENTRY_CAMPAIGN_ID = 2;
     private const HISTORY_MAXAGE = 3600 * 3;
     private const HISTORY_MAXENTRIES = 50;
 
@@ -127,14 +128,22 @@ class BannerFinder implements BannerFinderInterface
 
     private function getSeenOrder(array $userHistory): array
     {
-        $seen = [];
+        $seen = [
+            'banners'   => [],
+            'campaigns' => [],
+        ];
 
         foreach (array_reverse($userHistory) as $id => $entry) {
-            $mod = ($id ** 2) / (($id + 1) ** 2);
-            if (!isset($seen[$entry[self::HISTORY_ENTRY_BANNER_ID]])) {
-                $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] = $mod;
+            $mod = sqrt(($id ** 2) / (($id + 1) ** 2));
+            if (isset($seen['banners'][$entry[self::HISTORY_ENTRY_BANNER_ID]])) {
+                $seen['banners'][$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
             } else {
-                $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
+                $seen['banners'][$entry[self::HISTORY_ENTRY_BANNER_ID]] = $mod;
+            }
+            if (isset($seen['campaigns'][$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]])) {
+                $seen['campaigns'][$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]] *= $mod;
+            } else {
+                $seen['campaigns'][$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]] = $mod;
             }
         }
         $this->logger->debug(sprintf('[BANNER FINDER] seen: %s', json_encode($seen)));
@@ -193,8 +202,9 @@ class BannerFinder implements BannerFinderInterface
         // It can be implemented only when we return one banner. Otherwise, we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [
-                self::HISTORY_ENTRY_TIME      => $this->timeService->getDateTime()->getTimestamp(),
-                self::HISTORY_ENTRY_BANNER_ID => $collection[0]->getBannerId(),
+                self::HISTORY_ENTRY_TIME        => $this->timeService->getDateTime()->getTimestamp(),
+                self::HISTORY_ENTRY_BANNER_ID   => $collection[0]->getBannerId(),
+                self::HISTORY_ENTRY_CAMPAIGN_ID => $collection[0]->getCampaignId(),
             ];
         }
     }
