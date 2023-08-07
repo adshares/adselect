@@ -12,6 +12,7 @@ use App\Application\Service\TimeService;
 use App\Infrastructure\ElasticSearch\Client;
 use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use App\Infrastructure\ElasticSearch\QueryBuilder\BaseQuery;
+use App\Infrastructure\ElasticSearch\QueryBuilder\DirectDealQueryBuilder;
 use App\Infrastructure\ElasticSearch\QueryBuilder\ExpQueryBuilder;
 use App\Infrastructure\ElasticSearch\QueryBuilder\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -22,6 +23,7 @@ class BannerFinder implements BannerFinderInterface
     private const HISTORY_APC_KEY_PREFIX = 'Adselect.UserHistory';
     private const HISTORY_ENTRY_TIME = 0;
     private const HISTORY_ENTRY_BANNER_ID = 1;
+    private const HISTORY_ENTRY_CAMPAIGN_ID = 2;
     private const HISTORY_MAXAGE = 3600 * 3;
     private const HISTORY_MAXENTRIES = 50;
 
@@ -63,35 +65,28 @@ class BannerFinder implements BannerFinderInterface
             ],
         ];
 
-        $chance = (mt_rand(0, 999) / 1000);
-
-        if ($chance < $this->experimentChance) {
-            $this->logger->debug(
-                sprintf(
-                    '[BANNER FINDER] experiment < %s',
-                    $this->experimentChance
-                )
-            );
-            $queryBuilder = new ExpQueryBuilder($query);
+        $isDirectDeal = (bool)$queryDto->getZoneOption('direct_deal', false);
+        if ($isDirectDeal) {
+            $this->logger->debug('[BANNER FINDER] direct deal');
+            $queryBuilder = new DirectDealQueryBuilder($query, $this->getSeenOrder($userHistory));
         } else {
-            $queryBuilder = new QueryBuilder(
-                $query,
-                (float)$queryDto->getZoneOption('min_cpm', 0.0),
-                $this->getSeenOrder($userHistory)
-            );
-            $this->logger->debug('[BANNER FINDER] regular');
+            $chance = (mt_rand(0, 999) / 1000);
+            if ($chance < $this->experimentChance) {
+                $this->logger->debug(sprintf('[BANNER FINDER] experiment %s < %s', $chance, $this->experimentChance));
+                $queryBuilder = new ExpQueryBuilder($query);
+            } else {
+                $this->logger->debug(sprintf('[BANNER FINDER] regular %s >= %s', $chance, $this->experimentChance));
+                $queryBuilder = new QueryBuilder(
+                    $query,
+                    (float)$queryDto->getZoneOption('min_cpm', 0.0),
+                    $this->getSeenOrder($userHistory),
+                );
+            }
         }
 
         $params['body']['query'] = $queryBuilder->build();
 
-        $this->logger->debug(
-            sprintf(
-                '[BANNER FINDER] sending a query: %s %s %s',
-                $chance,
-                $this->experimentChance,
-                json_encode($params)
-            )
-        );
+        $this->logger->debug(sprintf('[BANNER FINDER] sending a query: %s', json_encode($params)));
 
         $response = $this->client->search($params);
 
@@ -133,14 +128,22 @@ class BannerFinder implements BannerFinderInterface
 
     private function getSeenOrder(array $userHistory): array
     {
-        $seen = [];
+        $seen = [
+            'banners'   => [],
+            'campaigns' => [],
+        ];
 
         foreach (array_reverse($userHistory) as $id => $entry) {
-            $mod = ($id ** 2) / (($id + 1) ** 2);
-            if (!isset($seen[$entry[self::HISTORY_ENTRY_BANNER_ID]])) {
-                $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] = $mod;
+            $mod = sqrt(($id ** 2) / (($id + 1) ** 2));
+            if (isset($seen['banners'][$entry[self::HISTORY_ENTRY_BANNER_ID]])) {
+                $seen['banners'][$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
             } else {
-                $seen[$entry[self::HISTORY_ENTRY_BANNER_ID]] *= $mod;
+                $seen['banners'][$entry[self::HISTORY_ENTRY_BANNER_ID]] = $mod;
+            }
+            if (isset($seen['campaigns'][$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]])) {
+                $seen['campaigns'][$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]] *= $mod;
+            } else {
+                $seen['campaigns'][$entry[self::HISTORY_ENTRY_CAMPAIGN_ID]] = $mod;
             }
         }
         $this->logger->debug(sprintf('[BANNER FINDER] seen: %s', json_encode($seen)));
@@ -199,8 +202,9 @@ class BannerFinder implements BannerFinderInterface
         // It can be implemented only when we return one banner. Otherwise, we do not know which one is displayed.
         if ($collection->count() > 0) {
             $history[] = [
-                self::HISTORY_ENTRY_TIME      => $this->timeService->getDateTime()->getTimestamp(),
-                self::HISTORY_ENTRY_BANNER_ID => $collection[0]->getBannerId(),
+                self::HISTORY_ENTRY_TIME        => $this->timeService->getDateTime()->getTimestamp(),
+                self::HISTORY_ENTRY_BANNER_ID   => $collection[0]->getBannerId(),
+                self::HISTORY_ENTRY_CAMPAIGN_ID => $collection[0]->getCampaignId(),
             ];
         }
     }
