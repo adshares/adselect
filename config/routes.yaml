@@ -43,6 +43,15 @@ last_payment:
     path: /api/%api_version%/payments/last
     methods: [GET]
     controller: App\UI\Controller\EventController::lastPayment
+    
+new_experiment_payments:
+    path: /api/%api_version%/experiment-payments
+    methods: [POST]
+    controller: App\UI\Controller\ExperimentPaymentController::newPayments
+last_experiment_payment:
+    path: /api/%api_version%/experiment-payments/last
+    methods: [GET]
+    controller: App\UI\Controller\ExperimentPaymentController::lastPayment
 
 info:
     path: /info.{_format}
