@@ -9,6 +9,7 @@ use App\Infrastructure\ElasticSearch\Client;
 use App\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Infrastructure\ElasticSearch\Mapping\ExperimentPaymentIndex;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -30,6 +31,14 @@ class StatsUpdater
     private const TIME_PERCENTILES = [0, 25, 50, 60, 70, 80, 90, 95, 97.5, 99, 99.5, 100];
     private const TIME_FORMAT = 'Y-m-d H:i:s';
     private const PAID_AMOUNT_FORMULA = "doc['paid_amount'].value/(double)1e8";
+    private const EXPERIMENT_ADD_SCRIPT = <<<SCRIPT
+double crpm = (ctx._source.stats.rpm ?: 0) + params._add_rpm;
+double maxRpm = (ctx._source.stats.rpm ?: 0) * params._growth_cap;
+if (crpm > params._avg_rpm && crpm > maxRpm) {
+    crpm = maxRpm;
+}
+ctx._source.stats.crpm = crpm;
+SCRIPT;
 
     private array $updateCache = [];
     private int $bulkLimit;
@@ -396,6 +405,156 @@ class StatsUpdater
         );
 
         $this->commitUpdates();
+
+
+        $from = $this->timeTo->modify('-1 hour');
+        $result = $this->client->search(
+            [
+                'index' => [
+                    '_index' => EventIndex::name(),
+                ],
+                'size' => 0,
+                'body' => [
+                    'query' => [
+                        'range' => [
+                            'time' => [
+                                'time_zone' => $from->format('P'),
+                                'gte' => $from->format(self::TIME_FORMAT),
+                                'lte' => $this->timeTo->format(self::TIME_FORMAT),
+                            ],
+                        ],
+                    ],
+                    'aggs' => [
+                        'campaigns' => [
+                            'terms' => [
+                                'field' => 'campaign_id'
+                            ],
+                            'aggs' => [
+                                'paid_amount' => [
+                                    'sum' => [
+                                        'field' => 'paid_amount',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        );
+
+        $revenue = 0;
+        $viewRevenue = 0;
+        foreach ($result['aggregations']['campaigns']['buckets'] as $bucket) {
+            $nViews = $bucket['doc_count'];
+            if ($nViews < 1) {
+                continue;
+            }
+            $revenue += $bucket['paid_amount']['value'];
+            $viewRevenue += $nViews * $bucket['paid_amount']['value'];
+        }
+        $averageRpm = $this->getAverageRpm();
+
+
+        $result = $this->client->search(
+            [
+                'index' => [
+                    '_index' => ExperimentPaymentIndex::name(),
+                ],
+                'size' => 0,
+                'body' => [
+                    'query' => [
+                        'range' => [
+                            'time' => [
+                                'time_zone' => $from->format('P'),
+                                'gte' => $from->format(self::TIME_FORMAT),
+                                'lte' => $this->timeTo->format(self::TIME_FORMAT),
+                            ],
+                        ],
+                    ],
+                    'aggs' => [
+                        'campaigns' => [
+                            'terms' => [
+                                'field' => 'campaign_id'
+                            ],
+                            'aggs' => [
+                                'paid_amount' => [
+                                    'sum' => [
+                                        'field' => 'paid_amount',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        );
+
+        foreach ($result['aggregations']['campaigns']['buckets'] as $bucket) {
+            $campaignId = $bucket['key'];
+            $paidAmount = $bucket['paid_amount']['value'] / 1e8;
+            if ($revenue <= 0 || $viewRevenue <= 0) {
+                $addExperimentalRpm = $averageRpm;
+            } else {
+                $addExperimentalRpm = $paidAmount * $revenue / $viewRevenue;
+            }
+            $bannerIds = $this->getAllBannerIds($campaignId);
+            foreach ($bannerIds as $bannerId) {
+                $params = [
+                    'index' => BannerIndex::name(),
+                    'body' => [
+                        '_source' => false,
+                        'query' => [
+                            'parent_id' => [
+                                'type' => 'stats',
+                                'id' => $bannerId,
+                            ],
+                        ],
+                    ],
+                ];
+                $response = $this->client->search($params);
+                $statsIds = array_map(fn(array $hit) => $hit['_id'], $response['hits']['hits']);
+                if (empty($statsIds)) {
+                    $statsIds[] = sha1(implode(":", [$campaignId, $bannerId, '', '', '']));
+                }
+
+                $mapped = [];
+                foreach ($statsIds as $statsId) {
+                    $mapped[] = [
+                        'update' => [
+                            '_index' => BannerIndex::name(),
+                            '_id' => $statsId,
+                            'routing' => $campaignId,
+                        ],
+                    ];
+                    $mapped[] = [
+                        'upsert' => [
+                            'join' => [
+                                'name' => 'stats',
+                                'parent' => $bannerId,
+                            ],
+                            'stats' => [
+                                'campaign_id' => $campaignId,
+                                'banner_id' => '',
+                                'site_id' => '',
+                                'zone_id' => '',
+                                'rpm' => 0
+                            ],
+                        ],
+                        'scripted_upsert' => true,
+                        'script' => [
+                            'source' => self::EXPERIMENT_ADD_SCRIPT,
+                            'params' => [
+                                '_growth_cap' => 1.3,
+                                '_avg_rpm' => $averageRpm,
+                                '_add_rpm' => $addExperimentalRpm,
+                            ],
+                            'lang' => 'painless',
+                        ],
+                    ];
+                }
+                $response = $this->client->bulk($mapped, 'TEST_UPDATE');
+            }
+        }
     }
 
     private function getAllBannerIds($campaignId): array
@@ -430,11 +589,7 @@ class StatsUpdater
 
         $result = $this->client->search($mapped);
 
-        $ids = [];
-        foreach ($result['hits']['hits'] as $hit) {
-            $ids[] = $hit['_id'];
-        }
-        return $ids;
+        return array_map(fn(array $hit) => $hit['_id'], $result['hits']['hits']);
     }
 
     private function saveBannerStats($campaignId, $bannerId, array $keyMap, array $stats): void

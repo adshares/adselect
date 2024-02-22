@@ -31,6 +31,7 @@ class BannerIndex extends AbstractIndex implements Index
                     'site_id' => ['type' => 'keyword'],
                     'zone_id' => ['type' => 'keyword'],
                     'rpm' => ['type' => 'double'],
+                    'crpm' => ['type' => 'double'],
                     'rpm_min' => ['type' => 'double'],
                     'rpm_max' => ['type' => 'double'],
                     'total_count' => ['type' => 'long'],
