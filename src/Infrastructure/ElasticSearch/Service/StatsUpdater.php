@@ -405,156 +405,7 @@ SCRIPT;
         );
 
         $this->commitUpdates();
-
-
-        $from = $this->timeTo->modify('-1 hour');
-        $result = $this->client->search(
-            [
-                'index' => [
-                    '_index' => EventIndex::name(),
-                ],
-                'size' => 0,
-                'body' => [
-                    'query' => [
-                        'range' => [
-                            'time' => [
-                                'time_zone' => $from->format('P'),
-                                'gte' => $from->format(self::TIME_FORMAT),
-                                'lte' => $this->timeTo->format(self::TIME_FORMAT),
-                            ],
-                        ],
-                    ],
-                    'aggs' => [
-                        'campaigns' => [
-                            'terms' => [
-                                'field' => 'campaign_id'
-                            ],
-                            'aggs' => [
-                                'paid_amount' => [
-                                    'sum' => [
-                                        'field' => 'paid_amount',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        );
-
-        $revenue = 0;
-        $viewRevenue = 0;
-        foreach ($result['aggregations']['campaigns']['buckets'] as $bucket) {
-            $nViews = $bucket['doc_count'];
-            if ($nViews < 1) {
-                continue;
-            }
-            $revenue += $bucket['paid_amount']['value'];
-            $viewRevenue += $nViews * $bucket['paid_amount']['value'];
-        }
-        $averageRpm = $this->getAverageRpm();
-
-
-        $result = $this->client->search(
-            [
-                'index' => [
-                    '_index' => ExperimentPaymentIndex::name(),
-                ],
-                'size' => 0,
-                'body' => [
-                    'query' => [
-                        'range' => [
-                            'time' => [
-                                'time_zone' => $from->format('P'),
-                                'gte' => $from->format(self::TIME_FORMAT),
-                                'lte' => $this->timeTo->format(self::TIME_FORMAT),
-                            ],
-                        ],
-                    ],
-                    'aggs' => [
-                        'campaigns' => [
-                            'terms' => [
-                                'field' => 'campaign_id'
-                            ],
-                            'aggs' => [
-                                'paid_amount' => [
-                                    'sum' => [
-                                        'field' => 'paid_amount',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        );
-
-        foreach ($result['aggregations']['campaigns']['buckets'] as $bucket) {
-            $campaignId = $bucket['key'];
-            $paidAmount = $bucket['paid_amount']['value'] / 1e8;
-            if ($revenue <= 0 || $viewRevenue <= 0) {
-                $addExperimentalRpm = $averageRpm;
-            } else {
-                $addExperimentalRpm = $paidAmount * $revenue / $viewRevenue;
-            }
-            $bannerIds = $this->getAllBannerIds($campaignId);
-            foreach ($bannerIds as $bannerId) {
-                $params = [
-                    'index' => BannerIndex::name(),
-                    'body' => [
-                        '_source' => false,
-                        'query' => [
-                            'parent_id' => [
-                                'type' => 'stats',
-                                'id' => $bannerId,
-                            ],
-                        ],
-                    ],
-                ];
-                $response = $this->client->search($params);
-                $statsIds = array_map(fn(array $hit) => $hit['_id'], $response['hits']['hits']);
-                if (empty($statsIds)) {
-                    $statsIds[] = sha1(implode(":", [$campaignId, $bannerId, '', '', '']));
-                }
-
-                $mapped = [];
-                foreach ($statsIds as $statsId) {
-                    $mapped[] = [
-                        'update' => [
-                            '_index' => BannerIndex::name(),
-                            '_id' => $statsId,
-                            'routing' => $campaignId,
-                        ],
-                    ];
-                    $mapped[] = [
-                        'upsert' => [
-                            'join' => [
-                                'name' => 'stats',
-                                'parent' => $bannerId,
-                            ],
-                            'stats' => [
-                                'campaign_id' => $campaignId,
-                                'banner_id' => '',
-                                'site_id' => '',
-                                'zone_id' => '',
-                                'rpm' => 0
-                            ],
-                        ],
-                        'scripted_upsert' => true,
-                        'script' => [
-                            'source' => self::EXPERIMENT_ADD_SCRIPT,
-                            'params' => [
-                                '_growth_cap' => 1.3,
-                                '_avg_rpm' => $averageRpm,
-                                '_add_rpm' => $addExperimentalRpm,
-                            ],
-                            'lang' => 'painless',
-                        ],
-                    ];
-                }
-                $response = $this->client->bulk($mapped, 'TEST_UPDATE');
-            }
-        }
+        $this->useExperimentPayments();
     }
 
     private function getAllBannerIds($campaignId): array
@@ -705,5 +556,171 @@ SCRIPT;
         ];
         $this->client->delete($query, BannerIndex::name());
         $this->client->refreshIndex(BannerIndex::name());
+    }
+
+    private function useExperimentPayments(): void
+    {
+        $to = $this->timeTo;
+        $from = $this->timeTo->modify('-1 hour');
+        $averageRpm = $this->getAverageRpm();
+        [$revenue, $viewRevenue] = $this->getHelperValues($from, $to);
+
+        $result = $this->client->search(
+            [
+                'index' => [
+                    '_index' => ExperimentPaymentIndex::name(),
+                ],
+                'size' => 0,
+                'body' => [
+                    'query' => [
+                        'range' => [
+                            'time' => [
+                                'time_zone' => $from->format('P'),
+                                'gte' => $from->format(self::TIME_FORMAT),
+                                'lte' => $to->format(self::TIME_FORMAT),
+                            ],
+                        ],
+                    ],
+                    'aggs' => [
+                        'campaigns' => [
+                            'terms' => [
+                                'field' => 'campaign_id'
+                            ],
+                            'aggs' => [
+                                'paid_amount' => [
+                                    'sum' => [
+                                        'field' => 'paid_amount',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        );
+
+        foreach ($result['aggregations']['campaigns']['buckets'] as $bucket) {
+            $campaignId = $bucket['key'];
+            $paidAmount = $bucket['paid_amount']['value'] / 1e8;
+            if ($revenue <= 0 || $viewRevenue <= 0) {
+                $addExperimentalRpm = $averageRpm;
+            } else {
+                $addExperimentalRpm = $paidAmount * $revenue / $viewRevenue;
+            }
+            $bannerIds = $this->getAllBannerIds($campaignId);
+            foreach ($bannerIds as $bannerId) {
+                $statsIds = $this->getAllStatisticsIds($campaignId, $bannerId);
+
+                $mapped = [];
+                foreach ($statsIds as $statsId) {
+                    $mapped[] = [
+                        'update' => [
+                            '_index' => BannerIndex::name(),
+                            '_id' => $statsId,
+                            'routing' => $campaignId,
+                        ],
+                    ];
+                    $mapped[] = [
+                        'upsert' => [
+                            'join' => [
+                                'name' => 'stats',
+                                'parent' => $bannerId,
+                            ],
+                            'stats' => [
+                                'campaign_id' => $campaignId,
+                                'banner_id' => '',
+                                'site_id' => '',
+                                'zone_id' => '',
+                                'rpm' => 0
+                            ],
+                        ],
+                        'scripted_upsert' => true,
+                        'script' => [
+                            'source' => self::EXPERIMENT_ADD_SCRIPT,
+                            'params' => [
+                                '_growth_cap' => 1.3,
+                                '_avg_rpm' => $averageRpm,
+                                '_add_rpm' => $addExperimentalRpm,
+                            ],
+                            'lang' => 'painless',
+                        ],
+                    ];
+                }
+                $this->client->bulk($mapped, 'ES_EXP_STATS_UPDATE');
+            }
+        }
+    }
+
+    private function getHelperValues(DateTimeInterface $from, DateTimeInterface $to): array
+    {
+        $result = $this->client->search(
+            [
+                'index' => [
+                    '_index' => EventIndex::name(),
+                ],
+                'size' => 0,
+                'body' => [
+                    'query' => [
+                        'range' => [
+                            'time' => [
+                                'time_zone' => $from->format('P'),
+                                'gte' => $from->format(self::TIME_FORMAT),
+                                'lte' => $to->format(self::TIME_FORMAT),
+                            ],
+                        ],
+                    ],
+                    'aggs' => [
+                        'campaigns' => [
+                            'terms' => [
+                                'field' => 'campaign_id',
+                            ],
+                            'aggs' => [
+                                'paid_amount' => [
+                                    'sum' => [
+                                        'field' => 'paid_amount',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        );
+
+        $revenue = 0;
+        $viewRevenue = 0;
+        foreach ($result['aggregations']['campaigns']['buckets'] as $bucket) {
+            $nViews = $bucket['doc_count'];
+            if ($nViews < 1) {
+                continue;
+            }
+            $revenue += $bucket['paid_amount']['value'];
+            $viewRevenue += $nViews * $bucket['paid_amount']['value'];
+        }
+
+        return [$revenue, $viewRevenue];
+    }
+
+    private function getAllStatisticsIds(string $campaignId, string $bannerId): array
+    {
+        $params = [
+            'index' => BannerIndex::name(),
+            'body' => [
+                '_source' => false,
+                'query' => [
+                    'parent_id' => [
+                        'type' => 'stats',
+                        'id' => $bannerId,
+                    ],
+                ],
+            ],
+        ];
+        $response = $this->client->search($params);
+        $statsIds = array_map(fn(array $hit) => $hit['_id'], $response['hits']['hits']);
+        $id = sha1(implode(":", [$campaignId, $bannerId, '', '', '']));
+        if (!in_array($id, $statsIds, true)) {
+            $statsIds[] = $id;
+        }
+        return $statsIds;
     }
 }
