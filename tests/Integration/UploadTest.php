@@ -62,12 +62,12 @@ final class UploadTest extends IntegrationTestCase
         );
 
         self::assertResponseIsSuccessful();
-        self::assertTrue($this->indexExists('exp_payments'));
+        self::assertTrue($this->indexExists('boost_payments'));
 
         // wait for index to be refreshed
         sleep(1);
 
-        $documents = $this->documentsInIndex('exp_payments');
+        $documents = $this->documentsInIndex('boost_payments');
         self::assertCount(2, $documents);
         $document = $documents[0];
         self::assertEquals('10', $document['_id']);

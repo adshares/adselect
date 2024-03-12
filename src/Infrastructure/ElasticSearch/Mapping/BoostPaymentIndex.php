@@ -7,7 +7,7 @@ namespace App\Infrastructure\ElasticSearch\Mapping;
 class BoostPaymentIndex extends AbstractIndex implements Index
 {
     private const TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
-    public const INDEX = 'exp_payments';
+    public const INDEX = 'boost_payments';
 
     public const MAPPINGS = [
         'properties' => [
