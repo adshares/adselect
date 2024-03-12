@@ -7,7 +7,7 @@ namespace App\Tests\Integration\Builders;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-final class ExperimentPaymentBuilder
+final class BoostPaymentBuilder
 {
     private static int $id = 0;
 

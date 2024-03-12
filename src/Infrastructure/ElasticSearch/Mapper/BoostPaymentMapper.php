@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\ElasticSearch\Mapper;
 
-use App\Domain\Model\ExperimentPayment;
+use App\Domain\Model\BoostPayment;
 
-class ExperimentPaymentMapper
+class BoostPaymentMapper
 {
-    public static function map(ExperimentPayment $payment, string $index): array
+    public static function map(BoostPayment $payment, string $index): array
     {
         return [
             'index' => [

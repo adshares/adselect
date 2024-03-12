@@ -9,7 +9,7 @@ use App\Infrastructure\ElasticSearch\Client;
 use App\Infrastructure\ElasticSearch\Mapper\BannerMapper;
 use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
-use App\Infrastructure\ElasticSearch\Mapping\ExperimentPaymentIndex;
+use App\Infrastructure\ElasticSearch\Mapping\BoostPaymentIndex;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -568,7 +568,7 @@ SCRIPT;
         $result = $this->client->search(
             [
                 'index' => [
-                    '_index' => ExperimentPaymentIndex::name(),
+                    '_index' => BoostPaymentIndex::name(),
                 ],
                 'size' => 0,
                 'body' => [

@@ -6,7 +6,7 @@ namespace App\Tests\Integration;
 
 use App\Tests\Integration\Builders\BannerBuilder;
 use App\Tests\Integration\Builders\CampaignBuilder;
-use App\Tests\Integration\Builders\ExperimentPaymentBuilder;
+use App\Tests\Integration\Builders\BoostPaymentBuilder;
 
 final class UploadTest extends IntegrationTestCase
 {
@@ -45,19 +45,19 @@ final class UploadTest extends IntegrationTestCase
 
         $client->request(
             'POST',
-            '/api/v1/experiment-payments',
+            '/api/v1/boost-payments',
             [],
             [],
             [],
             json_encode(['payments' => [
-                (new ExperimentPaymentBuilder())
+                (new BoostPaymentBuilder())
                     ->id(10)
                     ->campaignId('fedcba9876543210fedcba9876543210')
                     ->payTime('2024-02-21 13:54:27')
                     ->paidAmount(123456789)
                     ->payer('0001-00000002-BB2D')
                     ->build(),
-                (new ExperimentPaymentBuilder())->build(),
+                (new BoostPaymentBuilder())->build(),
             ]])
         );
 

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\ElasticSearch\Service;
 
-use App\Application\Dto\FoundExperimentPayment;
-use App\Application\Exception\ExperimentPaymentNotFound;
-use App\Application\Service\ExperimentPaymentFinder as ExperimentPaymentFinderInterface;
+use App\Application\Dto\FoundBoostPayment;
+use App\Application\Exception\BoostPaymentNotFound;
+use App\Application\Service\BoostPaymentFinder as BoostPaymentFinderInterface;
 use App\Infrastructure\ElasticSearch\Client;
-use App\Infrastructure\ElasticSearch\Mapping\ExperimentPaymentIndex;
+use App\Infrastructure\ElasticSearch\Mapping\BoostPaymentIndex;
 use Psr\Log\LoggerInterface;
 
-class ExperimentPaymentFinder implements ExperimentPaymentFinderInterface
+class BoostPaymentFinder implements BoostPaymentFinderInterface
 {
-    private const CACHE_KEY_LAST_PAYMENT_ID = 'Adselect.ExperimentPaymentFinder.LastPayment';
+    private const CACHE_KEY_LAST_PAYMENT_ID = 'Adselect.BoostPaymentFinder.LastPayment';
 
     private Client $client;
     private LoggerInterface $logger;
@@ -24,12 +24,12 @@ class ExperimentPaymentFinder implements ExperimentPaymentFinderInterface
         $this->logger = $logger;
     }
 
-    public function findLastPayment(): FoundExperimentPayment
+    public function findLastPayment(): FoundBoostPayment
     {
         $foundId = apcu_fetch(self::CACHE_KEY_LAST_PAYMENT_ID);
         if (!$foundId) {
             $params = [
-                'index' => ExperimentPaymentIndex::name(),
+                'index' => BoostPaymentIndex::name(),
                 'body' => [
                     '_source' => false,
                     'docvalue_fields' => ['id'],
@@ -54,19 +54,19 @@ class ExperimentPaymentFinder implements ExperimentPaymentFinderInterface
             ];
 
             $this->logger->debug(
-                sprintf('[EXPERIMENT PAYMENT FINDER] (last case) sending a query: %s', json_encode($params))
+                sprintf('[BOOST PAYMENT FINDER] (last case) sending a query: %s', json_encode($params))
             );
 
             $response = $this->client->search($params);
             $data = $response['hits']['hits'][0]['fields'] ?? null;
 
             if (!$data) {
-                throw new ExperimentPaymentNotFound();
+                throw new BoostPaymentNotFound();
             }
             $foundId = $data['id'][0];
             apcu_store(self::CACHE_KEY_LAST_PAYMENT_ID, $foundId, 300);
         }
 
-        return new FoundExperimentPayment($foundId);
+        return new FoundBoostPayment($foundId);
     }
 }

@@ -6,6 +6,6 @@ namespace App\Domain\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-final class ExperimentPaymentCollection extends ArrayCollection
+final class BoostPaymentCollection extends ArrayCollection
 {
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\ElasticSearch\Mapping;
 
-class ExperimentPaymentIndex extends AbstractIndex implements Index
+class BoostPaymentIndex extends AbstractIndex implements Index
 {
     private const TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
     public const INDEX = 'exp_payments';

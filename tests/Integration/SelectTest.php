@@ -824,7 +824,7 @@ final class SelectTest extends IntegrationTestCase
         self::assertResultsPresent($payingBannerIds, $results, 400);
     }
 
-    public function testSelectDifferentCampaignsWithOneExperimentsOtherPays(): void
+    public function testSelectDifferentCampaignsWithOneBoostOtherPays(): void
     {
         $eventAmount = 1_000_000_000;//$0.01
 
@@ -841,8 +841,8 @@ final class SelectTest extends IntegrationTestCase
         for ($hourOffset = 0; $hourOffset < 6; $hourOffset++) {
             $this->timeService->setModify(sprintf('+%d hours', $hourOffset));
             $totalAmount = (int)(50 * $eventAmount);
-            $this->setupExperimentPayments([
-                $this->getExperimentPayment($hourOffset + 1, $experimentingCampaignId, $totalAmount),
+            $this->setupBoostPayments([
+                $this->getBoostPayment($hourOffset + 1, $experimentingCampaignId, $totalAmount),
             ]);
             $this->setupInitialPaymentsWithEqualEventAmount(
                 $idsMap,
@@ -914,11 +914,11 @@ final class SelectTest extends IntegrationTestCase
         );
     }
 
-    private function setupExperimentPayments(array $payments): void
+    private function setupBoostPayments(array $payments): void
     {
         $this->client->request(
             'POST',
-            '/api/v1/experiment-payments',
+            '/api/v1/boost-payments',
             [],
             [],
             [],
@@ -1204,7 +1204,7 @@ final class SelectTest extends IntegrationTestCase
         ];
     }
 
-    private function getExperimentPayment(
+    private function getBoostPayment(
         int $id,
         string $campaignId,
         int $amount

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\UI\Controller;
 
-use App\Application\Dto\ExperimentPayments;
-use App\Application\Exception\ExperimentPaymentNotFound;
-use App\Application\Service\ExperimentPaymentCollector;
-use App\Application\Service\ExperimentPaymentFinder;
+use App\Application\Dto\BoostPayments;
+use App\Application\Exception\BoostPaymentNotFound;
+use App\Application\Service\BoostPaymentCollector;
+use App\Application\Service\BoostPaymentFinder;
 use App\UI\Controller\Exception\IncorrectDataException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,31 +16,31 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ExperimentPaymentController extends AbstractController
+class BoostPaymentController extends AbstractController
 {
-    private ExperimentPaymentCollector $experimentPaymentCollector;
-    private ExperimentPaymentFinder $experimentPaymentFinder;
+    private BoostPaymentCollector $boostPaymentCollector;
+    private BoostPaymentFinder $boostPaymentFinder;
     private LoggerInterface $logger;
 
     public function __construct(
-        ExperimentPaymentCollector $experimentPaymentCollector,
-        ExperimentPaymentFinder $experimentPaymentFinder,
+        BoostPaymentCollector $boostPaymentCollector,
+        BoostPaymentFinder $boostPaymentFinder,
         LoggerInterface $logger
     ) {
-        $this->experimentPaymentCollector = $experimentPaymentCollector;
-        $this->experimentPaymentFinder = $experimentPaymentFinder;
+        $this->boostPaymentCollector = $boostPaymentCollector;
+        $this->boostPaymentFinder = $boostPaymentFinder;
         $this->logger = $logger;
     }
 
     public function lastPayment(): JsonResponse
     {
         try {
-            $experimentPayment = $this->experimentPaymentFinder->findLastPayment();
-        } catch (ExperimentPaymentNotFound $exception) {
+            $payment = $this->boostPaymentFinder->findLastPayment();
+        } catch (BoostPaymentNotFound $exception) {
             throw new NotFoundHttpException($exception->getMessage());
         }
 
-        return new JsonResponse($experimentPayment->toArray(), Response::HTTP_OK);
+        return new JsonResponse($payment->toArray(), Response::HTTP_OK);
     }
 
     public function newPayments(Request $request): JsonResponse
@@ -50,14 +50,14 @@ class ExperimentPaymentController extends AbstractController
             throw new IncorrectDataException();
         }
 
-        $dto = new ExperimentPayments($content['payments']);
+        $dto = new BoostPayments($content['payments']);
 
         if (!$dto->payments()->isEmpty()) {
-            $this->experimentPaymentCollector->collectPayments($dto->payments());
+            $this->boostPaymentCollector->collectPayments($dto->payments());
 
             $this->logger->debug(
                 sprintf(
-                    '[EXPERIMENT PAYMENTS] Payments have been proceed (ids: %s).',
+                    '[BOOST PAYMENTS] Payments have been proceed (ids: %s).',
                     implode(', ', $dto->getPaymentIds())
                 )
             );
@@ -72,7 +72,7 @@ class ExperimentPaymentController extends AbstractController
 
             $this->logger->debug(
                 sprintf(
-                    '[EXPERIMENT PAYMENTS] Some payments have not been proceed (%s)',
+                    '[BOOST PAYMENTS] Some payments have not been proceed (%s)',
                     json_encode($dto->failedPayments())
                 )
             );

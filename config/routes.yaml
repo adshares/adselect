@@ -44,14 +44,14 @@ last_payment:
     methods: [GET]
     controller: App\UI\Controller\EventController::lastPayment
     
-new_experiment_payments:
-    path: /api/%api_version%/experiment-payments
+new_boost_payments:
+    path: /api/%api_version%/boost-payments
     methods: [POST]
-    controller: App\UI\Controller\ExperimentPaymentController::newPayments
-last_experiment_payment:
-    path: /api/%api_version%/experiment-payments/last
+    controller: App\UI\Controller\BoostPaymentController::newPayments
+last_boost_payment:
+    path: /api/%api_version%/boost-payments/last
     methods: [GET]
-    controller: App\UI\Controller\ExperimentPaymentController::lastPayment
+    controller: App\UI\Controller\BoostPaymentController::lastPayment
 
 info:
     path: /info.{_format}

@@ -6,7 +6,7 @@ namespace App\Domain\Model;
 
 use App\Lib\DateTimeInterface;
 
-final class ExperimentPayment
+final class BoostPayment
 {
     private int $id;
     private string $campaignId;
@@ -64,7 +64,7 @@ final class ExperimentPayment
         ];
     }
 
-    public function equals(ExperimentPayment $payment): bool
+    public function equals(BoostPayment $payment): bool
     {
         return $this->id === $payment->id;
     }

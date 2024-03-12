@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\ElasticSearch\Service;
 
-use App\Application\Service\ExperimentPaymentCollector as ExperimentPaymentCollectorInterface;
-use App\Domain\Model\ExperimentPaymentCollection;
+use App\Application\Service\BoostPaymentCollector as BoostPaymentCollectorInterface;
+use App\Domain\Model\BoostPaymentCollection;
 use App\Infrastructure\ElasticSearch\Client;
-use App\Infrastructure\ElasticSearch\Mapper\ExperimentPaymentMapper;
-use App\Infrastructure\ElasticSearch\Mapping\ExperimentPaymentIndex;
+use App\Infrastructure\ElasticSearch\Mapper\BoostPaymentMapper;
+use App\Infrastructure\ElasticSearch\Mapping\BoostPaymentIndex;
 
-class ExperimentPaymentCollector implements ExperimentPaymentCollectorInterface
+class BoostPaymentCollector implements BoostPaymentCollectorInterface
 {
-    private const CACHE_KEY_LAST_PAYMENT_ID = 'Adselect.ExperimentPaymentFinder.LastPayment';
-    private const ES_TYPE_PAYMENT = 'EXPERIMENT PAYMENTS';
+    private const CACHE_KEY_LAST_PAYMENT_ID = 'Adselect.BoostPaymentFinder.LastPayment';
+    private const ES_TYPE_PAYMENT = 'BOOST PAYMENTS';
 
     private Client $client;
     private int $bulkLimit;
@@ -36,14 +36,14 @@ class ExperimentPaymentCollector implements ExperimentPaymentCollectorInterface
         return null;
     }
 
-    public function collectPayments(ExperimentPaymentCollection $payments): void
+    public function collectPayments(BoostPaymentCollection $payments): void
     {
         $lastId = null;
         $bulkOffset = 0;
         $mappedPayments = [];
 
         foreach ($payments as $payment) {
-            $mapped = ExperimentPaymentMapper::map($payment, ExperimentPaymentIndex::name());
+            $mapped = BoostPaymentMapper::map($payment, BoostPaymentIndex::name());
             $mappedPayments[] = $mapped['index'];
             $mappedPayments[] = $mapped['data'];
 

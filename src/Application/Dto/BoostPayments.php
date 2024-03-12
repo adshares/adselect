@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Application\Dto;
 
 use App\Domain\Exception\AdSelectRuntimeException;
-use App\Domain\Model\ExperimentPayment;
-use App\Domain\Model\ExperimentPaymentCollection;
+use App\Domain\Model\BoostPayment;
+use App\Domain\Model\BoostPaymentCollection;
 use App\Lib\Exception\LibraryRuntimeException;
 use App\Lib\ExtendedDateTime;
 
-class ExperimentPayments
+class BoostPayments
 {
     protected const REQUIRED_FIELDS = [
         'id',
@@ -20,18 +20,18 @@ class ExperimentPayments
         'payer'
     ];
 
-    protected ExperimentPaymentCollection $payments;
-    /** @var ExperimentPayment[] */
+    protected BoostPaymentCollection $payments;
+    /** @var BoostPayment[] */
     protected array $failedPayments = [];
 
     public function __construct(array $payments)
     {
-        $this->payments = new ExperimentPaymentCollection();
+        $this->payments = new BoostPaymentCollection();
 
         foreach ($payments as $payment) {
             if ($this->isValid($payment)) {
                 try {
-                    $payment = new ExperimentPayment(
+                    $payment = new BoostPayment(
                         $payment['id'],
                         $payment['campaign_id'],
                         ExtendedDateTime::createFromString($payment['pay_time']),
@@ -51,7 +51,7 @@ class ExperimentPayments
     public function getPaymentIds(): array
     {
         return $this->payments
-            ->map(fn (ExperimentPayment $payment) => $payment->getId())
+            ->map(fn (BoostPayment $payment) => $payment->getId())
             ->toArray();
     }
 
@@ -60,7 +60,7 @@ class ExperimentPayments
         return $this->failedPayments;
     }
 
-    public function payments(): ExperimentPaymentCollection
+    public function payments(): BoostPaymentCollection
     {
         return $this->payments;
     }
