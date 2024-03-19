@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2024-03-19
+### Added
+- Campaign boost
+
 ## [1.3.0] - 2023-08-07
 ### Added
 - Direct deal support
@@ -90,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-04-19
 Last python version
 
-[Unreleased]: https://github.com/adshares/adselect/compare/v1.3.0...develop
+[Unreleased]: https://github.com/adshares/adselect/compare/v1.4.0...develop
+[1.4.0]: https://github.com/adshares/adselect/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/adshares/adselect/compare/v1.2.3...v1.3.0
 [1.2.3]: https://github.com/adshares/adselect/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/adshares/adselect/compare/v1.2.1...v1.2.2

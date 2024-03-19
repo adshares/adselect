@@ -824,6 +824,38 @@ final class SelectTest extends IntegrationTestCase
         self::assertResultsPresent($payingBannerIds, $results, 400);
     }
 
+    public function testSelectDifferentCampaignsWithOneBoostOtherPays(): void
+    {
+        $eventAmount = 1_000_000_000;//$0.01
+
+        $idsMap = [
+            '10000000000000000000000000000000' => '11111111111111111111111111111111',
+            '20000000000000000000000000000000' => '22222222222222222222222222222222',
+        ];
+        $this->setupCampaigns(self::getCampaignsData($idsMap));
+
+        $experimentingCampaignId = '10000000000000000000000000000000';
+        $payingBannerIds = [
+            '22222222222222222222222222222222',
+        ];
+        for ($hourOffset = 0; $hourOffset < 6; $hourOffset++) {
+            $this->timeService->setModify(sprintf('+%d hours', $hourOffset));
+            $totalAmount = (int)(50 * $eventAmount);
+            $this->setupBoostPayments([
+                $this->getBoostPayment($hourOffset + 1, $experimentingCampaignId, $totalAmount),
+            ]);
+            $this->setupInitialPaymentsWithEqualEventAmount(
+                $idsMap,
+                $payingBannerIds,
+                $eventAmount,
+            );
+        }
+
+        $results = $this->findBanners();
+
+        self::assertResultsPresent(array_values($idsMap), $results, 400);
+    }
+
     public function eventAmountProvider(): array
     {
         return [
@@ -875,6 +907,18 @@ final class SelectTest extends IntegrationTestCase
         $this->client->request(
             'POST',
             '/api/v1/payments',
+            [],
+            [],
+            [],
+            json_encode(['payments' => $payments])
+        );
+    }
+
+    private function setupBoostPayments(array $payments): void
+    {
+        $this->client->request(
+            'POST',
+            '/api/v1/boost-payments',
             [],
             [],
             [],
@@ -1156,6 +1200,20 @@ final class SelectTest extends IntegrationTestCase
             'case_id' => $caseId,
             'paid_amount' => $amount,
             'pay_time' => ($creationDateTime ?: $this->timeService->getDateTime())->format(DateTimeInterface::ATOM),
+            'payer' => '0001-00000001-XXXX',
+        ];
+    }
+
+    private function getBoostPayment(
+        int $id,
+        string $campaignId,
+        int $amount
+    ): array {
+        return [
+            'id' => $id,
+            'campaign_id' => $campaignId,
+            'paid_amount' => $amount,
+            'pay_time' => $this->timeService->getDateTime()->format(DateTimeInterface::ATOM),
             'payer' => '0001-00000001-XXXX',
         ];
     }
