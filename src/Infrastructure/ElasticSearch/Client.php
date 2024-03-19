@@ -9,6 +9,7 @@ use App\Infrastructure\ElasticSearch\Mapping\AdserverIndex;
 use App\Infrastructure\ElasticSearch\Mapping\BannerIndex;
 use App\Infrastructure\ElasticSearch\Mapping\CampaignIndex;
 use App\Infrastructure\ElasticSearch\Mapping\EventIndex;
+use App\Infrastructure\ElasticSearch\Mapping\BoostPaymentIndex;
 use Elasticsearch\Client as BaseClient;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
@@ -74,6 +75,9 @@ class Client
             case AdserverIndex::INDEX:
                 $mappings = AdserverIndex::mappings();
                 break;
+            case BoostPaymentIndex::INDEX:
+                $mappings = BoostPaymentIndex::mappings();
+                break;
             default:
                 throw new ElasticSearchRuntime(sprintf('Given index (%s) does not exists', $indexName));
         }
@@ -85,6 +89,7 @@ class Client
         $this->createIndex(BannerIndex::INDEX, $force);
         $this->createIndex(EventIndex::INDEX, $force);
         $this->createIndex(AdserverIndex::INDEX, $force);
+        $this->createIndex(BoostPaymentIndex::INDEX, $force);
     }
 
     public function indexExists(string $indexName): bool

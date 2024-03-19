@@ -161,6 +161,7 @@ PAINLESS;
                     "_growth_cap" => StatsUpdater::MAX_HOURLY_RPM_GROWTH,
                     "_cap_rpm"    => $capRpm,
                     "_rpm"        => $stats['rpm_est'] ?? 0,
+                    "crpm"        => $stats['rpm_est'] ?? 0,
                     'rpm_min'     => $stats['avg_min'] ?? 0,
                     'rpm_max'     => $stats['avg_max'] ?? 0,
                     'total_count' => $stats['count'] ?? 0,
